@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>GAP Analysis View - SuperOS for Students</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Override view.active to show gap by default */
+    #view-gap {
+      display: block !important;
+    }
+    /* Ensure profile-nav is visible */
+    .profile-nav {
+      display: block !important;
+    }
+    /* GAP Chart Styles */
+    #gapChart {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      margin: 20px 0;
+    }
+    .compact {
+      list-style: none;
+      padding: 0;
+    }
+    .compact li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .compact li:last-child {
+      border-bottom: none;
+    }
+    /* Current Goal Styles */
+    .current-goal {
+      background: rgba(110, 168, 254, 0.1);
+      border: 1px solid rgba(110, 168, 254, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+    .current-goal h3 {
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: var(--neon);
+    }
+    .goal-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .goal-badge {
+      background: rgba(110, 168, 254, 0.2);
+      border: 1px solid rgba(110, 168, 254, 0.4);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .goal-badge .icon {
+      font-size: 16px;
+    }
+    /* Recommendation Cards Styles */
+    .recommendations-section {
+      margin-top: 24px;
+    }
+    .recommendations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .recommendation-card {
+      background: rgba(11, 19, 43, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .recommendation-card:hover {
+      border-color: var(--neon);
+      box-shadow: 0 4px 20px rgba(110, 168, 254, 0.2);
+      transform: translateY(-2px);
+    }
+    .recommendation-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .recommendation-college {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .recommendation-major {
+      font-size: 14px;
+      color: var(--neon);
+      font-weight: 500;
+    }
+    .recommendation-match {
+      background: rgba(126, 231, 135, 0.2);
+      border: 1px solid rgba(126, 231, 135, 0.4);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--neon2);
+    }
+    .recommendation-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+    }
+    .recommendation-stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .recommendation-stat-value {
+      color: var(--text);
+      font-weight: 500;
+    }
+    @media (max-width: 600px) {
+      .recommendations-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>SuperOS for Students - GAP Analysis</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <!-- Authenticated Application -->
+    <section id="route-app" class="route-shell">
+      <!-- Top Tabs Navigation (profile routes only) -->
+      <div id="profileNav" class="profile-nav">
+        <div class="tabs top" id="topTabs">
+          <button type="button" class="tab small" data-tab-route="profile">Profile</button>
+          <button type="button" class="tab small" data-tab-route="persona">Persona</button>
+          <button type="button" class="tab small active" data-tab-route="gap">GAP</button>
+          <button type="button" class="tab small" data-tab-route="advisor">Major Advisor</button>
+          <button type="button" class="tab small" data-tab-route="roadmap">Roadmap</button>
+        </div>
+      </div>
+
+      <!-- GAP Analysis (separate view) -->
+      <section id="view-gap" class="view active">
+        <div class="card">
+          <div class="row space">
+            <h2>GAP Analysis</h2>
+            <button type="button" id="btnBackProfileG">Back to Profile</button>
+          </div>
+          <canvas id="gapChart" width="340" height="260"></canvas>
+          <div id="gapMeta" class="muted"></div>
+          
+          <!-- Current Goal Information -->
+          <div id="currentGoal" class="current-goal">
+            <h3>🎯 Current Goal</h3>
+            <div id="goalInfo" class="goal-info">
+              <div class="goal-badge">
+                <span class="icon">🏫</span>
+                <span id="currentCollege">—</span>
+              </div>
+              <div class="goal-badge">
+                <span class="icon">📚</span>
+                <span id="currentMajor">—</span>
+              </div>
+            </div>
+          </div>
+          
+          <h3>Summary</h3>
+          <ul id="profileSummary" class="compact"></ul>
+        </div>
+        
+        <!-- Similar Recommendations Section -->
+        <div class="card recommendations-section">
+          <h2>✨ Similar Recommendations</h2>
+          <p class="muted" style="margin-bottom: 16px;">Based on your current profile, here are some college + major combinations that might be a better fit:</p>
+          <div id="recommendationsGrid" class="recommendations-grid"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    // Sample GAP Analysis Data
+    const gapData = {
+      profile: {
+        gpa: 3.7,
+        sat: 1420,
+        act: null,
+        apCourses: 3,
+        activities: 5,
+        leadership: 2,
+        awards: 3,
+        essays: 1,
+        recommendations: 2
+      },
+      target: {
+        gpa: 3.9,
+        sat: 1500,
+        act: 34,
+        apCourses: 6,
+        activities: 8,
+        leadership: 4,
+        awards: 5,
+        essays: 3,
+        recommendations: 3
+      },
+      targetSchools: [
+        { name: 'MIT', match: 75 },
+        { name: 'Stanford', match: 68 },
+        { name: 'UC Berkeley', match: 82 },
+        { name: 'Carnegie Mellon', match: 78 }
+      ]
+    };
+
+    // Profile Summary Data
+    const profileSummary = {
+      completeness: 68,
+      items: [
+        { label: 'Identity & Contact', status: 'complete', value: '100%' },
+        { label: 'Academic Records', status: 'partial', value: '75%' },
+        { label: 'Test Scores', status: 'complete', value: '100%' },
+        { label: 'Activities', status: 'partial', value: '60%' },
+        { label: 'Essays', status: 'incomplete', value: '30%' },
+        { label: 'Recommendations', status: 'partial', value: '67%' }
+      ]
+    };
+
+    // Sample Recommendations Data
+    const recommendations = [
+      {
+        college: 'UC San Diego',
+        major: 'Computer Science',
+        matchScore: 85,
+        avgGPA: 3.6,
+        avgSAT: 1380,
+        acceptanceRate: '34%',
+        reason: 'Strong CS program with good fit for your profile'
+      },
+      {
+        college: 'University of Washington',
+        major: 'Data Science',
+        matchScore: 82,
+        avgGPA: 3.7,
+        avgSAT: 1350,
+        acceptanceRate: '49%',
+        reason: 'Excellent data science program, achievable admission'
+      },
+      {
+        college: 'UC Davis',
+        major: 'Computer Science',
+        matchScore: 88,
+        avgGPA: 3.5,
+        avgSAT: 1320,
+        acceptanceRate: '46%',
+        reason: 'Great match with your current academic profile'
+      },
+      {
+        college: 'University of Texas at Austin',
+        major: 'Computer Science',
+        matchScore: 80,
+        avgGPA: 3.8,
+        avgSAT: 1400,
+        acceptanceRate: '31%',
+        reason: 'Top-tier CS program with strong career outcomes'
+      },
+      {
+        college: 'Georgia Tech',
+        major: 'Computer Science',
+        matchScore: 75,
+        avgGPA: 3.9,
+        avgSAT: 1450,
+        acceptanceRate: '18%',
+        reason: 'Reach school with exceptional CS reputation'
+      },
+      {
+        college: 'UC Irvine',
+        major: 'Data Science',
+        matchScore: 87,
+        avgGPA: 3.6,
+        avgSAT: 1340,
+        acceptanceRate: '29%',
+        reason: 'Growing program with good industry connections'
+      }
+    ];
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Draw GAP Chart
+      drawGAPChart();
+      
+      // Update GAP Meta
+      updateGAPMeta();
+      
+      // Update Profile Summary
+      updateProfileSummary();
+      
+      // Update Profile Completeness
+      updateProfileCompleteness();
+      
+      // Update Current Goal
+      updateCurrentGoal();
+      
+      // Render Recommendations
+      renderRecommendations();
+    });
+
+    function drawGAPChart() {
+      const canvas = document.getElementById('gapChart');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const width = canvas.width;
+      const height = canvas.height;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const radius = Math.min(width, height) / 2 - 20;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw background circle
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Draw radar chart
+      const categories = ['GPA', 'SAT', 'AP', 'Activities', 'Leadership', 'Awards'];
+      const numCategories = categories.length;
+      const angleStep = (Math.PI * 2) / numCategories;
+
+      // Calculate values (normalized to 0-1)
+      const values = [
+        gapData.profile.gpa / 4.0,
+        gapData.profile.sat / 1600,
+        gapData.profile.apCourses / 10,
+        gapData.profile.activities / 10,
+        gapData.profile.leadership / 5,
+        gapData.profile.awards / 5
+      ];
+
+      const targetValues = [
+        gapData.target.gpa / 4.0,
+        gapData.target.sat / 1600,
+        gapData.target.apCourses / 10,
+        gapData.target.activities / 10,
+        gapData.target.leadership / 5,
+        gapData.target.awards / 5
+      ];
+
+      // Draw target area (light)
+      ctx.fillStyle = 'rgba(126, 231, 135, 0.2)';
+      ctx.beginPath();
+      for (let i = 0; i < numCategories; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const x = centerX + Math.cos(angle) * targetValues[i] * radius;
+        const y = centerY + Math.sin(angle) * targetValues[i] * radius;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.closePath();
+      ctx.fill();
+
+      // Draw current profile area
+      ctx.fillStyle = 'rgba(110, 168, 254, 0.4)';
+      ctx.beginPath();
+      for (let i = 0; i < numCategories; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const x = centerX + Math.cos(angle) * values[i] * radius;
+        const y = centerY + Math.sin(angle) * values[i] * radius;
+        if (i === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(110, 168, 254, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Draw category labels
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i < numCategories; i++) {
+        const angle = i * angleStep - Math.PI / 2;
+        const labelRadius = radius + 25;
+        const x = centerX + Math.cos(angle) * labelRadius;
+        const y = centerY + Math.sin(angle) * labelRadius;
+        ctx.fillText(categories[i], x, y);
+      }
+
+      // Draw legend
+      ctx.fillStyle = 'rgba(126, 231, 135, 0.8)';
+      ctx.fillRect(20, height - 40, 12, 12);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('Target', 38, height - 30);
+
+      ctx.fillStyle = 'rgba(110, 168, 254, 0.8)';
+      ctx.fillRect(100, height - 40, 12, 12);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.fillText('Current', 118, height - 30);
+    }
+
+    function updateGAPMeta() {
+      const gapMetaEl = document.getElementById('gapMeta');
+      if (!gapMetaEl) return;
+
+      const currentAvg = (
+        (gapData.profile.gpa / 4.0) +
+        (gapData.profile.sat / 1600) +
+        (gapData.profile.apCourses / 10) +
+        (gapData.profile.activities / 10) +
+        (gapData.profile.leadership / 5) +
+        (gapData.profile.awards / 5)
+      ) / 6 * 100;
+
+      const targetAvg = (
+        (gapData.target.gpa / 4.0) +
+        (gapData.target.sat / 1600) +
+        (gapData.target.apCourses / 10) +
+        (gapData.target.activities / 10) +
+        (gapData.target.leadership / 5) +
+        (gapData.target.awards / 5)
+      ) / 6 * 100;
+
+      const gap = targetAvg - currentAvg;
+
+      gapMetaEl.innerHTML = `
+        <p><strong>Current Profile Score:</strong> ${currentAvg.toFixed(1)}%</p>
+        <p><strong>Target Profile Score:</strong> ${targetAvg.toFixed(1)}%</p>
+        <p><strong>GAP:</strong> ${gap.toFixed(1)}%</p>
+        <p style="margin-top: 12px; color: var(--neon2);">
+          <strong>Key Areas to Improve:</strong> Increase AP courses, expand leadership roles, and strengthen extracurricular activities.
+        </p>
+      `;
+    }
+
+    function updateProfileSummary() {
+      const summaryEls = document.querySelectorAll('#profileSummary');
+      if (!summaryEls || summaryEls.length === 0) return;
+
+      summaryEls.forEach(el => {
+        el.innerHTML = profileSummary.items.map(item => {
+          const statusIcon = {
+            'complete': '✓',
+            'partial': '◐',
+            'incomplete': '○'
+          };
+          const statusColor = {
+            'complete': 'var(--neon2)',
+            'partial': 'var(--neon)',
+            'incomplete': 'var(--text-muted)'
+          };
+          return `
+            <li style="display: flex; justify-content: space-between; align-items: center;">
+              <span>${item.label}</span>
+              <span style="color: ${statusColor[item.status]};">
+                ${statusIcon[item.status]} ${item.value}
+              </span>
+            </li>
+          `;
+        }).join('');
+      });
+    }
+
+    function updateProfileCompleteness() {
+      const completenessEl = document.getElementById('profileCompleteness');
+      const progressFillEl = document.getElementById('progressFill');
+      
+      if (completenessEl) {
+        completenessEl.textContent = `Profile completeness: ${profileSummary.completeness}%`;
+      }
+      
+      if (progressFillEl) {
+        progressFillEl.style.width = `${profileSummary.completeness}%`;
+      }
+    }
+
+    function updateCurrentGoal() {
+      const currentCollegeEl = document.getElementById('currentCollege');
+      const currentMajorEl = document.getElementById('currentMajor');
+      
+      // Try to get goal from global state if available
+      let college = 'Not Set';
+      let major = 'Not Set';
+      
+      if (typeof state !== 'undefined') {
+        // Try to get from profile.targetSchools
+        if (state.profile && state.profile.targetSchools && state.profile.targetSchools.length > 0) {
+          college = Array.isArray(state.profile.targetSchools) 
+            ? state.profile.targetSchools[0] 
+            : state.profile.targetSchools;
+        }
+        
+        // Try to get from profile.targetMajors
+        if (state.profile && state.profile.targetMajors && state.profile.targetMajors.length > 0) {
+          major = Array.isArray(state.profile.targetMajors) 
+            ? state.profile.targetMajors[0] 
+            : state.profile.targetMajors;
+        }
+        
+        // Try to get from profileSections
+        if (state.profileSections) {
+          const majorSection = state.profileSections.find(s => s.key === 'Intended Major');
+          if (majorSection) {
+            const majorParam = majorSection.params.find(p => p[0] === 'Majors');
+            if (majorParam && majorParam[1] && majorParam[1] !== '—' && majorParam[1] !== 'Undecided') {
+              const majors = majorParam[1].split(',').map(m => m.trim()).filter(Boolean);
+              if (majors.length > 0) {
+                major = majors[0];
+              }
+            }
+          }
+        }
+      }
+      
+      // Fallback: use sample data from gapData
+      if (college === 'Not Set' && gapData.targetSchools && gapData.targetSchools.length > 0) {
+        college = gapData.targetSchools[0].name;
+      }
+      
+      if (currentCollegeEl) {
+        currentCollegeEl.textContent = college;
+      }
+      
+      if (currentMajorEl) {
+        currentMajorEl.textContent = major;
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function renderRecommendations() {
+      const gridEl = document.getElementById('recommendationsGrid');
+      if (!gridEl) return;
+      
+      // Sort recommendations by match score (highest first)
+      const sortedRecs = [...recommendations].sort((a, b) => b.matchScore - a.matchScore);
+      
+      // Take top 6 recommendations
+      const topRecs = sortedRecs.slice(0, 6);
+      
+      gridEl.innerHTML = topRecs.map(rec => {
+        const college = escapeHtml(rec.college);
+        const major = escapeHtml(rec.major);
+        const reason = escapeHtml(rec.reason);
+        
+        return `
+        <div class="recommendation-card" data-college="${college}" data-major="${major}">
+          <div class="recommendation-card-header">
+            <div>
+              <div class="recommendation-college">${college}</div>
+              <div class="recommendation-major">${major}</div>
+            </div>
+            <div class="recommendation-match">${rec.matchScore}% Match</div>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted); margin: 8px 0;">${reason}</p>
+          <div class="recommendation-stats">
+            <div class="recommendation-stat">
+              <span>Avg GPA:</span>
+              <span class="recommendation-stat-value">${rec.avgGPA}</span>
+            </div>
+            <div class="recommendation-stat">
+              <span>Avg SAT:</span>
+              <span class="recommendation-stat-value">${rec.avgSAT}</span>
+            </div>
+            <div class="recommendation-stat">
+              <span>Acceptance Rate:</span>
+              <span class="recommendation-stat-value">${rec.acceptanceRate}</span>
+            </div>
+          </div>
+        </div>
+      `}).join('');
+      
+      // Add click event listeners using addEventListener instead of inline onclick
+      gridEl.querySelectorAll('.recommendation-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const college = card.dataset.college;
+          const major = card.dataset.major;
+          selectRecommendation(college, major);
+        });
+      });
+    }
+
+    function selectRecommendation(college, major) {
+      // Update current goal display
+      const currentCollegeEl = document.getElementById('currentCollege');
+      const currentMajorEl = document.getElementById('currentMajor');
+      
+      if (currentCollegeEl) {
+        currentCollegeEl.textContent = college;
+      }
+      
+      if (currentMajorEl) {
+        currentMajorEl.textContent = major;
+      }
+      
+      // Update global state if available
+      if (typeof state !== 'undefined') {
+        if (!state.profile) state.profile = {};
+        if (!state.profile.targetSchools) state.profile.targetSchools = [];
+        if (!state.profile.targetMajors) state.profile.targetMajors = [];
+        
+        // Update target schools
+        if (!state.profile.targetSchools.includes(college)) {
+          state.profile.targetSchools.unshift(college);
+          state.profile.targetSchools = state.profile.targetSchools.slice(0, 5); // Keep top 5
+        }
+        
+        // Update target majors
+        if (!state.profile.targetMajors.includes(major)) {
+          state.profile.targetMajors.unshift(major);
+          state.profile.targetMajors = state.profile.targetMajors.slice(0, 5); // Keep top 5
+        }
+        
+        // Update profileSections if available
+        if (state.profileSections) {
+          const majorSection = state.profileSections.find(s => s.key === 'Intended Major');
+          if (majorSection) {
+            const majorParam = majorSection.params.find(p => p[0] === 'Majors');
+            if (majorParam) {
+              const majors = majorParam[1] ? majorParam[1].split(',').map(m => m.trim()).filter(Boolean) : [];
+              if (!majors.includes(major)) {
+                majors.unshift(major);
+                majorParam[1] = majors.slice(0, 3).join(', ');
+              }
+            }
+          }
+        }
+      }
+      
+      // Provide user feedback
+      console.log(`Selected: ${college} - ${major}`);
+      alert(`Updated goal to: ${college} - ${major}`);
+    }
+    
+    // Expose selectRecommendation to global scope
+    window.selectRecommendation = selectRecommendation;
+  </script>
+</body>
+</html>

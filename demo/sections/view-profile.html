@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Profile View - SuperOS for Students</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Override view.active to show profile by default */
+    #view-profile {
+      display: block !important;
+    }
+    /* Ensure profile-nav is visible */
+    .profile-nav {
+      display: block !important;
+    }
+    /* Ensure tutor-footer is visible and positioned at bottom */
+    .tutor-footer {
+      display: flex !important;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    /* Add padding to main content to prevent overlap with fixed footer */
+    main#componentArea {
+      padding-bottom: 120px;
+    }
+    /* Position voice sidebar higher up */
+    #voiceSidebar.sidebar {
+      position: fixed;
+      bottom: 150px;
+      right: 20px;
+      z-index: 1001;
+      max-width: 320px;
+      max-height: 400px;
+    }
+    /* Tab content visibility */
+    .tab-content {
+      display: block;
+    }
+    .tab-content.hidden {
+      display: none !important;
+    }
+    .guide-card.section-item {
+      margin-top: 12px;
+      cursor: pointer;
+    }
+    .guide-card.section-item .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      cursor: pointer;
+    }
+    .guide-card.section-item .section-head h4 {
+      margin: 0;
+      flex: 1;
+    }
+    .guide-card.section-item .section-head .chev {
+      margin-left: auto;
+    }
+    .guide-card.section-item ul[id^="summary-"] {
+      padding: 12px 16px;
+      margin: 0;
+      list-style: none;
+      border-top: 1px solid var(--border-light);
+    }
+    .guide-card.section-item ul[id^="summary-"] li {
+      padding: 4px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .section-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .section-item.expanded {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--border);
+    }
+    .section-head {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .section-head .badge {
+      background: var(--neon);
+      color: #000;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .section-head .chev {
+      margin-left: auto;
+      color: var(--text-muted);
+      font-size: 20px;
+      transition: transform 0.2s ease;
+    }
+    .section-item.expanded .chev {
+      transform: rotate(90deg);
+    }
+    .section-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .section-item.expanded .section-body {
+      max-height: 2000px;
+    }
+    .param-editor {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .token {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin: 4px;
+      font-size: 13px;
+    }
+    .token .k {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .token .v {
+      color: var(--text);
+      min-width: 60px;
+      outline: none;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .token .v:focus {
+      background: rgba(255,255,255,0.1);
+    }
+    .token .x {
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    .token .x:hover {
+      background: rgba(255,0,0,0.2);
+      color: var(--neon3);
+    }
+    .token-add {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+    }
+    .token-add input {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+    .token-add input:focus {
+      border-color: var(--neon);
+      background: rgba(255,255,255,0.08);
+    }
+    .token-add .add {
+      padding: 8px 16px;
+      background: var(--neon);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .token-add .add:hover {
+      background: var(--neon2);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>SuperOS for Students - Profile</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <!-- Profile View -->
+    <section id="view-profile" class="view active">
+      
+     <!-- Authenticated Application -->
+     <section id="route-app" class="route-shell">
+      <!-- Top Tabs Navigation (profile routes only) -->
+      <div id="profileNav" class="profile-nav">
+        <div class="tabs top" id="topTabs">
+          <button type="button" class="tab small active" data-tab-route="profile">Profile</button>
+          <button type="button" class="tab small" data-tab-route="persona">Persona</button>
+          <button type="button" class="tab small" data-tab-route="gap">GAP</button>
+          <button type="button" class="tab small" data-tab-route="advisor">Major Advisor</button>
+          <button type="button" class="tab small" data-tab-route="roadmap">Roadmap</button>
+        </div>
+      </div>
+
+      <!-- Profile & Persona & GAP - Loaded from external file -->
+      <div id="view-profile-container" class="tab-content">
+        <div class="card" id="guideCard">
+        <h3>Common App Field Guide</h3>
+        <div class="guide">
+          <div class="guide-card section-item" data-section="identity" data-section-key="identity">
+            <div class="section-head">
+            <h4 data-edit="identity">Identity & Contact <span class="status-badge status-empty" id="status-identity">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-identity">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-identity"></div>
+            </div>
+          </div>
+          <div class="guide-card section-item" data-section="school" data-section-key="school">
+            <div class="section-head">
+            <h4 data-edit="school">School & CEEB <span class="status-badge status-empty" id="status-school">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-school">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-school"></div>
+            </div>
+          </div>
+          <div class="guide-card section-item" data-section="transcript" data-section-key="transcript">
+            <div class="section-head">
+            <h4 data-edit="transcript">Transcript / GPA <span class="status-badge status-empty" id="status-transcript">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-transcript">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-transcript"></div>
+            </div>
+          </div>
+          <div class="guide-card section-item" data-section="activities" data-section-key="activities">
+            <div class="section-head">
+            <h4 data-edit="activities">Activities <span class="status-badge status-empty" id="status-activities">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-activities">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-activities"></div>
+            </div>
+          </div>
+          <div class="guide-card section-item" data-section="testing" data-section-key="testing">
+            <div class="section-head">
+            <h4 data-edit="testing">Testing <span class="status-badge status-empty" id="status-testing">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-testing">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-testing"></div>
+            </div>
+          </div>
+          <div class="guide-card section-item" data-section="recommenders" data-section-key="recommenders">
+            <div class="section-head">
+            <h4 data-edit="recommenders">Recommenders <span class="status-badge status-empty" id="status-recommenders">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-recommenders">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-recommenders"></div>
+            </div>
+          </div>
+          <div class="guide-card section-item" data-section="essays" data-section-key="essays">
+            <div class="section-head">
+            <h4 data-edit="essays">Essays <span class="status-badge status-empty" id="status-essays">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-essays">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-essays"></div>
+            </div>
+          </div>
+          <div class="guide-card section-item" data-section="ferpa" data-section-key="ferpa">
+            <div class="section-head">
+            <h4 data-edit="ferpa">Permissions / FERPA <span class="status-badge status-empty" id="status-ferpa">empty</span></h4>
+              <div class="chev">›</div>
+            </div>
+            <ul id="summary-ferpa">
+              <li>Summary will appear here.</li>
+            </ul>
+            <div class="section-body">
+              <div class="param-editor" id="param-editor-ferpa"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside id="voiceSidebar" class="sidebar" style="display: none;">
+        <div class="sidebar-head">
+          <span>🔊 Detected from voice</span>
+          <button id="closeVoiceSidebar" class="close-sidebar-btn">×</button>
+        </div>
+        <div class="sidebar-content">
+          <div id="voiceSuggestions" class="suggestions">
+            <div class="suggestion-item">
+              <span class="suggestion-label">Name:</span>
+              <span class="suggestion-value">Alex Chen</span>
+              <button class="suggestion-action">✓</button>
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-label">Date of Birth:</span>
+              <span class="suggestion-value">May 15, 2007</span>
+              <button class="suggestion-action">✓</button>
+            </div>
+            <div class="suggestion-item">
+              <span class="suggestion-label">GPA:</span>
+              <span class="suggestion-value">3.9</span>
+              <button class="suggestion-action">✓</button>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-footer">
+          <button id="confirmAllBtn" class="sidebar-action-btn confirm-btn">✓ Confirm All</button>
+          <button id="dismissAllBtn" class="sidebar-action-btn dismiss-btn">✕ Dismiss All</button>
+        </div>
+      </aside>
+      </div>
+      <!-- End Profile tab content -->
+
+      <!-- GAP Analysis (separate view) - Loaded from external file -->
+      <div id="view-gap-container" class="tab-content hidden">
+        <div class="card">
+          <h2>GAP Analysis</h2>
+          <p>GAP Analysis content will appear here.</p>
+        </div>
+      </div>
+
+      <!-- Persona (separate view) - Loaded from external file -->
+      <div id="view-persona-container" class="tab-content hidden">
+        <div class="card">
+          <h2>Persona</h2>
+          <p>Persona content will appear here.</p>
+        </div>
+      </div>
+
+      <!-- Major Advisor & Compare - Loaded from external file -->
+      <div id="view-advisor-container" class="tab-content hidden">
+        <div class="card">
+          <h2>Major Advisor</h2>
+          <p>Major Advisor content will appear here.</p>
+        </div>
+      </div>
+
+      <!-- Goals & Roadmap - Loaded from external file -->
+      <div id="view-roadmap-container" class="tab-content hidden">
+        <div class="card">
+          <h2>Roadmap</h2>
+          <p>Roadmap content will appear here.</p>
+        </div>
+      </div>
+
+      <!-- Editor View -->
+      <section id="view-editor" class="view">
+        <div class="card">
+          <div class="row space">
+            <h2 id="editorTitle">Editor</h2>
+            <button id="btnBackProfileE">Back to Profile</button>
+          </div>
+          <div id="editorBody"></div>
+        </div>
+      </section>
+
+      <!-- Tutor Agent: Footer with integrated speech component -->
+      <footer id="tutorAgent" class="tutor-footer" aria-live="polite" aria-atomic="true">
+        <div class="tutor-surface">
+          <div class="tutor-meta">
+            <div class="tutor-status" role="status">
+              <span class="tutor-status-dot"></span>
+              <span class="tutor-status-text" id="tutorStatusText">AI Tutor · Listening</span>
+            </div>
+            <div class="tutor-controls">
+              <button id="toggleInputMode" type="button" class="tutor-control-btn" aria-label="Toggle input mode">
+                <span id="inputModeText">Voice Input</span>
+              </button>
+              <button id="toggleVoice" type="button" class="tutor-control-btn" aria-label="Toggle voice output">Voice: Off</button>
+              <button id="toggleTutor" type="button" class="tutor-control-btn ghost" aria-label="Hide tutor subtitle">Hide</button>
+            </div>
+          </div>
+
+          <div class="tutor-core">
+            <div id="tutorWaveform" class="tutor-waveform">
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+            </div>
+            <div id="tutorStream" class="tutor-subtitle" role="button" tabindex="0" aria-expanded="false" aria-label="Tap to expand transcript">
+              <span class="subtitle-text" id="subtitleText">Welcome to your profile! I'm your AI Tutor. I can help you fill out your Common App fields and answer any questions you might have.</span>
+              <span class="subtitle-highlight" id="subtitleHighlight"></span>
+            </div>
+          </div>
+
+          <div id="tutorInputArea" class="tutor-input-area voice-mode" data-mode="voice">
+            <button id="micBtn" type="button" class="tutor-input-btn voice-mode" aria-label="Start voice input">🎤</button>
+            <input id="userInput" class="tutor-input" placeholder="Tap microphone to speak..." autocomplete="off" />
+            <button id="sendBtn" type="button" class="tutor-input-btn text-mode" aria-label="Send message">Send</button>
+          </div>
+        </div>
+
+      </footer>
+    </section>
+  </main>
+
+  <!-- Load modules in correct order -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sections.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/router-agent.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/persona.js"></script>
+  <script src="js/gap.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/advisor.js"></script>
+  <script src="js/roadmap.js"></script>
+  <script src="js/tutor.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/subtitle.js"></script>
+  <script src="js/editor.js"></script>
+
+    
+  </main>
+
+  <script>
+    // Mock state object for standalone preview
+    const state = {
+      profile: {
+        name: 'Alex Chen',
+        email: 'alex.chen@example.com',
+        background: 'Grade 11 student, AP Calculus, National Math Competition winner',
+        interests: ['Mathematics', 'Computer Science', 'Robotics'],
+        targetMajors: ['Computer Science', 'Data Science'],
+        targetSchools: [],
+        learningStyle: ''
+      },
+      profileSections: [
+        { key: 'Identity', badge: 'I', params: [ ['Name','Alex Chen'], ['DOB','2007-05-15'], ['Country','USA'] ] },
+        { key: 'School', badge: 'S', params: [ ['High School','Ridgefield High School'], ['GPA','3.9'] ], meta: 'sent' },
+        { key: 'Intended Major', badge: 'I', params: [ ['Majors','CS, Data Science'] ] },
+        { key: 'Activities', badge: 'A', params: [ ['Top','Math Team Captain'], ['Count','5'] ] },
+        { key: 'Essays', badge: 'E', params: [ ['Personal Essay','1 draft'] ], meta: 'draft' },
+        { key: 'Recommenders', badge: 'R', params: [ ['Counselor','sent'], ['Teachers','2'] ] },
+        { key: 'Applications', badge: 'A', params: [ ['Applied','3/20'], ['Next','11/01'] ], meta: '11/01' },
+      ],
+      gap: null,
+      updatedAt: {},
+      onboardingComplete: true
+    };
+
+    // Utility functions
+    function escapeHtml(s) {
+      return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function getSection(key) {
+      if (!state.profileSections || !Array.isArray(state.profileSections)) return null;
+      return state.profileSections.find(s=>s.key===key) || null;
+    }
+
+    function titleMap(sectionKey) {
+      return {
+        identity:'Identity', school:'School', transcript:'School', activities:'Activities', 
+        testing:'Applications', recommenders:'Recommenders', essays:'Essays', ferpa:'Permissions / FERPA'
+      }[sectionKey] || sectionKey;
+    }
+
+    function getSectionStatus(sectionKey) {
+      const sec = getSection(titleMap(sectionKey));
+      const updated = state.updatedAt[sectionKey];
+      const empty = !sec || !sec.params || sec.params.every(p=>!p[1] || p[1]==='—');
+      if (empty) return { label: 'empty', cls: 'status-empty' };
+      if (sectionKey==='transcript') {
+        const gpa = (sec.params.find(p=>p[0]==='GPA')||['',''])[1];
+        const num = parseFloat(gpa);
+        if (!isNaN(num) && num < 3.0) return { label: 'risk', cls: 'status-risk' };
+      }
+      return { label: updated? `updated ${updated}` : 'pending', cls: updated? 'status-updated' : 'status-pending' };
+    }
+
+    function sectionSummary(sectionKey) {
+      const secKey = titleMap(sectionKey);
+      const sec = getSection(secKey);
+      if (!sec) return 'No data yet.';
+      const pick = (k)=> (sec.params.find(p=>p[0]===k)||['',''])[1] || '—';
+      switch(sectionKey) {
+        case 'identity': return `Name: ${pick('Name')} · DOB: ${pick('DOB')} · Email: ${state.profile.email||'—'}`;
+        case 'school': return `School: ${pick('High School')} · GPA: ${pick('GPA')}`;
+        case 'transcript': return `GPA: ${pick('GPA')} · Courses: (via OCR later)`;
+        case 'activities': return `Top: ${pick('Top')} · Count: ${pick('Count')}`;
+        case 'testing': return `Next: ${getSection('Applications')?.params.find(p=>p[0]==='Next')?.[1] || '—'}`;
+        case 'recommenders': return `Counselor: ${pick('Counselor')} · Teachers: ${pick('Teachers')}`;
+        case 'essays': return `Personal Essay: ${getSection('Essays')?.params.find(p=>p[0]==='Personal Essay')?.[1] || '—'}`;
+        case 'ferpa': return `FERPA: ${state.ferpaSigned? 'signed' : 'not signed'}`;
+        default: return '—';
+      }
+    }
+
+    function renderGuideMeta() {
+      const sections = ['identity','school','transcript','activities','testing','recommenders','essays','ferpa'];
+      sections.forEach(key=>{
+        const st = getSectionStatus(key);
+        const badge = document.getElementById(`status-${key}`);
+        if (badge) { badge.textContent = st.label; badge.className = `status-badge ${st.cls}`; }
+        const sumEl = document.getElementById(`summary-${key}`);
+        if (sumEl) { sumEl.innerHTML = `<li>${sectionSummary(key)}</li>`; }
+      });
+    }
+
+    function tokenHTML(sectionIndex, paramIndex, key, value) {
+      return `<span class="token" data-sidx="${sectionIndex}" data-pidx="${paramIndex}">
+        <span class="k">${key}</span>
+        <span class="v" contenteditable="true">${escapeHtml(value)}</span>
+        <span class="x">×</span>
+      </span>`;
+    }
+
+    function bindTokenEditorEvents() {
+      document.querySelectorAll('.guide-card.section-item[data-section-key]').forEach((item) => {
+        const sectionKey = item.dataset.sectionKey;
+        const sectionName = titleMap(sectionKey);
+        const section = getSection(sectionName);
+        if (!section) return;
+        
+        // Find section index in profileSections array
+        const sectionIndex = state.profileSections.findIndex(s => s.key === sectionName);
+        if (sectionIndex === -1) return;
+        
+        // Skip if already bound (check for data-bound attribute)
+        if (item.dataset.bound === 'true') return;
+        item.dataset.bound = 'true';
+        
+        // Bind click event to toggle expanded state (on section-head)
+        item.querySelector('.section-head')?.addEventListener('click', () => {
+          item.classList.toggle('expanded');
+        });
+        
+        // Use event delegation for dynamic content
+        item.addEventListener('input', (event) => {
+          if (event.target.classList.contains('v')) {
+            const token = event.target.closest('.token');
+            const pIdx = parseInt(token.dataset.pidx, 10);
+            state.profileSections[sectionIndex].params[pIdx][1] = event.target.textContent;
+            renderGuideMeta();
+            renderProfileAndGap();
+          }
+        });
+        
+        item.addEventListener('click', (event) => {
+          if (event.target.classList.contains('x')) {
+            const token = event.target.closest('.token');
+            const pIdx = parseInt(token.dataset.pidx, 10);
+            state.profileSections[sectionIndex].params.splice(pIdx, 1);
+            renderSectionEditor(sectionKey);
+            renderGuideMeta();
+            renderProfileAndGap();
+          } else if (event.target.classList.contains('add')) {
+          const keyInput = item.querySelector('[data-add-key]');
+          const valueInput = item.querySelector('[data-add-val]');
+          if (!keyInput || !valueInput) return;
+          const key = keyInput.value.trim();
+          const value = valueInput.value.trim();
+          if (!key || !value) return;
+          state.profileSections[sectionIndex].params.push([key, value]);
+          keyInput.value = '';
+          valueInput.value = '';
+            renderSectionEditor(sectionKey);
+          renderGuideMeta();
+          renderProfileAndGap();
+          }
+        });
+      });
+    }
+
+    function renderSectionEditor(sectionKey) {
+      const sectionName = titleMap(sectionKey);
+      const section = getSection(sectionName);
+      if (!section) return;
+      
+      const editorEl = document.getElementById(`param-editor-${sectionKey}`);
+      if (!editorEl) return;
+      
+      const sectionIndex = state.profileSections.findIndex(s => s.key === sectionName);
+      if (sectionIndex === -1) return;
+      
+      // Remove bound flag to allow re-binding after re-render
+      const sectionItem = editorEl.closest('.section-item');
+      if (sectionItem) {
+        sectionItem.dataset.bound = 'false';
+      }
+      
+      editorEl.innerHTML = `
+                ${section.params.map((param, paramIndex) => tokenHTML(sectionIndex, paramIndex, param[0], param[1])).join('')}
+                <div class="token-add">
+                  <input placeholder="Key" data-add-key />
+                  <input placeholder="Value" data-add-val />
+                  <button class="add">Add</button>
+                </div>
+      `;
+      
+      bindTokenEditorEvents();
+    }
+    
+    function renderAllSectionEditors() {
+      const sections = ['identity','school','transcript','activities','testing','recommenders','essays','ferpa'];
+      sections.forEach(key => renderSectionEditor(key));
+    }
+
+    function renderProfileAndGap() {
+      // Profile completeness calculation - elements may not exist in this standalone view
+      const filled = [state.profile.name, state.profile.email, state.profile.background].filter(Boolean).length;
+      const completeness = Math.round((filled / 3) * 100);
+      const profileCompletenessEl = document.getElementById('profileCompleteness');
+      const progressFillEl = document.getElementById('progressFill');
+      if (profileCompletenessEl) {
+        profileCompletenessEl.textContent = `Profile completeness: ${completeness}%`;
+      }
+      if (progressFillEl) {
+        progressFillEl.style.width = `${Math.max(10, completeness)}%`;
+      }
+    }
+
+    function renderProfileSummary() {
+      const profileSummaryEl = document.getElementById('profileSummary');
+      if (!profileSummaryEl) return;
+      const school = getSection('School');
+      const identity = getSection('Identity');
+      const majors = getSection('Intended Major');
+      const activities = getSection('Activities');
+      const essays = getSection('Essays');
+      const recommenders = getSection('Recommenders');
+      const applications = getSection('Applications');
+      const getParam = (section, key) => (section && section.params ? (section.params.find((item) => item[0] === key) || [])[1] || '' : '');
+      const line = (label, valueHtml) => `<li><span>${label}</span><span class="badges">${valueHtml}</span></li>`;
+      profileSummaryEl.innerHTML = [
+        line(`Identity: ${getParam(identity, 'Name') || '—'} · ${getParam(identity, 'DOB') || '—'} · ${getParam(identity, 'Country') || '—'}`, ''),
+        line(`School: ${getParam(school, 'High School') || '—'}`, `<span class='badge-pill'>GPA ${getParam(school, 'GPA') || '—'}</span>`),
+        line('Intended Major', `<span class='badge-pill'>${getParam(majors, 'Majors') || '—'}</span>`),
+        line('Activities', `<span class='badge-pill'>${getParam(activities, 'Count') || '0'} items</span><span class='badge-pill'>Top ${getParam(activities, 'Top') || '—'}</span>`),
+        line('Essays', `<span class='badge-pill'>${getParam(essays, 'Personal Essay') || '—'}</span>`),
+        line('Recommenders', `<span class='badge-pill'>Counselor ${getParam(recommenders, 'Counselor') || '—'}</span><span class='badge-pill'>Teachers ${getParam(recommenders, 'Teachers') || '0'}</span>`),
+        line('Applications', `<span class='badge-pill'>${getParam(applications, 'Applied') || '0/0'}</span><span class='badge-pill'>Next ${getParam(applications, 'Next') || '—'}</span>`)
+      ].join('');
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderGuideMeta();
+      renderAllSectionEditors();
+      // Note: renderProfileAndGap and renderProfileSummary are optional
+      // They require elements that may not exist in this standalone view
+      renderProfileAndGap();
+      renderProfileSummary();
+      
+      // Handle Send button click to show voice sidebar
+      const sendBtn = document.getElementById('sendBtn');
+      const voiceSidebar = document.getElementById('voiceSidebar');
+      const closeVoiceSidebar = document.getElementById('closeVoiceSidebar');
+      
+      if (sendBtn && voiceSidebar) {
+        sendBtn.addEventListener('click', () => {
+          voiceSidebar.style.display = 'block';
+        });
+      }
+      
+      // Handle close sidebar button
+      if (closeVoiceSidebar && voiceSidebar) {
+        closeVoiceSidebar.addEventListener('click', () => {
+          voiceSidebar.style.display = 'none';
+        });
+      }
+      
+      // Handle dismiss all button
+      const dismissAllBtn = document.getElementById('dismissAllBtn');
+      if (dismissAllBtn && voiceSidebar) {
+        dismissAllBtn.addEventListener('click', () => {
+          voiceSidebar.style.display = 'none';
+        });
+      }
+      
+      // Handle confirm all button
+      const confirmAllBtn = document.getElementById('confirmAllBtn');
+      if (confirmAllBtn && voiceSidebar) {
+        confirmAllBtn.addEventListener('click', () => {
+          // Here you could add logic to confirm all suggestions
+          voiceSidebar.style.display = 'none';
+        });
+      }
+      
+      // Handle tab navigation
+      const tabButtons = document.querySelectorAll('#topTabs .tab[data-tab-route]');
+      const tabContentMap = {
+        'profile': { containerId: 'view-profile-container', sectionId: null },
+        'persona': { containerId: 'view-persona-container', sectionId: 'view-persona', filePath: 'sections/view-persona.html' },
+        'gap': { containerId: 'view-gap-container', sectionId: 'view-gap', filePath: 'sections/view-gap.html' },
+        'advisor': { containerId: 'view-advisor-container', sectionId: 'view-advisor', filePath: 'sections/view-advisor.html' },
+        'roadmap': { containerId: 'view-roadmap-container', sectionId: 'view-roadmap', filePath: 'sections/view-roadmap.html' }
+      };
+      
+      // Function to load external HTML file
+      async function loadTabContent(route) {
+        const tabConfig = tabContentMap[route];
+        if (!tabConfig || !tabConfig.containerId) return;
+        
+        const container = document.getElementById(tabConfig.containerId);
+        if (!container) return;
+        
+        // If it's profile, just show it (already loaded)
+        if (route === 'profile') {
+          container.classList.remove('hidden');
+          return;
+        }
+        
+        // For other tabs, load from external file
+        if (tabConfig.filePath && tabConfig.sectionId) {
+          try {
+            const response = await fetch(tabConfig.filePath);
+            if (response.ok) {
+              const html = await response.text();
+              if (html) {
+                // Extract section content from full HTML page
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Try to find the section element
+                const section = doc.getElementById(tabConfig.sectionId);
+                if (section) {
+                  // Extract the section content
+                  container.innerHTML = section.outerHTML;
+                } else {
+                  // Fallback: try to find content inside route-app or main
+                  const routeApp = doc.querySelector('#route-app');
+                  const main = doc.querySelector('main');
+                  const targetElement = routeApp || main;
+                  
+                  if (targetElement) {
+                    // Find the section inside the target element
+                    const sectionInTarget = targetElement.querySelector(`#${tabConfig.sectionId}`);
+                    if (sectionInTarget) {
+                      container.innerHTML = sectionInTarget.outerHTML;
+                    } else {
+                      // Use the content of the target element
+                      container.innerHTML = targetElement.innerHTML;
+                    }
+                  } else {
+                    // Last resort: use body content
+                    const bodyContent = doc.body;
+                    if (bodyContent) {
+                      container.innerHTML = bodyContent.innerHTML;
+                    }
+                  }
+                }
+              }
+            } else {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+          } catch (error) {
+            console.error(`Failed to load ${route} content:`, error);
+            // Show error message
+            container.innerHTML = `<div class="card"><h2>${tabConfig.sectionId || route}</h2><p>Failed to load content: ${error.message}</p><p>Please check if the file exists at: ${tabConfig.filePath}</p></div>`;
+          }
+        }
+        
+        container.classList.remove('hidden');
+      }
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+          const route = button.getAttribute('data-tab-route');
+          
+          // Update active tab button
+          tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.removeAttribute('aria-selected');
+          });
+          button.classList.add('active');
+          button.setAttribute('aria-selected', 'true');
+          
+          // Hide all tab contents
+          Object.values(tabContentMap).forEach(config => {
+            const container = document.getElementById(config.containerId);
+            if (container) {
+              container.classList.add('hidden');
+            }
+          });
+          
+          // Load and show selected tab content
+          await loadTabContent(route);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+

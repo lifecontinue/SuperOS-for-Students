@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Podcast Pathway Components - SuperOS for Students</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .pathway-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pathway-header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .pathway-header .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .task-category {
+      margin-bottom: 24px;
+    }
+
+    .task-category-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .task-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .task-card {
+      background: rgba(11,19,43,0.7);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .task-card:active {
+      transform: scale(0.98);
+      border-color: var(--neon);
+    }
+
+    .task-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .task-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+      flex: 1;
+    }
+
+    .task-type-badge {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .task-type-badge.learn { background: rgba(110,168,254,0.2); color: var(--neon); }
+    .task-type-badge.communication { background: rgba(126,231,135,0.2); color: var(--neon2); }
+    .task-type-badge.writing { background: rgba(255,154,169,0.2); color: var(--neon3); }
+    .task-type-badge.reflection { background: rgba(255,193,7,0.2); color: #ffc107; }
+    .task-type-badge.qa { background: rgba(156,39,176,0.2); color: #9c27b0; }
+    .task-type-badge.evaluation { background: rgba(76,175,80,0.2); color: #4caf50; }
+    .task-type-badge.survey { background: rgba(255,152,0,0.2); color: #ff9800; }
+
+    .task-card-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .task-card-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .feature-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .component-area {
+        padding: 16px;
+      }
+
+      .task-card {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>SuperOS for Students</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <div class="card">
+      <div class="pathway-header">
+        <h1>Podcast Pathway</h1>
+        <p class="subtitle">Complete tasks to build your podcast project</p>
+      </div>
+
+      <!-- Task Categories -->
+      <div class="task-category">
+        <h2 class="task-category-title">Phase 1: Ideation & Planning</h2>
+        <div class="task-grid">
+          <!-- Ideation & Scoping -->
+          <div class="task-card" onclick="openComponent('ideation')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Ideation & Scoping</h3>
+              <span class="task-type-badge communication">Communication</span>
+            </div>
+            <p class="task-card-description">
+              Complete the checklist through chatting. AI asks questions in the form of a chat (such as age and interests), guiding users to complete the user profile form and confirm target user persona.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Chat Interface</span>
+              <span class="feature-tag">User Profile</span>
+              <span class="feature-tag">Persona Confirmation</span>
+            </div>
+          </div>
+
+          <!-- AI Insights -->
+          <div class="task-card" onclick="openComponent('insights')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">AI Insights (Research Popular Themes)</h3>
+              <span class="task-type-badge learn">Learn</span>
+            </div>
+            <p class="task-card-description">
+              Summarize current trends in student publications. View a short report of relevant themes with start_time, end_time, summary, and trends report list with recommended topic tags.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Report</span>
+              <span class="feature-tag">Trend Analysis</span>
+              <span class="feature-tag">Topic Tags</span>
+            </div>
+          </div>
+
+          <!-- Generate Topic Ideas -->
+          <div class="task-card" onclick="openComponent('topics')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Generate Topic Ideas</h3>
+              <span class="task-type-badge learn">Learn</span>
+            </div>
+            <p class="task-card-description">
+              AI suggests a list of engaging blog topics based on student interests. View markdown list of 10 topic ideas, select final theme and input reason.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Card List</span>
+              <span class="feature-tag">10 Ideas</span>
+              <span class="feature-tag">Theme Selection</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-category">
+        <h2 class="task-category-title">Phase 2: Planning & Setup</h2>
+        <div class="task-grid">
+          <!-- Outline Blog Structure -->
+          <div class="task-card" onclick="openComponent('outline')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Outline Blog Structure</h3>
+              <span class="task-type-badge writing">Writing</span>
+            </div>
+            <p class="task-card-description">
+              Create an outline of sections for the first blog post. Bulleted outline (Markdown) of sections, identify publication schedule, set calendar reminder, student confirms, sync to calendar.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Outline</span>
+              <span class="feature-tag">Calendar</span>
+              <span class="feature-tag">Schedule</span>
+            </div>
+          </div>
+
+          <!-- Assign Roles -->
+          <div class="task-card" onclick="openComponent('roles')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Assign Roles</h3>
+              <span class="task-type-badge communication">Communication</span>
+            </div>
+            <p class="task-card-description">
+              List roles (writer, editor, photographer) for collaborators. Select a role and enter the name of each role, generate list of roles and responsibilities, edit context, confirm.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Role List</span>
+              <span class="feature-tag">Collaboration</span>
+              <span class="feature-tag">Responsibilities</span>
+            </div>
+          </div>
+
+          <!-- Recommend Platform -->
+          <div class="task-card" onclick="openComponent('platform')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Recommend Platform</h3>
+              <span class="task-type-badge learn">Learn</span>
+            </div>
+            <p class="task-card-description">
+              Analyze different platforms. Comparison tables between different platforms, choice platform, specification, confirm.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Comparison Table</span>
+              <span class="feature-tag">Platform Choice</span>
+              <span class="feature-tag">Specification</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-category">
+        <h2 class="task-category-title">Phase 3: Creation & Production</h2>
+        <div class="task-grid">
+          <!-- Write Draft -->
+          <div class="task-card" onclick="openComponent('draft')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Write Draft</h3>
+              <span class="task-type-badge writing">Writing</span>
+            </div>
+            <p class="task-card-description">
+              Rich text editor for creating content. Generate draft/enter draft, highlight AI advice & click accept, student edit content, history (recovery), confirm final version, send to email or connect to Google Drive.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Rich Text Editor</span>
+              <span class="feature-tag">AI Suggestions</span>
+              <span class="feature-tag">Export Menu</span>
+            </div>
+          </div>
+
+          <!-- Suggestion -->
+          <div class="task-card" onclick="openComponent('suggestion')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Promotion Suggestions</h3>
+              <span class="task-type-badge learn">Learn</span>
+            </div>
+            <p class="task-card-description">
+              AI generates an action list. The release or promotion activities suggestions of the project, understand advantages and disadvantages of each suggestion, confirm.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Action List</span>
+              <span class="feature-tag">Email/Post/Others</span>
+              <span class="feature-tag">Pros & Cons</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-category">
+        <h2 class="task-category-title">Phase 4: Feedback & Reflection</h2>
+        <div class="task-grid">
+          <!-- Feedback & Analysis -->
+          <div class="task-card" onclick="openComponent('feedback')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Feedback & Analysis</h3>
+              <span class="task-type-badge survey">Survey</span>
+            </div>
+            <p class="task-card-description">
+              Structurally collect feedback (data) and utilize AI to transform it into actionable information. Select questions you focus on, create survey (spreadsheet), enter result, analyze data, create next step advice.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Form</span>
+              <span class="feature-tag">Analysis Graph</span>
+              <span class="feature-tag">Action Items</span>
+            </div>
+          </div>
+
+          <!-- Reflection -->
+          <div class="task-card" onclick="openComponent('reflection')">
+            <div class="task-card-header">
+              <h3 class="task-card-title">Reflection</h3>
+              <span class="task-type-badge reflection">Reflection</span>
+            </div>
+            <p class="task-card-description">
+              Guiding students to conduct "metacognitive" reflection for college applications. Summarize what you have done, ask some open-ended questions, summarize and reflect on the content.
+            </p>
+            <div class="task-card-features">
+              <span class="feature-tag">Report</span>
+              <span class="feature-tag">Chat</span>
+              <span class="feature-tag">Summary</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    function openComponent(componentType) {
+      console.log(`Opening component: ${componentType}`);
+      
+      // Navigate to conversation component page
+      if (componentType === 'conversation' || componentType === 'ideation') {
+        window.location.href = 'conversation_component.html';
+        return;
+      }
+      
+      // For other components, show alert for now
+      alert(`Opening ${componentType} component...\n\nThis component page is coming soon.`);
+    }
+
+    // Initialize component interactions
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add any initialization code here
+    });
+  </script>
+</body>
+</html>
+

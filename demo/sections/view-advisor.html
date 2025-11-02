@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Major Advisor View - SuperOS for Students</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Override view.active to show advisor by default */
+    #view-advisor {
+      display: block !important;
+    }
+    /* Ensure profile-nav is visible */
+    .profile-nav {
+      display: block !important;
+    }
+    /* Major Card Styles */
+    .major-carousel {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+      margin-top: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    @media (max-width: 768px) {
+      .major-carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 16px;
+        padding: 0 16px;
+        margin-left: -16px;
+        margin-right: -16px;
+        scroll-padding: 16px;
+        align-items: flex-start;
+      }
+      .major-carousel::-webkit-scrollbar {
+        height: 4px;
+      }
+      .major-carousel::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .major-carousel::-webkit-scrollbar-thumb {
+        background: var(--neon);
+        border-radius: 2px;
+      }
+    }
+    .major-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      scroll-snap-align: start;
+    }
+    @media (max-width: 768px) {
+      .major-card {
+        min-width: calc(100vw - 32px);
+        max-width: calc(100vw - 32px);
+        flex-shrink: 0;
+        padding: 16px;
+      }
+      .major-card:not(.expanded) {
+        max-height: 320px;
+        overflow: hidden;
+        position: relative;
+      }
+      .major-card:not(.expanded)::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(to top, rgba(8, 16, 32, 0.95), transparent);
+        pointer-events: none;
+      }
+      .major-card.expanded {
+        max-height: none;
+      }
+      .major-card.expanded::after {
+        display: none;
+      }
+    }
+    .major-card:hover {
+      border-color: var(--neon);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(110, 168, 254, 0.2);
+    }
+    @media (max-width: 768px) {
+      .major-card:hover {
+        transform: none;
+      }
+    }
+    .major-card.selected {
+      border-color: var(--neon2);
+      background: rgba(126, 231, 135, 0.1);
+      position: relative;
+    }
+    .major-card-view-detail-btn {
+      display: none;
+    }
+    .major-card.selected .major-card-view-detail-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 10px 16px;
+      margin-top: 12px;
+      background: linear-gradient(135deg, var(--neon2), var(--neon));
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .major-card.selected .major-card-view-detail-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(126, 231, 135, 0.3);
+    }
+    /* Modal/Popup Styles */
+    .major-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10000;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .major-modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .major-modal-content {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+    .major-modal-header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--bg2);
+      z-index: 10;
+    }
+    .major-modal-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    .major-modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .major-modal-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+    .major-modal-body {
+      padding: 24px;
+    }
+    @media (max-width: 768px) {
+      .major-modal {
+        padding: 0;
+      }
+      .major-modal-content {
+        max-width: 100%;
+        border-radius: 0;
+        max-height: 100vh;
+      }
+      .major-modal-header {
+        padding: 20px 16px 12px;
+      }
+      .major-modal-title {
+        font-size: 20px;
+      }
+      .major-modal-body {
+        padding: 16px;
+      }
+    }
+    .major-card-expand-btn {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      .major-card-expand-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 12px;
+        margin-top: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        color: var(--neon);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .major-card-expand-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .major-card.expanded .major-card-expand-btn {
+        margin-top: 0;
+      }
+    }
+    .major-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .major-card-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    .major-card-badge {
+      background: var(--neon);
+      color: #000;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .major-card-section {
+      margin-bottom: 16px;
+    }
+    .major-card-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--neon);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .major-card-content {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .major-card-content ul {
+      margin: 8px 0;
+      padding-left: 20px;
+    }
+    .major-card-content li {
+      margin: 4px 0;
+    }
+    .major-universities {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .university-badge {
+      background: rgba(110, 168, 254, 0.15);
+      border: 1px solid var(--neon);
+      color: var(--neon);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .video-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--neon2);
+      text-decoration: none;
+      font-size: 13px;
+      margin-top: 8px;
+      transition: all 0.2s ease;
+    }
+    .video-link:hover {
+      color: var(--neon);
+      text-decoration: underline;
+    }
+    .inspiration-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      margin: 6px 0;
+    }
+    .inspiration-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .inspiration-text {
+      flex: 1;
+      font-size: 13px;
+    }
+    .inspiration-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .inspiration-desc {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    /* Compare Table Styles */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    .table th,
+    .table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .table th {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--neon);
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .table td {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .kv {
+      margin-top: 16px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+    }
+    .kv-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .kv-item:last-child {
+      border-bottom: none;
+    }
+    .kv-label {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .kv-value {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>SuperOS for Students - Major Advisor</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <!-- Authenticated Application -->
+    <section id="route-app" class="route-shell">
+      <!-- Top Tabs Navigation (profile routes only) -->
+      <div id="profileNav" class="profile-nav">
+        <div class="tabs top" id="topTabs">
+          <button type="button" class="tab small" data-tab-route="profile">Profile</button>
+          <button type="button" class="tab small" data-tab-route="persona">Persona</button>
+          <button type="button" class="tab small" data-tab-route="gap">GAP</button>
+          <button type="button" class="tab small active" data-tab-route="advisor">Major Advisor</button>
+          <button type="button" class="tab small" data-tab-route="roadmap">Roadmap</button>
+        </div>
+      </div>
+
+      <!-- Major Advisor & Compare -->
+      <section id="view-advisor" class="view active">
+        <div class="card">
+          <div class="row space">
+            <h2>Major Advisor</h2>
+            <button type="button" id="btnBackProfileA">Back to Profile</button>
+          </div>
+          <p class="muted" style="margin-top: 8px; margin-bottom: 16px;">Select up to 2 majors to compare. Click on a major card to select it.</p>
+          <div id="majorList" class="major-carousel">
+            <!-- Computer Science Major Card -->
+            <div class="major-card" data-major="cs">
+              <div class="major-card-header">
+                <h3 class="major-card-title">Computer Science</h3>
+                <span class="major-card-badge">CS</span>
+              </div>
+              
+              <div class="major-card-section">
+                <div class="major-card-section-title">🏛️ Top Universities</div>
+                <div class="major-card-content">
+                  <div class="major-universities">
+                    <span class="university-badge">MIT</span>
+                    <span class="university-badge">Stanford</span>
+                    <span class="university-badge">Carnegie Mellon</span>
+                    <span class="university-badge">UC Berkeley</span>
+                    <span class="university-badge">Harvard</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🎥 Introduction Video</div>
+                <div class="major-card-content">
+                  <a href="https://www.youtube.com/watch?v=zOjov-2OZ0E" target="_blank" class="video-link">
+                    ▶️ Watch: "What is Computer Science?" by MIT
+                  </a>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">📖 Core Introduction</div>
+                <div class="major-card-content">
+                  Computer Science is the study of algorithms, data structures, and computational systems. It combines mathematical theory with practical problem-solving to create software, systems, and applications that power modern technology.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">✨ Why We Recommend</div>
+                <div class="major-card-content">
+                  <ul>
+                    <li>High demand across all industries</li>
+                    <li>Excellent salary potential and job security</li>
+                    <li>Creative problem-solving opportunities</li>
+                    <li>Foundation for many emerging technologies</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">📚 Curriculum</div>
+                <div class="major-card-content">
+                  <ul>
+                    <li>Data Structures & Algorithms</li>
+                    <li>Operating Systems</li>
+                    <li>Database Systems</li>
+                    <li>Software Engineering</li>
+                    <li>Artificial Intelligence</li>
+                    <li>Computer Networks</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🌐 Applications</div>
+                <div class="major-card-content">
+                  Software development, cybersecurity, data science, artificial intelligence, web development, mobile apps, game development, fintech, healthcare technology, autonomous vehicles.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">💼 Career & Employment</div>
+                <div class="major-card-content">
+                  <strong>Graduation Rate:</strong> 85%<br>
+                  <strong>Employment Rate:</strong> 94% within 6 months<br>
+                  <strong>Average Starting Salary:</strong> $75,000-$120,000<br>
+                  <strong>Top Employers:</strong> Google, Microsoft, Amazon, Apple, Meta, startups
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🚀 Future Directions</div>
+                <div class="major-card-content">
+                  Quantum computing, edge computing, AI/ML advancement, cybersecurity evolution, blockchain technology, IoT expansion, autonomous systems, cloud computing.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🌟 Real-Life Inspirations</div>
+                <div class="major-card-content">
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">💻</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Tim Berners-Lee</div>
+                      <div class="inspiration-desc">Invented the World Wide Web</div>
+                    </div>
+                  </div>
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">🚀</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Elon Musk</div>
+                      <div class="inspiration-desc">Tesla, SpaceX, Neuralink</div>
+                    </div>
+                  </div>
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">👩‍💻</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Grace Hopper</div>
+                      <div class="inspiration-desc">Pioneer of computer programming</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="major-card-expand-btn" onclick="toggleCardExpand(this)">
+                <span class="expand-text">Show More</span>
+                <span class="collapse-text" style="display: none;">Show Less</span>
+              </button>
+              <button class="major-card-view-detail-btn" onclick="showMajorDetail('cs')">
+                📋 View Full Details
+              </button>
+            </div>
+
+            <!-- Biomedical Engineering Major Card -->
+            <div class="major-card" data-major="bio">
+              <div class="major-card-header">
+                <h3 class="major-card-title">Biomedical Engineering</h3>
+                <span class="major-card-badge">BME</span>
+              </div>
+              
+              <div class="major-card-section">
+                <div class="major-card-section-title">🏛️ Top Universities</div>
+                <div class="major-card-content">
+                  <div class="major-universities">
+                    <span class="university-badge">Johns Hopkins</span>
+                    <span class="university-badge">MIT</span>
+                    <span class="university-badge">Duke</span>
+                    <span class="university-badge">Stanford</span>
+                    <span class="university-badge">Georgia Tech</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🎥 Introduction Video</div>
+                <div class="major-card-content">
+                  <a href="https://www.youtube.com/watch?v=example" target="_blank" class="video-link">
+                    ▶️ Watch: "Biomedical Engineering Explained"
+                  </a>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">📖 Core Introduction</div>
+                <div class="major-card-content">
+                  Biomedical Engineering combines engineering principles with medical sciences to design and create devices, systems, and solutions for healthcare. It bridges the gap between engineering and medicine to improve human health.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">✨ Why We Recommend</div>
+                <div class="major-card-content">
+                  <ul>
+                    <li>Growing healthcare industry demand</li>
+                    <li>Meaningful impact on human lives</li>
+                    <li>Interdisciplinary problem-solving</li>
+                    <li>Innovation in medical technology</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">📚 Curriculum</div>
+                <div class="major-card-content">
+                  <ul>
+                    <li>Biomechanics</li>
+                    <li>Biomaterials</li>
+                    <li>Medical Imaging</li>
+                    <li>Physiology & Anatomy</li>
+                    <li>Biomedical Instrumentation</li>
+                    <li>Tissue Engineering</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🌐 Applications</div>
+                <div class="major-card-content">
+                  Medical devices, prosthetics, diagnostic equipment, drug delivery systems, tissue engineering, medical imaging, rehabilitation engineering, pharmaceutical development.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">💼 Career & Employment</div>
+                <div class="major-card-content">
+                  <strong>Graduation Rate:</strong> 78%<br>
+                  <strong>Employment Rate:</strong> 91% within 6 months<br>
+                  <strong>Average Starting Salary:</strong> $65,000-$95,000<br>
+                  <strong>Top Employers:</strong> Medtronic, Boston Scientific, Johnson & Johnson, FDA, hospitals
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🚀 Future Directions</div>
+                <div class="major-card-content">
+                  Personalized medicine, regenerative medicine, nanotechnology in healthcare, AI in diagnostics, wearable medical devices, 3D bioprinting, neural interfaces.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🌟 Real-Life Inspirations</div>
+                <div class="major-card-content">
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">❤️</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Robert Jarvik</div>
+                      <div class="inspiration-desc">Invented the artificial heart</div>
+                    </div>
+                  </div>
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">🔬</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Elizabeth Holmes</div>
+                      <div class="inspiration-desc">Founded Theranos (healthcare innovation)</div>
+                    </div>
+                  </div>
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">🦾</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Hugh Herr</div>
+                      <div class="inspiration-desc">Bionic limb pioneer</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="major-card-expand-btn" onclick="toggleCardExpand(this)">
+                <span class="expand-text">Show More</span>
+                <span class="collapse-text" style="display: none;">Show Less</span>
+              </button>
+              <button class="major-card-view-detail-btn" onclick="showMajorDetail('bio')">
+                📋 View Full Details
+              </button>
+            </div>
+
+            <!-- Data Science Major Card -->
+            <div class="major-card" data-major="ds">
+              <div class="major-card-header">
+                <h3 class="major-card-title">Data Science</h3>
+                <span class="major-card-badge">DS</span>
+              </div>
+              
+              <div class="major-card-section">
+                <div class="major-card-section-title">🏛️ Top Universities</div>
+                <div class="major-card-content">
+                  <div class="major-universities">
+                    <span class="university-badge">MIT</span>
+                    <span class="university-badge">Stanford</span>
+                    <span class="university-badge">Carnegie Mellon</span>
+                    <span class="university-badge">UC Berkeley</span>
+                    <span class="university-badge">Harvard</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🎥 Introduction Video</div>
+                <div class="major-card-content">
+                  <a href="https://www.youtube.com/watch?v=example" target="_blank" class="video-link">
+                    ▶️ Watch: "Introduction to Data Science"
+                  </a>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">📖 Core Introduction</div>
+                <div class="major-card-content">
+                  Data Science combines statistics, computer science, and domain expertise to extract insights from large datasets. It involves data collection, cleaning, analysis, visualization, and machine learning to solve complex problems.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">✨ Why We Recommend</div>
+                <div class="major-card-content">
+                  <ul>
+                    <li>Explosive growth in job market</li>
+                    <li>High salary potential</li>
+                    <li>Applications across all industries</li>
+                    <li>Foundation for AI and ML careers</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">📚 Curriculum</div>
+                <div class="major-card-content">
+                  <ul>
+                    <li>Statistics & Probability</li>
+                    <li>Machine Learning</li>
+                    <li>Data Mining</li>
+                    <li>Big Data Technologies</li>
+                    <li>Data Visualization</li>
+                    <li>Python/R Programming</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🌐 Applications</div>
+                <div class="major-card-content">
+                  Business analytics, healthcare analytics, financial modeling, recommendation systems, fraud detection, predictive maintenance, social media analysis, scientific research.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">💼 Career & Employment</div>
+                <div class="major-card-content">
+                  <strong>Graduation Rate:</strong> 82%<br>
+                  <strong>Employment Rate:</strong> 96% within 6 months<br>
+                  <strong>Average Starting Salary:</strong> $70,000-$110,000<br>
+                  <strong>Top Employers:</strong> Google, Amazon, Netflix, consulting firms, banks, tech startups
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🚀 Future Directions</div>
+                <div class="major-card-content">
+                  Automated machine learning, real-time analytics, edge analytics, quantum computing for data, AI ethics, explainable AI, federated learning, data privacy technologies.
+                </div>
+              </div>
+
+              <div class="major-card-section">
+                <div class="major-card-section-title">🌟 Real-Life Inspirations</div>
+                <div class="major-card-content">
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">📊</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">DJ Patil</div>
+                      <div class="inspiration-desc">Former U.S. Chief Data Scientist</div>
+                    </div>
+                  </div>
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">🤖</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Andrew Ng</div>
+                      <div class="inspiration-desc">AI/ML pioneer, Coursera co-founder</div>
+                    </div>
+                  </div>
+                  <div class="inspiration-item">
+                    <span class="inspiration-icon">💡</span>
+                    <div class="inspiration-text">
+                      <div class="inspiration-name">Nate Silver</div>
+                      <div class="inspiration-desc">Founder of FiveThirtyEight</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="major-card-expand-btn" onclick="toggleCardExpand(this)">
+                <span class="expand-text">Show More</span>
+                <span class="collapse-text" style="display: none;">Show Less</span>
+              </button>
+              <button class="major-card-view-detail-btn" onclick="showMajorDetail('ds')">
+                📋 View Full Details
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Compare Majors</h3>
+          <div class="form">
+            <div class="row" style="align-items:center; gap: 12px; flex-wrap: wrap;">
+              <span class="badge-pill major-badge" id="selMajorA">—</span>
+              <span style="color: var(--text-muted);">vs</span>
+              <span class="badge-pill major-badge" id="selMajorB">—</span>
+              <button id="btnCompare" class="chip">Compare</button>
+            </div>
+          </div>
+          <div id="compareView" class="kv"></div>
+          <table id="compareTable" class="table"></table>
+          <div id="compareSummary" class="muted" style="margin-top:12px;"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Major Detail Modal -->
+  <div id="majorDetailModal" class="major-modal">
+    <div class="major-modal-content">
+      <div class="major-modal-header">
+        <h2 class="major-modal-title" id="modalMajorTitle">Major Details</h2>
+        <button class="major-modal-close" onclick="closeMajorDetail()" aria-label="Close">×</button>
+      </div>
+      <div class="major-modal-body" id="modalMajorBody">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Major selection functionality
+    let selectedMajors = [];
+    const maxSelections = 2;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const majorCards = document.querySelectorAll('.major-card');
+      const selMajorA = document.getElementById('selMajorA');
+      const selMajorB = document.getElementById('selMajorB');
+      const btnCompare = document.getElementById('btnCompare');
+
+      majorCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const majorId = card.dataset.major;
+          const majorName = card.querySelector('.major-card-title').textContent;
+
+          // Toggle selection
+          if (card.classList.contains('selected')) {
+            // Deselect
+            card.classList.remove('selected');
+            selectedMajors = selectedMajors.filter(id => id !== majorId);
+          } else {
+            // Select (if under limit)
+            if (selectedMajors.length < maxSelections) {
+              card.classList.add('selected');
+              selectedMajors.push(majorId);
+            } else {
+              // Replace first selection
+              const firstCard = document.querySelector(`.major-card[data-major="${selectedMajors[0]}"]`);
+              if (firstCard) {
+                firstCard.classList.remove('selected');
+              }
+              selectedMajors[0] = selectedMajors[1];
+              selectedMajors[1] = majorId;
+              card.classList.add('selected');
+            }
+          }
+
+          // Update display
+          updateMajorSelection();
+        });
+      });
+
+      function updateMajorSelection() {
+        if (selectedMajors.length === 0) {
+          if (selMajorA) selMajorA.textContent = '—';
+          if (selMajorB) selMajorB.textContent = '—';
+        } else if (selectedMajors.length === 1) {
+          const card1 = document.querySelector(`.major-card[data-major="${selectedMajors[0]}"]`);
+          if (card1 && selMajorA) {
+            selMajorA.textContent = card1.querySelector('.major-card-title').textContent;
+          }
+          if (selMajorB) selMajorB.textContent = '—';
+        } else {
+          const card1 = document.querySelector(`.major-card[data-major="${selectedMajors[0]}"]`);
+          const card2 = document.querySelector(`.major-card[data-major="${selectedMajors[1]}"]`);
+          if (card1 && selMajorA) {
+            selMajorA.textContent = card1.querySelector('.major-card-title').textContent;
+          }
+          if (card2 && selMajorB) {
+            selMajorB.textContent = card2.querySelector('.major-card-title').textContent;
+          }
+        }
+      }
+
+      // Compare button functionality
+      if (btnCompare) {
+        btnCompare.addEventListener('click', () => {
+          if (selectedMajors.length < 2) {
+            alert('Please select 2 majors to compare.');
+            return;
+          }
+
+          // Show comparison data
+          displayComparison(selectedMajors[0], selectedMajors[1]);
+        });
+      }
+    });
+
+    // Toggle card expand/collapse
+    function toggleCardExpand(btn) {
+      const card = btn.closest('.major-card');
+      const expandText = btn.querySelector('.expand-text');
+      const collapseText = btn.querySelector('.collapse-text');
+      
+      if (card.classList.contains('expanded')) {
+        card.classList.remove('expanded');
+        expandText.style.display = 'inline';
+        collapseText.style.display = 'none';
+        // Scroll to top of card
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        card.classList.add('expanded');
+        expandText.style.display = 'none';
+        collapseText.style.display = 'inline';
+      }
+    }
+
+    // Major comparison data
+    const majorComparisonData = {
+      cs: {
+        name: 'Computer Science',
+        salary: '$75,000-$120,000',
+        demand: 'Very High',
+        difficulty: 'High',
+        jobGrowth: '22% (2020-2030)',
+        industries: 'Tech, Finance, Healthcare, Startups',
+        skills: 'Programming, Algorithms, System Design',
+        workLife: 'Balanced',
+        innovation: 'Very High'
+      },
+      bio: {
+        name: 'Biomedical Engineering',
+        salary: '$65,000-$95,000',
+        demand: 'High',
+        difficulty: 'Very High',
+        jobGrowth: '6% (2020-2030)',
+        industries: 'Medical Devices, Healthcare, Pharma',
+        skills: 'Engineering, Biology, Medical Knowledge',
+        workLife: 'Balanced',
+        innovation: 'High'
+      },
+      ds: {
+        name: 'Data Science',
+        salary: '$70,000-$110,000',
+        demand: 'Very High',
+        difficulty: 'High',
+        jobGrowth: '31% (2020-2030)',
+        industries: 'Tech, Finance, Consulting, Research',
+        skills: 'Statistics, Machine Learning, Python/R',
+        workLife: 'Balanced',
+        innovation: 'Very High'
+      }
+    };
+
+    // Display comparison
+    function displayComparison(majorId1, majorId2) {
+      const major1 = majorComparisonData[majorId1];
+      const major2 = majorComparisonData[majorId2];
+      
+      if (!major1 || !major2) {
+        alert('Comparison data not available for selected majors.');
+        return;
+      }
+
+      const compareView = document.getElementById('compareView');
+      const compareTable = document.getElementById('compareTable');
+      const compareSummary = document.getElementById('compareSummary');
+
+      // Update compare view (key-value pairs)
+      if (compareView) {
+        compareView.innerHTML = `
+          <div class="kv-item">
+            <span class="kv-label">Comparison Date</span>
+            <span class="kv-value">${new Date().toLocaleDateString()}</span>
+          </div>
+          <div class="kv-item">
+            <span class="kv-label">Major 1</span>
+            <span class="kv-value">${major1.name}</span>
+          </div>
+          <div class="kv-item">
+            <span class="kv-label">Major 2</span>
+            <span class="kv-value">${major2.name}</span>
+          </div>
+        `;
+      }
+
+      // Update comparison table
+      if (compareTable) {
+        compareTable.innerHTML = `
+          <thead>
+            <tr>
+              <th>Criteria</th>
+              <th>${major1.name}</th>
+              <th>${major2.name}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Starting Salary</td>
+              <td>${major1.salary}</td>
+              <td>${major2.salary}</td>
+            </tr>
+            <tr>
+              <td>Job Demand</td>
+              <td>${major1.demand}</td>
+              <td>${major2.demand}</td>
+            </tr>
+            <tr>
+              <td>Difficulty</td>
+              <td>${major1.difficulty}</td>
+              <td>${major2.difficulty}</td>
+            </tr>
+            <tr>
+              <td>Job Growth</td>
+              <td>${major1.jobGrowth}</td>
+              <td>${major2.jobGrowth}</td>
+            </tr>
+            <tr>
+              <td>Key Industries</td>
+              <td>${major1.industries}</td>
+              <td>${major2.industries}</td>
+            </tr>
+            <tr>
+              <td>Required Skills</td>
+              <td>${major1.skills}</td>
+              <td>${major2.skills}</td>
+            </tr>
+            <tr>
+              <td>Work-Life Balance</td>
+              <td>${major1.workLife}</td>
+              <td>${major2.workLife}</td>
+            </tr>
+            <tr>
+              <td>Innovation Level</td>
+              <td>${major1.innovation}</td>
+              <td>${major2.innovation}</td>
+            </tr>
+          </tbody>
+        `;
+      }
+
+      // Update summary
+      if (compareSummary) {
+        let recommendation = '';
+        const salary1 = parseInt(major1.salary.split('-')[0].replace(/[^0-9]/g, ''));
+        const salary2 = parseInt(major2.salary.split('-')[0].replace(/[^0-9]/g, ''));
+        
+        if (salary1 > salary2) {
+          recommendation = `${major1.name} offers higher starting salaries.`;
+        } else if (salary2 > salary1) {
+          recommendation = `${major2.name} offers higher starting salaries.`;
+        } else {
+          recommendation = 'Both majors offer competitive starting salaries.';
+        }
+
+        compareSummary.innerHTML = `
+          <p><strong>Summary:</strong> ${recommendation}</p>
+          <p style="margin-top: 8px;">Consider your interests, career goals, and preferred work environment when making your decision. Both majors offer strong career prospects and growth opportunities.</p>
+        `;
+      }
+
+      // Scroll to comparison section
+      const compareSection = document.querySelector('.card:last-child');
+      if (compareSection) {
+        compareSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Show major detail modal
+    function showMajorDetail(majorId) {
+      const modal = document.getElementById('majorDetailModal');
+      const modalTitle = document.getElementById('modalMajorTitle');
+      const modalBody = document.getElementById('modalMajorBody');
+      
+      if (!modal || !modalTitle || !modalBody) return;
+
+      // Find the major card
+      const majorCard = document.querySelector(`.major-card[data-major="${majorId}"]`);
+      if (!majorCard) return;
+
+      // Get all sections from the card
+      const title = majorCard.querySelector('.major-card-title')?.textContent || '';
+      const badge = majorCard.querySelector('.major-card-badge')?.textContent || '';
+      const sections = majorCard.querySelectorAll('.major-card-section');
+
+      // Build modal content
+      let contentHTML = '';
+
+      sections.forEach(section => {
+        const sectionTitle = section.querySelector('.major-card-section-title')?.textContent || '';
+        const sectionContent = section.querySelector('.major-card-content')?.innerHTML || '';
+        
+        if (sectionTitle && sectionContent) {
+          contentHTML += `
+            <div class="major-card-section" style="margin-bottom: 24px;">
+              <div class="major-card-section-title" style="font-size: 16px; margin-bottom: 12px;">${sectionTitle}</div>
+              <div class="major-card-content" style="font-size: 15px;">${sectionContent}</div>
+            </div>
+          `;
+        }
+      });
+
+      // Update modal
+      modalTitle.textContent = `${title} ${badge ? `(${badge})` : ''}`;
+      modalBody.innerHTML = contentHTML;
+
+      // Show modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      // Close on backdrop click
+      modal.addEventListener('click', function backdropClick(e) {
+        if (e.target === modal) {
+          closeMajorDetail();
+          modal.removeEventListener('click', backdropClick);
+        }
+      });
+
+      // Close on Escape key
+      const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          closeMajorDetail();
+          document.removeEventListener('keydown', escapeHandler);
+        }
+      };
+      document.addEventListener('keydown', escapeHandler);
+    }
+
+    // Close major detail modal
+    function closeMajorDetail() {
+      const modal = document.getElementById('majorDetailModal');
+      if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+  </script>
+</body>
+</html>

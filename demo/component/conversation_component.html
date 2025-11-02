@@ -1,0 +1,1066 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Conversation Component - SuperOS for Students</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Step-by-Step Container */
+    .step-navigation {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding: 0 16px;
+      flex-wrap: wrap;
+    }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .step-indicator.active .step-number {
+      background: var(--neon);
+      border-color: var(--neon);
+      color: var(--bg);
+      box-shadow: 0 0 12px rgba(110,168,254,0.4);
+    }
+
+    .step-indicator.completed .step-number {
+      background: var(--neon2);
+      border-color: var(--neon2);
+      color: var(--bg);
+    }
+
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border-light);
+      transition: all 0.3s ease;
+      min-width: 20px;
+    }
+
+    .step-indicator.completed .step-line {
+      background: var(--neon2);
+    }
+
+    .step-title-mobile {
+      display: none;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .step-indicator.active .step-title-mobile {
+      color: var(--neon);
+    }
+
+    /* Step Content Container */
+    .step-content-container {
+      position: relative;
+      min-height: 400px;
+    }
+
+    .step-panel {
+      display: none;
+      animation: fadeInSlide 0.3s ease;
+    }
+
+    .step-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeInSlide {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Header */
+    .conversation-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .conversation-header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .conversation-header .subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Step 1: Contact Finder */
+    .search-section {
+      margin-bottom: 20px;
+    }
+
+    .search-input-wrapper {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(110,168,254,0.15);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .search-btn {
+      padding: 12px 20px;
+      background: rgba(110,168,254,0.15);
+      border: 1px solid rgba(110,168,254,0.3);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .search-btn:active {
+      background: rgba(110,168,254,0.25);
+      transform: scale(0.98);
+    }
+
+    .contact-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .contact-card:active {
+      border-color: var(--neon);
+      background: rgba(255,255,255,0.05);
+      transform: scale(0.98);
+    }
+
+    .contact-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .contact-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 4px 0;
+    }
+
+    .contact-title {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .contact-status {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .contact-status.searched { background: rgba(255,255,255,0.1); color: var(--text-muted); }
+    .contact-status.contacted { background: rgba(110,168,254,0.2); color: var(--neon); }
+    .contact-status.replied { background: rgba(126,231,135,0.2); color: var(--neon2); }
+    .contact-status.met { background: rgba(255,193,7,0.2); color: #ffc107; }
+
+    .contact-links {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      font-size: 12px;
+      color: var(--neon);
+      text-decoration: none;
+      padding: 6px 12px;
+      border: 1px solid rgba(110,168,254,0.3);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .contact-link:active {
+      background: rgba(110,168,254,0.15);
+      border-color: var(--neon);
+    }
+
+    .contact-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .contact-btn {
+      flex: 1;
+      background: rgba(110,168,254,0.15);
+      border: 1px solid rgba(110,168,254,0.3);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .contact-btn:active {
+      background: rgba(110,168,254,0.25);
+      transform: scale(0.98);
+    }
+
+    .contact-btn.primary {
+      background: rgba(126,231,135,0.2);
+      border-color: rgba(126,231,135,0.3);
+    }
+
+    /* Step 2: Email Draft */
+    .email-editor {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .email-editor-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .email-preview {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .email-field {
+      margin-bottom: 12px;
+    }
+
+    .email-field-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .email-field-input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .email-field-input:focus {
+      outline: none;
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(110,168,254,0.15);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .email-editor-textarea {
+      width: 100%;
+      min-height: 150px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .email-editor-textarea:focus {
+      outline: none;
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(110,168,254,0.15);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .email-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .email-action-btn {
+      flex: 1;
+      min-width: 120px;
+      background: rgba(110,168,254,0.15);
+      border: 1px solid rgba(110,168,254,0.3);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .email-action-btn.primary {
+      background: rgba(126,231,135,0.2);
+      border-color: rgba(126,231,135,0.3);
+    }
+
+    .email-action-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Step 3: Tracking & Logging */
+    .crm-board {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .crm-column {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .crm-column:active {
+      border-color: var(--neon);
+      transform: scale(0.98);
+    }
+
+    .crm-column-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .crm-count {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 8px 0;
+    }
+
+    .crm-description {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .reply-tracker {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .reply-tracker-header {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .reply-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .reply-textarea {
+      width: 100%;
+      min-height: 100px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    .reply-textarea:focus {
+      outline: none;
+      border-color: var(--neon);
+      box-shadow: 0 0 0 3px rgba(110,168,254,0.15);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .reply-checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reply-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-light);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .reply-checkbox-label {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* Navigation Buttons */
+    .step-navigation-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      border: none;
+    }
+
+    .nav-btn.secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      color: var(--text);
+    }
+
+    .nav-btn.secondary:active {
+      background: rgba(255,255,255,0.1);
+      transform: scale(0.98);
+    }
+
+    .nav-btn.primary {
+      background: linear-gradient(135deg, var(--neon), var(--neon2));
+      color: var(--bg);
+      box-shadow: 0 4px 12px rgba(110,168,254,0.3);
+    }
+
+    .nav-btn.primary:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(110,168,254,0.3);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Back Button */
+    .back-btn {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 8px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-btn:active {
+      background: rgba(255,255,255,0.1);
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .app-header {
+      position: relative;
+    }
+
+    .app-header h1 {
+      margin: 0 auto;
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 768px) {
+      .step-navigation {
+        padding: 0 8px;
+      }
+
+      .step-title-mobile {
+        display: block;
+      }
+
+      .step-number {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+      }
+
+      .step-line {
+        min-width: 12px;
+      }
+
+      .conversation-header h1 {
+        font-size: 18px;
+      }
+
+      .contact-card {
+        padding: 12px;
+      }
+
+      .contact-actions {
+        flex-direction: column;
+      }
+
+      .crm-board {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .crm-column {
+        padding: 12px;
+      }
+
+      .crm-count {
+        font-size: 24px;
+      }
+
+      .email-actions {
+        flex-direction: column;
+      }
+
+      .email-action-btn {
+        min-width: 100%;
+      }
+
+      .step-navigation-buttons {
+        flex-direction: column;
+      }
+
+      .nav-btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .step-navigation {
+        gap: 4px;
+      }
+
+      .step-number {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+      }
+
+      .step-title-mobile {
+        font-size: 10px;
+      }
+
+      .search-input-wrapper {
+        flex-direction: column;
+      }
+
+      .search-btn {
+        width: 100%;
+      }
+
+      .back-btn {
+        left: 8px;
+        padding: 6px;
+      }
+
+      .back-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .conversation-header h1 {
+        font-size: 16px;
+      }
+    }
+
+    /* Additional mobile enhancements */
+    @media (max-width: 768px) {
+      .step-content-container {
+        min-height: 300px;
+      }
+
+      .step-panel {
+        padding-bottom: 20px;
+      }
+
+      .crm-board {
+        margin-bottom: 16px;
+      }
+
+      .reply-tracker {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <button class="back-btn" onclick="goBack()" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <h1>Conversation Component</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <div class="card">
+      <div class="conversation-header">
+        <h2 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 8px;">Conversation Component</h2>
+        <p class="subtitle">Identify, contact and gain guidance from mentors or experts</p>
+      </div>
+
+      <!-- Step Navigation -->
+      <div class="step-navigation">
+        <div class="step-indicator active" data-step="1">
+          <div class="step-number">1</div>
+          <div class="step-line"></div>
+          <div class="step-title-mobile">Find Contacts</div>
+        </div>
+        <div class="step-indicator" data-step="2">
+          <div class="step-number">2</div>
+          <div class="step-line"></div>
+          <div class="step-title-mobile">Draft Email</div>
+        </div>
+        <div class="step-indicator" data-step="3">
+          <div class="step-number">3</div>
+          <div class="step-title-mobile">Track & Log</div>
+        </div>
+      </div>
+
+      <!-- Step Content Container -->
+      <div class="step-content-container">
+        <!-- Step 1: Contact Finder -->
+        <div class="step-panel active" id="step-1">
+          <h2 style="font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 16px;">
+            Step 1: Contact Finder
+          </h2>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+            Search for contacts or add custom contacts. AI returns "contact cards" list with name, bio, and relevant links.
+          </p>
+
+          <div class="search-section">
+            <div class="search-input-wrapper">
+              <input type="text" class="search-input" placeholder="Search for mentors or experts..." id="contactSearch">
+              <button class="search-btn" onclick="searchContacts()">Search</button>
+            </div>
+          </div>
+
+          <div id="contactResults">
+            <!-- Example Contact Cards -->
+            <div class="contact-card">
+              <div class="contact-card-header">
+                <div class="contact-info">
+                  <div class="contact-name">Dr. Sarah Chen</div>
+                  <div class="contact-title">Professor of AI Ethics, Stanford University</div>
+                </div>
+                <span class="contact-status searched">Searched</span>
+              </div>
+              <div class="contact-links">
+                <a href="#" class="contact-link">LinkedIn</a>
+                <a href="#" class="contact-link">School Website</a>
+              </div>
+              <div class="contact-actions">
+                <button class="contact-btn" onclick="selectContact('sarah-chen', 'Dr. Sarah Chen')">Contact</button>
+                <button class="contact-btn secondary">Save</button>
+              </div>
+            </div>
+
+            <div class="contact-card">
+              <div class="contact-card-header">
+                <div class="contact-info">
+                  <div class="contact-name">Prof. Michael Rodriguez</div>
+                  <div class="contact-title">Director, AI Research Lab, MIT</div>
+                </div>
+                <span class="contact-status contacted">Contacted</span>
+              </div>
+              <div class="contact-links">
+                <a href="#" class="contact-link">LinkedIn</a>
+                <a href="#" class="contact-link">School Website</a>
+              </div>
+              <div class="contact-actions">
+                <button class="contact-btn primary" onclick="recordReply('michael-rodriguez')">Record Reply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Email Draft -->
+        <div class="step-panel" id="step-2">
+          <h2 style="font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 16px;">
+            Step 2: Email Draft / Message Draft / Agenda
+          </h2>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+            AI-generated email draft is shown below. You can edit it and then send via your preferred method.
+          </p>
+
+          <div class="email-editor">
+            <div class="email-editor-header">Email Draft (AI Generated)</div>
+            
+            <div class="email-field">
+              <label class="email-field-label">To:</label>
+              <input type="text" class="email-field-input" id="emailTo" value="Dr. Sarah Chen" readonly>
+            </div>
+
+            <div class="email-field">
+              <label class="email-field-label">Subject:</label>
+              <input type="text" class="email-field-input" id="emailSubject" value="Request for Guidance on AI Ethics Capstone Project">
+            </div>
+
+            <div class="email-preview" id="emailPreview">
+Subject: Request for Guidance on AI Ethics Capstone Project
+
+Dear Dr. Chen,
+
+I am a high school student working on a Capstone project about [project topic]. I have read your research on [relevant paper], and I hope to discuss [specific question] with you. Would you be available for a brief meeting?
+
+Best regards,
+[Your Name]
+            </div>
+
+            <textarea class="email-editor-textarea" id="emailBody" placeholder="Edit the email draft...">Dear Dr. Chen,
+
+I am a high school student working on a Capstone project about AI ethics in education. I have read your research on ethical AI frameworks, and I hope to discuss how these principles can be applied to educational technology with you. Would you be available for a brief meeting?
+
+Best regards,
+[Your Name]</textarea>
+
+            <div class="email-actions">
+              <button class="email-action-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
+              <button class="email-action-btn" onclick="saveDraft()">Save Draft</button>
+              <button class="email-action-btn primary" onclick="sendViaGmail()">Send via Gmail</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Tracking & Logging -->
+        <div class="step-panel" id="step-3">
+          <h2 style="font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 16px;">
+            Step 3: Tracking & Logging
+          </h2>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+            Track your contact statuses. AI automatically sets reminders to follow up after one week.
+          </p>
+
+          <div class="crm-board">
+            <div class="crm-column">
+              <div class="crm-column-title">Searched</div>
+              <div class="crm-count" id="countSearched">3</div>
+              <div class="crm-description">Initial contacts found</div>
+            </div>
+            <div class="crm-column">
+              <div class="crm-column-title">Contacted</div>
+              <div class="crm-count" id="countContacted">2</div>
+              <div class="crm-description">Emails sent</div>
+            </div>
+            <div class="crm-column">
+              <div class="crm-column-title">Replied</div>
+              <div class="crm-count" id="countReplied">1</div>
+              <div class="crm-description">Received responses</div>
+            </div>
+            <div class="crm-column">
+              <div class="crm-column-title">Met</div>
+              <div class="crm-count" id="countMet">0</div>
+              <div class="crm-description">Meetings completed</div>
+            </div>
+          </div>
+
+          <div class="reply-tracker">
+            <div class="reply-tracker-header">Record Reply</div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+              When you receive a reply, paste the content below and indicate if they agreed to meet.
+            </p>
+            <div class="reply-form">
+              <textarea class="reply-textarea" id="replyContent" placeholder="Paste reply content here..."></textarea>
+              <div class="reply-checkbox-group">
+                <input type="checkbox" class="reply-checkbox" id="agreeToMeet">
+                <label class="reply-checkbox-label" for="agreeToMeet">Did they agree to meet/guide?</label>
+              </div>
+              <button class="nav-btn primary" onclick="submitReply()">Submit Reply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="step-navigation-buttons">
+        <button class="nav-btn secondary" id="btnPrev" onclick="previousStep()" disabled>Previous</button>
+        <button class="nav-btn primary" id="btnNext" onclick="nextStep()">Next</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    function updateStepNavigation() {
+      // Update step indicators
+      document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+        const stepNum = index + 1;
+        indicator.classList.remove('active', 'completed');
+        
+        if (stepNum < currentStep) {
+          indicator.classList.add('completed');
+        } else if (stepNum === currentStep) {
+          indicator.classList.add('active');
+        }
+      });
+
+      // Show/hide step panels
+      document.querySelectorAll('.step-panel').forEach((panel, index) => {
+        if (index + 1 === currentStep) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+
+      // Update navigation buttons
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+
+      btnPrev.disabled = currentStep === 1;
+      
+      if (currentStep === totalSteps) {
+        btnNext.textContent = 'Complete';
+        btnNext.onclick = completeFlow;
+      } else {
+        btnNext.textContent = 'Next';
+        btnNext.onclick = nextStep;
+      }
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateStepNavigation();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function previousStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepNavigation();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function completeFlow() {
+      alert('Conversation flow completed! Your contacts and communications have been tracked.');
+      // Optionally navigate back after completion
+      setTimeout(() => {
+        if (confirm('Would you like to return to the components page?')) {
+          goBack();
+        }
+      }, 500);
+    }
+
+    function goBack() {
+      // Check if there's a referrer, otherwise go to component.html
+      if (document.referrer && document.referrer.includes('component.html')) {
+        window.history.back();
+      } else {
+        window.location.href = 'component.html';
+      }
+    }
+
+    function searchContacts() {
+      const query = document.getElementById('contactSearch').value;
+      if (query.trim()) {
+        // Simulate search
+        console.log('Searching for:', query);
+        alert(`Searching for: ${query}\n\nThis would typically call an AI service to find relevant contacts.`);
+      }
+    }
+
+    function selectContact(id, name) {
+      // Set contact name in email draft
+      document.getElementById('emailTo').value = name;
+      // Move to step 2
+      currentStep = 2;
+      updateStepNavigation();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function recordReply(id) {
+      // Show reply tracker form
+      currentStep = 3;
+      updateStepNavigation();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyToClipboard() {
+      const subject = document.getElementById('emailSubject').value;
+      const body = document.getElementById('emailBody').value;
+      const emailText = `Subject: ${subject}\n\n${body}`;
+      
+      navigator.clipboard.writeText(emailText).then(() => {
+        alert('Email copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy. Please select and copy manually.');
+      });
+    }
+
+    function saveDraft() {
+      alert('Draft saved!');
+    }
+
+    function sendViaGmail() {
+      const subject = encodeURIComponent(document.getElementById('emailSubject').value);
+      const body = encodeURIComponent(document.getElementById('emailBody').value);
+      const to = encodeURIComponent(document.getElementById('emailTo').value);
+      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}&body=${body}`, '_blank');
+    }
+
+    function submitReply() {
+      const replyContent = document.getElementById('replyContent').value;
+      const agreed = document.getElementById('agreeToMeet').checked;
+
+      if (!replyContent.trim()) {
+        alert('Please paste the reply content.');
+        return;
+      }
+
+      // Update counts
+      const countReplied = document.getElementById('countReplied');
+      countReplied.textContent = parseInt(countReplied.textContent) + 1;
+
+      if (agreed) {
+        const countMet = document.getElementById('countMet');
+        countMet.textContent = parseInt(countMet.textContent) + 1;
+      }
+
+      // Clear form
+      document.getElementById('replyContent').value = '';
+      document.getElementById('agreeToMeet').checked = false;
+
+      alert('Reply recorded! AI will analyze the response and provide next steps.');
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      updateStepNavigation();
+
+      // Allow step indicators to be clicked
+      document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+          const targetStep = index + 1;
+          if (targetStep <= currentStep || targetStep === currentStep + 1) {
+            currentStep = targetStep;
+            updateStepNavigation();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      });
+
+      // Update email preview when body changes
+      document.getElementById('emailBody').addEventListener('input', function() {
+        const subject = document.getElementById('emailSubject').value;
+        const body = this.value;
+        document.getElementById('emailPreview').textContent = `Subject: ${subject}\n\n${body}`;
+      });
+    });
+  </script>
+</body>
+</html>
+

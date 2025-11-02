@@ -1,0 +1,1254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Router Agent Status Report</title>
+  <style>
+    :root {
+      --bg: #081020;
+      --bg2: #0b132b;
+      --neon: #6ea8fe;
+      --neon2: #7ee787;
+      --neon3: #ff9aa9;
+      --text: #e6e9ef;
+      --text-muted: #9aa4b2;
+      --border: rgba(255,255,255,0.12);
+      --border-light: rgba(255,255,255,0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html, body { 
+      background: radial-gradient(1200px 600px at 50% -10%, #0f1b3a, #080d1a 60%), linear-gradient(180deg, #07122a, #040812);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .router-status-report {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      padding-bottom: 180px; /* Space for enhanced footer */
+      overflow-y: auto;
+    }
+
+    .router-status-report.hidden {
+      display: none;
+    }
+
+    .status-report-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+    }
+
+    .status-report-modal {
+      position: relative;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 0;
+      max-width: 420px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      z-index: 1;
+    }
+
+    .status-report-header {
+      padding: 24px 24px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .status-report-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .location-icon {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    .status-report-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .status-report-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    .status-report-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .status-main-question {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .status-main-question h3 {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+
+    /* Mood Selection Buttons */
+    .mood-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .mood-btn {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .mood-btn:hover {
+      transform: scale(1.1);
+      border-color: var(--neon);
+      background: rgba(110, 168, 254, 0.2);
+    }
+
+    .mood-btn.selected {
+      border-color: var(--neon3);
+      background: rgba(255, 154, 169, 0.2);
+      box-shadow: 0 0 20px rgba(255, 154, 169, 0.4);
+    }
+
+    .mood-btn.question {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--text-muted);
+    }
+
+    /* Quick Tags */
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .tag-btn {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tag-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--neon);
+      color: var(--text);
+    }
+
+    /* Alert Card */
+    .alert-card {
+      background: rgba(255, 154, 169, 0.1);
+      border: 1px solid var(--neon3);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .alert-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .alert-content {
+      flex: 1;
+    }
+
+    .alert-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .alert-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .alert-progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .alert-progress-bar {
+      height: 100%;
+      background: var(--neon3);
+      transition: width 0.3s ease;
+    }
+
+    .alert-progress-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .alert-arrow {
+      font-size: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .alert-arrow:hover {
+      transform: translateY(2px);
+    }
+
+    /* Recommendation Card */
+    .recommendation-card {
+      background: rgba(126, 231, 135, 0.1);
+      border: 1px solid var(--neon2);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .rec-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .rec-content {
+      flex: 1;
+    }
+
+    .rec-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .rec-progress {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .rec-progress-bar {
+      height: 100%;
+      background: var(--neon2);
+      transition: width 0.3s ease;
+    }
+
+    .rec-arrow {
+      font-size: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .rec-arrow:hover {
+      transform: translateY(2px);
+    }
+
+    /* Priority Task Card Enhancements */
+    .priority-task-card {
+      border-color: rgba(255, 154, 169, 0.4);
+      background: linear-gradient(135deg, rgba(255, 154, 169, 0.12), rgba(126, 231, 135, 0.08));
+      box-shadow: 0 4px 16px rgba(255, 154, 169, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .priority-task-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 154, 169, 0.25);
+      border-color: rgba(255, 154, 169, 0.6);
+    }
+
+    .priority-task-card .rec-title {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .priority-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--neon3);
+      background: rgba(255, 154, 169, 0.2);
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      width: fit-content;
+      text-transform: uppercase;
+    }
+
+    #priorityTaskTitle {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .task-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .task-due {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .task-time-left {
+      font-size: 11px;
+      color: var(--neon3);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .task-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .task-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .task-progress-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    .task-action-btn {
+      padding: 6px 14px;
+      background: linear-gradient(135deg, var(--neon), var(--neon2));
+      border: none;
+      border-radius: 12px;
+      color: #000;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .task-action-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(110, 168, 254, 0.4);
+    }
+
+    .task-action-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Action Button */
+    .action-button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--neon), var(--neon2));
+      border: none;
+      border-radius: 16px;
+      color: #000;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(110, 168, 254, 0.3);
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(110, 168, 254, 0.4);
+    }
+
+    .action-button:active {
+      transform: translateY(0);
+    }
+
+    /* Info Section */
+    .info-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 13px;
+    }
+
+    .info-label {
+      color: var(--text-muted);
+    }
+
+    .info-value {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 600px) {
+      .status-report-modal {
+        max-width: 100%;
+        border-radius: 0;
+        max-height: 100vh;
+      }
+
+      .mood-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 32px;
+      }
+
+      .time-display {
+        font-size: 40px;
+      }
+
+      .status-main-question h3 {
+        font-size: 20px;
+      }
+    }
+
+    /* Tutor Footer - Integrated in Router Report - Enhanced Design */
+    .router-status-report .tutor-footer {
+      position: absolute !important;
+      bottom: 20px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: min(680px, calc(100% - 40px)) !important;
+      max-width: calc(100vw - 40px) !important;
+      max-height: calc(100vh / 5) !important;
+      z-index: 10001 !important;
+      display: flex !important;
+      justify-content: center !important;
+      padding: 0 !important;
+      margin: 0 auto !important;
+      background: transparent !important;
+      pointer-events: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+
+    .router-status-report.hidden .tutor-footer {
+      display: none !important;
+    }
+
+    .router-status-report .tutor-surface {
+      pointer-events: all !important;
+      max-height: calc(100vh / 5) !important;
+      padding: 14px 18px 16px !important;
+      border-radius: 24px !important;
+      gap: 12px !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      background: linear-gradient(135deg, rgba(18, 30, 64, 0.96), rgba(34, 14, 62, 0.94), rgba(20, 25, 55, 0.95)) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+      backdrop-filter: blur(24px) saturate(180%) !important;
+      box-shadow: 
+        0 12px 48px rgba(4, 6, 28, 0.5),
+        0 0 0 1px rgba(110, 168, 254, 0.1) inset,
+        0 2px 8px rgba(110, 168, 254, 0.15) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .router-status-report .tutor-surface:hover {
+      border-color: rgba(255, 255, 255, 0.25) !important;
+      box-shadow: 
+        0 16px 64px rgba(4, 6, 28, 0.6),
+        0 0 0 1px rgba(110, 168, 254, 0.15) inset,
+        0 4px 12px rgba(110, 168, 254, 0.2) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    /* Enhanced Tutor Meta */
+    .router-status-report .tutor-meta {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      flex-wrap: wrap !important;
+      margin-bottom: 0 !important;
+    }
+
+    .router-status-report .tutor-status {
+      font-size: 13px !important;
+      gap: 6px !important;
+      flex-shrink: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    .router-status-report .tutor-status-dot {
+      width: 8px !important;
+      height: 8px !important;
+      border-radius: 50% !important;
+      background: var(--neon2) !important;
+      box-shadow: 0 0 8px rgba(126, 231, 135, 0.6), 0 0 16px rgba(126, 231, 135, 0.3) !important;
+      animation: pulse 2s ease-in-out infinite !important;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    .router-status-report .tutor-status-text {
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: var(--text) !important;
+      letter-spacing: 0.3px !important;
+    }
+
+    .router-status-report .tutor-controls {
+      display: flex !important;
+      gap: 8px !important;
+      flex-wrap: wrap !important;
+      flex-shrink: 0 !important;
+    }
+
+    .router-status-report .tutor-control-btn {
+      padding: 6px 12px !important;
+      font-size: 12px !important;
+      border-radius: 12px !important;
+      min-height: 32px !important;
+      line-height: 1.3 !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      color: var(--text) !important;
+      transition: all 0.2s ease !important;
+      font-weight: 500 !important;
+    }
+
+    .router-status-report .tutor-control-btn:hover {
+      background: rgba(255, 255, 255, 0.15) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .router-status-report .tutor-control-btn:active {
+      transform: translateY(0) !important;
+    }
+
+    .router-status-report .tutor-control-btn span {
+      font-size: 12px !important;
+    }
+
+    /* Enhanced Tutor Core */
+    .router-status-report .tutor-core {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      flex: 1 !important;
+      min-height: 0 !important;
+      max-height: 70px !important;
+    }
+
+    .router-status-report .tutor-waveform {
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      min-width: 60px !important;
+      height: 48px !important;
+      padding: 6px 12px !important;
+      flex-shrink: 0 !important;
+      background: rgba(255, 255, 255, 0.05) !important;
+      border-radius: 14px !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .router-status-report .tutor-waveform .waveform-bar {
+      width: 4px !important;
+      min-height: 16px !important;
+      max-height: 32px !important;
+      border-radius: 2px !important;
+      background: linear-gradient(180deg, var(--neon), var(--neon2)) !important;
+      transition: height 0.15s ease !important;
+    }
+
+    .router-status-report .tutor-subtitle {
+      flex: 1 !important;
+      padding: 10px 16px !important;
+      min-height: 48px !important;
+      max-height: 70px !important;
+      border-radius: 16px !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      display: flex !important;
+      align-items: center !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .router-status-report .tutor-subtitle:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+
+    .router-status-report .subtitle-text {
+      font-size: 14px !important;
+      line-height: 1.5 !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      color: var(--text) !important;
+      font-weight: 400 !important;
+    }
+
+    /* Enhanced Input Area */
+    .router-status-report .tutor-input-area {
+      padding: 6px 8px !important;
+      gap: 8px !important;
+      border-radius: 18px !important;
+      min-height: 52px !important;
+      max-height: 56px !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .router-status-report .tutor-input-area:focus-within {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(110, 168, 254, 0.4) !important;
+      box-shadow: 0 0 0 2px rgba(110, 168, 254, 0.1) !important;
+    }
+
+    .router-status-report .tutor-input-btn {
+      min-width: 44px !important;
+      height: 44px !important;
+      font-size: 20px !important;
+      padding: 0 !important;
+      border-radius: 12px !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .router-status-report .tutor-input-btn:hover {
+      background: rgba(255, 255, 255, 0.15) !important;
+      transform: scale(1.05) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .router-status-report .tutor-input-btn:active {
+      transform: scale(0.98) !important;
+    }
+
+    .router-status-report .tutor-input {
+      font-size: 14px !important;
+      padding: 10px 14px !important;
+      height: 44px !important;
+      border-radius: 12px !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      color: var(--text) !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .router-status-report .tutor-input::placeholder {
+      color: var(--text-muted) !important;
+      opacity: 0.7 !important;
+    }
+
+    .router-status-report .tutor-input:focus {
+      outline: none !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(110, 168, 254, 0.5) !important;
+      box-shadow: 0 0 0 2px rgba(110, 168, 254, 0.1) !important;
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 600px) {
+      .router-status-report .tutor-footer {
+        bottom: 16px !important;
+        width: calc(100% - 32px) !important;
+        max-width: calc(100vw - 32px) !important;
+        max-height: calc(100vh / 5) !important;
+      }
+
+      .router-status-report .tutor-surface {
+        padding: 12px 14px 14px !important;
+        gap: 10px !important;
+        border-radius: 20px !important;
+      }
+
+      .router-status-report .tutor-meta {
+        gap: 10px !important;
+      }
+
+      .router-status-report .tutor-status {
+        font-size: 12px !important;
+      }
+
+      .router-status-report .tutor-status-dot {
+        width: 7px !important;
+        height: 7px !important;
+      }
+
+      .router-status-report .tutor-control-btn {
+        padding: 5px 10px !important;
+        font-size: 11px !important;
+        min-height: 28px !important;
+      }
+
+      .router-status-report .tutor-control-btn span {
+        font-size: 11px !important;
+      }
+
+      .router-status-report .tutor-core {
+        gap: 10px !important;
+        max-height: 60px !important;
+      }
+
+      .router-status-report .tutor-waveform {
+        min-width: 50px !important;
+        height: 40px !important;
+        padding: 5px 10px !important;
+      }
+
+      .router-status-report .tutor-waveform .waveform-bar {
+        width: 3px !important;
+        min-height: 14px !important;
+        max-height: 26px !important;
+      }
+
+      .router-status-report .tutor-subtitle {
+        padding: 8px 12px !important;
+        min-height: 40px !important;
+        max-height: 60px !important;
+      }
+
+      .router-status-report .subtitle-text {
+        font-size: 13px !important;
+        -webkit-line-clamp: 2 !important;
+        line-clamp: 2 !important;
+      }
+
+      .router-status-report .tutor-input-area {
+        padding: 5px 6px !important;
+        gap: 6px !important;
+        min-height: 48px !important;
+        max-height: 52px !important;
+      }
+
+      .router-status-report .tutor-input-btn {
+        min-width: 40px !important;
+        height: 40px !important;
+        font-size: 18px !important;
+      }
+
+      .router-status-report .tutor-input {
+        font-size: 13px !important;
+        padding: 8px 12px !important;
+        height: 40px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="routerStatusReport" class="router-status-report">
+    <div class="status-report-overlay"></div>
+    <div class="status-report-modal">
+      <div class="status-report-header">
+        <button id="statusReportClose" class="status-report-close" type="button" aria-label="Minimize">−</button>
+        <h2>
+          Router Agent
+          <span class="location-icon">📍</span>
+        </h2>
+      </div>
+      
+      <div class="status-report-body">
+        <!-- Main Question -->
+        <div class="status-main-question">
+          <h3 id="mainQuestion">How are you feeling today?</h3>
+        </div>
+
+        <!-- Mood Selection -->
+        <div class="mood-buttons">
+          <button class="mood-btn" data-mood="great" title="Great">
+            😊
+          </button>
+          <button class="mood-btn" data-mood="okay" title="Okay">
+            😐
+          </button>
+          <button class="mood-btn" data-mood="sad" title="Not Great">
+            😔
+          </button>
+          <button class="mood-btn question" data-mood="other" title="Other">
+            ?
+          </button>
+        </div>
+
+        <!-- Quick Tags -->
+        <div class="quick-tags">
+          <button class="tag-btn" data-tag="study">Study</button>
+          <button class="tag-btn" data-tag="sports">Sports</button>
+          <button class="tag-btn" data-tag="social">Social</button>
+          <button class="tag-btn" data-tag="rest">Rest</button>
+          <button class="tag-btn" data-tag="stress">Stress</button>
+          <button class="tag-btn" data-tag="excited">Excited</button>
+        </div>
+
+        <!-- Priority Task Card -->
+        <div class="recommendation-card priority-task-card">
+          <div class="rec-icon">🔥</div>
+          <div class="rec-content">
+            <div class="rec-title">
+              <span class="priority-badge">HIGH PRIORITY</span>
+              <span id="priorityTaskTitle">Complete Math Assignment</span>
+            </div>
+            <div class="task-meta">
+              <span class="task-due" id="taskDueDate">Due: Tomorrow, 11:59 PM</span>
+              <span class="task-time-left" id="taskTimeLeft">⏰ 23h 45m left</span>
+            </div>
+            <div class="task-description" id="taskDescription">
+              Chapter 5: Calculus Integration Problems (15 questions)
+            </div>
+            <div class="rec-progress">
+              <div class="rec-progress-bar" id="taskProgressBar" style="width: 40%"></div>
+            </div>
+            <div class="task-footer">
+              <span class="task-progress-text" id="taskProgressText">40% Complete · 6/15 questions</span>
+              <button class="task-action-btn" id="startTaskBtn">Start Now</button>
+            </div>
+          </div>
+          <div class="rec-arrow">→</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tutor Agent: Footer with integrated speech component - Integrated in Router Report -->
+    <footer id="tutorAgent" class="tutor-footer" aria-live="polite" aria-atomic="true">
+      <div class="tutor-surface">
+        <!-- Status and Controls -->
+        <div class="tutor-meta">
+          <div class="tutor-status" role="status">
+            <span class="tutor-status-dot"></span>
+            <span class="tutor-status-text" id="tutorStatusText">AI Tutor · Listening</span>
+          </div>
+          <div class="tutor-controls">
+            <button id="toggleInputMode" type="button" class="tutor-control-btn" aria-label="Toggle input mode">
+              <span id="inputModeText">Voice Input</span>
+            </button>
+            <button id="toggleVoice" type="button" class="tutor-control-btn" aria-label="Toggle voice output">Voice: Off</button>
+            <button id="toggleTutor" type="button" class="tutor-control-btn ghost" aria-label="Hide tutor subtitle">Hide</button>
+          </div>
+        </div>
+
+        <!-- Waveform and Subtitle Display -->
+        <div class="tutor-core">
+          <div id="tutorWaveform" class="tutor-waveform">
+            <span class="waveform-bar"></span>
+            <span class="waveform-bar"></span>
+            <span class="waveform-bar"></span>
+            <span class="waveform-bar"></span>
+            <span class="waveform-bar"></span>
+          </div>
+          <div id="tutorStream" class="tutor-subtitle" role="button" tabindex="0" aria-expanded="false" aria-label="Tap to expand transcript">
+            <span class="subtitle-text" id="subtitleText">Welcome to your profile! I'm your AI Tutor. I can help you fill out your Common App fields and answer any questions you might have.</span>
+            <span class="subtitle-highlight" id="subtitleHighlight"></span>
+          </div>
+        </div>
+
+        <!-- Input Area: Voice/Text Input -->
+        <div id="tutorInputArea" class="tutor-input-area voice-mode" data-mode="voice">
+          <button id="micBtn" type="button" class="tutor-input-btn voice-mode" aria-label="Start voice input">🎤</button>
+          <input id="userInput" class="tutor-input" placeholder="Tap microphone to speak..." autocomplete="off" />
+          <button id="sendBtn" type="button" class="tutor-input-btn text-mode" aria-label="Send message">Send</button>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    // Mock state
+    const state = {
+      selectedMood: null,
+      selectedTags: [],
+      location: null,
+      lastActivity: new Date(),
+      consecutiveDays: 3
+    };
+
+    // Initialize
+    function init() {
+      updateTime();
+      updateDate();
+      requestLocation();
+      bindEvents();
+      
+      // Update time every minute
+      setInterval(updateTime, 60000);
+    }
+
+    // Update time display
+    function updateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const timeEl = document.getElementById('currentTime');
+      if (timeEl) {
+        timeEl.textContent = `${hours}:${minutes}`;
+      }
+    }
+
+    // Update date display
+    function updateDate() {
+      const now = new Date();
+      const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const weekday = weekdays[now.getDay()];
+      const month = now.getMonth() + 1;
+      const day = now.getDate();
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const dateEl = document.getElementById('currentDate');
+      if (dateEl) {
+        dateEl.textContent = `${weekday}, ${monthNames[month - 1]} ${day}`;
+      }
+    }
+
+    // Request location
+    function requestLocation() {
+      const locationEl = document.getElementById('locationInfo');
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            if (locationEl) {
+              locationEl.textContent = 'Located';
+            }
+            state.location = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+          },
+          (error) => {
+            if (locationEl) {
+              locationEl.textContent = 'Not Authorized';
+            }
+          },
+          { timeout: 5000 }
+        );
+      } else {
+        if (locationEl) {
+          locationEl.textContent = 'Not Supported';
+        }
+      }
+    }
+
+    // Bind events
+    function bindEvents() {
+      // Minimize button
+      const minimizeBtn = document.getElementById('statusReportClose');
+      if (minimizeBtn) {
+        minimizeBtn.addEventListener('click', () => {
+          const routerReport = document.getElementById('routerStatusReport');
+          if (routerReport) {
+            routerReport.classList.add('hidden');
+          }
+        });
+      }
+
+      // Overlay click
+      const overlay = document.querySelector('.status-report-overlay');
+      if (overlay) {
+        overlay.addEventListener('click', () => {
+          // Don't close on overlay click, require explicit close
+        });
+      }
+
+      // Mood buttons
+      const moodButtons = document.querySelectorAll('.mood-btn');
+      moodButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // Remove selected class from all
+          moodButtons.forEach(b => b.classList.remove('selected'));
+          // Add selected class to clicked button
+          btn.classList.add('selected');
+          state.selectedMood = btn.dataset.mood;
+          
+          // Haptic feedback
+          if (navigator.vibrate) {
+            navigator.vibrate([10]);
+          }
+        });
+      });
+
+      // Tag buttons
+      const tagButtons = document.querySelectorAll('.tag-btn');
+      tagButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tag = btn.dataset.tag;
+          if (btn.classList.contains('selected')) {
+            btn.classList.remove('selected');
+            state.selectedTags = state.selectedTags.filter(t => t !== tag);
+          } else {
+            btn.classList.add('selected');
+            state.selectedTags.push(tag);
+          }
+        });
+      });
+
+      // Alert card click
+      const alertCard = document.querySelector('.alert-card');
+      if (alertCard) {
+        alertCard.addEventListener('click', () => {
+          alert('Pending Tasks Details:\n- Complete Homework: 95%\n- Prepare for Exam: 80%\n- Other Tasks: 60%');
+        });
+      }
+
+      // Priority Task Card interactions
+      const priorityTaskCard = document.querySelector('.priority-task-card');
+      const startTaskBtn = document.getElementById('startTaskBtn');
+      
+      if (priorityTaskCard) {
+        // Card click - show task details
+        priorityTaskCard.addEventListener('click', (e) => {
+          // Don't trigger if clicking the action button
+          if (!e.target.closest('.task-action-btn')) {
+            const taskTitle = document.getElementById('priorityTaskTitle').textContent;
+            const taskDesc = document.getElementById('taskDescription').textContent;
+            const taskDue = document.getElementById('taskDueDate').textContent;
+            alert(`Task Details:\n\n${taskTitle}\n\n${taskDesc}\n\n${taskDue}\n\nClick "Start Now" to begin working on this task.`);
+          }
+        });
+      }
+
+      if (startTaskBtn) {
+        startTaskBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent card click
+          const taskTitle = document.getElementById('priorityTaskTitle').textContent;
+          alert(`Starting task: ${taskTitle}\n\nGood luck! You've got this! 💪`);
+          // In a real app, this would navigate to the task or open a task view
+        });
+      }
+
+      // Update task time remaining
+      function updateTaskTimeRemaining() {
+        const timeLeftEl = document.getElementById('taskTimeLeft');
+        if (timeLeftEl) {
+          // Mock time calculation - in real app, calculate from due date
+          const hours = Math.floor(Math.random() * 24);
+          const minutes = Math.floor(Math.random() * 60);
+          if (hours > 0) {
+            timeLeftEl.textContent = `⏰ ${hours}h ${minutes}m left`;
+          } else {
+            timeLeftEl.textContent = `⏰ ${minutes}m left`;
+            timeLeftEl.style.color = 'var(--neon3)';
+          }
+        }
+      }
+
+      // Update task progress
+      function updateTaskProgress() {
+        const progressBar = document.getElementById('taskProgressBar');
+        const progressText = document.getElementById('taskProgressText');
+        if (progressBar && progressText) {
+          // Mock progress - in real app, get from task data
+          const completed = Math.floor(Math.random() * 10) + 5; // 5-14
+          const total = 15;
+          const progress = Math.round((completed / total) * 100);
+          progressBar.style.width = `${progress}%`;
+          progressText.textContent = `${progress}% Complete · ${completed}/${total} questions`;
+        }
+      }
+
+      // Action button
+      const actionBtn = document.getElementById('actionButton');
+      if (actionBtn) {
+        actionBtn.addEventListener('click', () => {
+          const moodEmoji = {
+            great: '😊',
+            okay: '😐',
+            sad: '😔',
+            other: '?'
+          };
+          const moodText = {
+            great: 'Great',
+            okay: 'Okay',
+            sad: 'Not Great',
+            other: 'Other'
+          };
+          
+          const message = `Status saved:\nMood: ${moodEmoji[state.selectedMood] || '?'} ${moodText[state.selectedMood] || 'Not Selected'}\nTags: ${state.selectedTags.length > 0 ? state.selectedTags.join(', ') : 'None'}\nTime: ${document.getElementById('currentTime').textContent}`;
+          
+          alert(message);
+          
+          // Show success feedback
+          actionBtn.textContent = '✓ Saved';
+          actionBtn.style.background = 'linear-gradient(135deg, var(--neon2), var(--neon))';
+          
+          setTimeout(() => {
+            actionBtn.textContent = 'Continue';
+            actionBtn.style.background = 'linear-gradient(135deg, var(--neon), var(--neon2))';
+          }, 2000);
+        });
+      }
+
+      // Update last activity
+      const lastActivityEl = document.getElementById('lastActivity');
+      if (lastActivityEl) {
+        const updateLastActivity = () => {
+          const now = new Date();
+          const diff = Math.floor((now - state.lastActivity) / 1000 / 60); // minutes
+          if (diff < 1) {
+            lastActivityEl.textContent = 'Just now';
+          } else if (diff < 60) {
+            lastActivityEl.textContent = `${diff} ${diff === 1 ? 'minute' : 'minutes'} ago`;
+          } else {
+            const hours = Math.floor(diff / 60);
+            lastActivityEl.textContent = `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+          }
+        };
+        updateLastActivity();
+        setInterval(updateLastActivity, 60000);
+      }
+
+      // Update consecutive days
+      const consecutiveDaysEl = document.getElementById('consecutiveDays');
+      if (consecutiveDaysEl) {
+        consecutiveDaysEl.textContent = `${state.consecutiveDays} ${state.consecutiveDays === 1 ? 'day' : 'days'}`;
+      }
+    }
+
+    // Randomize progress bars for demo
+    function randomizeProgress() {
+      const alertBar = document.getElementById('alertProgressBar');
+      const recBar = document.getElementById('recProgressBar');
+      
+      if (alertBar) {
+        const alertValue = Math.floor(Math.random() * 20) + 80; // 80-100%
+        alertBar.style.width = `${alertValue}%`;
+        const alertText = alertBar.parentElement.nextElementSibling;
+        if (alertText) {
+          alertText.textContent = `${alertValue}% Complete`;
+        }
+      }
+      
+      if (recBar) {
+        const recValue = Math.floor(Math.random() * 30) + 50; // 50-80%
+        recBar.style.width = `${recValue}%`;
+      }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      init();
+      // Randomize progress every 5 seconds for demo
+      setInterval(randomizeProgress, 5000);
+      // Initialize task updates
+      updateTaskTimeRemaining();
+      updateTaskProgress();
+      // Update task time every minute
+      setInterval(updateTaskTimeRemaining, 60000);
+      // Update task progress every 10 seconds (slower than other updates)
+      setInterval(updateTaskProgress, 10000);
+    });
+  </script>
+
+ 
+</body>
+</html>

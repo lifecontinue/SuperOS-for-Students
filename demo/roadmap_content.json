@@ -1,0 +1,349 @@
+{
+  "roadmap": {
+    "stages": [
+      {
+        "stage_id": "stage_grade_9",
+        "name": "Grade 9: Foundation & Exploration",
+        "theme": "Laying the Cornerstone",
+        "status": "unlocked",
+        "progress": 30,
+        "associated_plant_stage": "Seed",
+        "icon": "🌱",
+        "description": "Establish academic foundations and explore interests",
+        "key_milestones": [
+          {
+            "milestone_id": "ms_0901",
+            "name": "Academic Foundation Plan",
+            "description": "Establish a strong academic plan and select foundational courses for your high school journey.",
+            "category": "Academic",
+            "status": "completed",
+            "deadline": null,
+            "triggers_achievement": "ach_foundation_pioneer",
+            "quest_category": "portfolio"
+          },
+          {
+            "milestone_id": "ms_0902",
+            "name": "Initial Extracurricular Mapping",
+            "description": "Explore and engage in initial extracurricular activities to discover your passions.",
+            "category": "Personal Growth",
+            "status": "in_progress",
+            "deadline": null,
+            "quest_category": "portfolio"
+          },
+          {
+            "milestone_id": "ms_0903",
+            "name": "Build Academic Relationships",
+            "description": "Connect with teachers and mentors who can support your journey.",
+            "category": "Personal Growth",
+            "status": "pending",
+            "deadline": null,
+            "quest_category": "recommenders"
+          }
+        ]
+      },
+      {
+        "stage_id": "stage_grade_10",
+        "name": "Grade 10: Deepening & Growth",
+        "theme": "Branching Out",
+        "status": "unlocked",
+        "progress": 15,
+        "associated_plant_stage": "Sprout",
+        "icon": "🌿",
+        "description": "Deepen commitments and build leadership",
+        "key_milestones": [
+          {
+            "milestone_id": "ms_1001",
+            "name": "Comprehensive GAP Analysis",
+            "description": "Conduct a detailed analysis of your academic and extracurricular profile to identify strengths and areas for development.",
+            "category": "Strategic Planning",
+            "status": "pending",
+            "deadline": null,
+            "triggers_achievement": "ach_strategic_thinker",
+            "quest_category": "portfolio"
+          },
+          {
+            "milestone_id": "ms_1002",
+            "name": "Leadership Roles",
+            "description": "Take on leadership positions in clubs or activities.",
+            "category": "Personal Growth",
+            "status": "pending",
+            "deadline": null,
+            "quest_category": "portfolio"
+          },
+          {
+            "milestone_id": "ms_1003",
+            "name": "PSAT Preparation",
+            "description": "Prepare for and take the PSAT to establish baseline scores.",
+            "category": "Academic",
+            "status": "pending",
+            "deadline": "2024-10-15",
+            "deadline_sensitive": true,
+            "quest_category": "tests"
+          }
+        ]
+      },
+      {
+        "stage_id": "stage_grade_11",
+        "name": "Grade 11: Intensity & Achievement",
+        "theme": "Reaching for the Sun",
+        "status": "locked",
+        "progress": 0,
+        "associated_plant_stage": "Flowering",
+        "icon": "🌺",
+        "description": "Demonstrate excellence and commitment",
+        "key_milestones": [
+          {
+            "milestone_id": "ms_1101",
+            "name": "Standardized Testing Mastery",
+            "description": "Prepare for and achieve target scores on standardized tests like the SAT or ACT.",
+            "category": "Academic",
+            "status": "pending",
+            "deadline": "2025-06-01",
+            "deadline_sensitive": true,
+            "quest_category": "tests"
+          },
+          {
+            "milestone_id": "ms_1102",
+            "name": "Capstone Project Completion",
+            "description": "Complete a significant, long-term project that showcases your passion and skills in a chosen area.",
+            "category": "Personal Growth",
+            "status": "pending",
+            "deadline": null,
+            "triggers_achievement": "ach_capstone_champion",
+            "quest_category": "portfolio"
+          },
+          {
+            "milestone_id": "ms_1103",
+            "name": "Teacher Recommendations",
+            "description": "Secure strong recommendation letters from teachers and counselors.",
+            "category": "Strategic Planning",
+            "status": "pending",
+            "deadline": null,
+            "quest_category": "recommenders"
+          },
+          {
+            "milestone_id": "ms_1104",
+            "name": "College Research & Visits",
+            "description": "Research and visit colleges to refine your list.",
+            "category": "Strategic Planning",
+            "status": "pending",
+            "deadline": null,
+            "quest_category": "applications"
+          }
+        ]
+      },
+      {
+        "stage_id": "stage_grade_12",
+        "name": "Grade 12: Application & Submission",
+        "theme": "Harvesting Success",
+        "status": "locked",
+        "progress": 0,
+        "associated_plant_stage": "Fruit",
+        "icon": "🍎",
+        "description": "Complete applications and submit to colleges",
+        "key_milestones": [
+          {
+            "milestone_id": "ms_1201",
+            "name": "Finalized College List & Strategy",
+            "description": "Curate and finalize a balanced list of target, reach, and safety schools.",
+            "category": "Strategic Planning",
+            "status": "pending",
+            "deadline": "2025-08-01",
+            "quest_category": "applications"
+          },
+          {
+            "milestone_id": "ms_1202",
+            "name": "Personal Statement & Essays",
+            "description": "Write compelling personal statements and supplemental essays.",
+            "category": "Execution",
+            "status": "pending",
+            "deadline": "2025-10-15",
+            "deadline_sensitive": true,
+            "triggers_achievement": "ach_essay_master",
+            "quest_category": "essays"
+          },
+          {
+            "milestone_id": "ms_1203",
+            "name": "Application Submission",
+            "description": "Successfully prepare and submit all components of your college applications.",
+            "category": "Execution",
+            "status": "pending",
+            "deadline": "2025-12-31",
+            "dependency_sensitive": true,
+            "triggers_achievement": "ach_application_voyager",
+            "quest_category": "applications"
+          },
+          {
+            "milestone_id": "ms_1204",
+            "name": "Financial Aid Applications",
+            "description": "Complete FAFSA and CSS Profile applications.",
+            "category": "Execution",
+            "status": "pending",
+            "deadline": "2025-12-31",
+            "deadline_sensitive": true,
+            "quest_category": "applications"
+          }
+        ]
+      }
+    ],
+    "achievements": [
+      {
+        "achievement_id": "ach_foundation_pioneer",
+        "name": "Foundation Pioneer",
+        "description": "Successfully established your 4-year academic and activity plan.",
+        "category": "Planning",
+        "icon_locked": "🔒",
+        "icon_unlocked": "🎯",
+        "unlocked": false,
+        "unlock_animation": "confetti_fall",
+        "unlock_sound": "ding.mp3"
+      },
+      {
+        "achievement_id": "ach_strategic_thinker",
+        "name": "Strategic Thinker",
+        "description": "Completed a comprehensive GAP analysis of your profile.",
+        "category": "Analysis",
+        "icon_locked": "🔒",
+        "icon_unlocked": "🧠",
+        "unlocked": false,
+        "unlock_animation": "confetti_fall",
+        "unlock_sound": "ding.mp3"
+      },
+      {
+        "achievement_id": "ach_test_master",
+        "name": "Test Master",
+        "description": "Achieved your target score on standardized tests.",
+        "category": "Academic",
+        "icon_locked": "🔒",
+        "icon_unlocked": "📊",
+        "unlocked": false,
+        "unlock_animation": "confetti_fall",
+        "unlock_sound": "ding.mp3"
+      },
+      {
+        "achievement_id": "ach_capstone_champion",
+        "name": "Capstone Champion",
+        "description": "Successfully completed a major capstone project.",
+        "category": "Excellence",
+        "icon_locked": "🔒",
+        "icon_unlocked": "🏆",
+        "unlocked": false,
+        "unlock_animation": "confetti_fall",
+        "unlock_sound": "ding.mp3"
+      },
+      {
+        "achievement_id": "ach_essay_master",
+        "name": "Essay Master",
+        "description": "Completed all application essays with excellence.",
+        "category": "Writing",
+        "icon_locked": "🔒",
+        "icon_unlocked": "✍️",
+        "unlocked": false,
+        "unlock_animation": "confetti_fall",
+        "unlock_sound": "ding.mp3"
+      },
+      {
+        "achievement_id": "ach_application_voyager",
+        "name": "Application Voyager",
+        "description": "Submitted your first complete college application.",
+        "category": "Milestone",
+        "icon_locked": "🔒",
+        "icon_unlocked": "🚀",
+        "unlocked": false,
+        "unlock_animation": "confetti_fall",
+        "unlock_sound": "ding.mp3"
+      },
+      {
+        "achievement_id": "ach_perfect_application",
+        "name": "Perfect Application",
+        "description": "Submitted applications to all target schools.",
+        "category": "Milestone",
+        "icon_locked": "🔒",
+        "icon_unlocked": "⭐",
+        "unlocked": false,
+        "unlock_animation": "confetti_fall",
+        "unlock_sound": "ding.mp3"
+      }
+    ],
+    "risk_modes": {
+      "low": {
+        "level": "Low Risk",
+        "color_code": "#3498db",
+        "animation": "pulse",
+        "threshold": { "min": 0, "max": 29 },
+        "message": "You're on track! Keep up the great work.",
+        "icon": "✓"
+      },
+      "medium": {
+        "level": "Medium Risk",
+        "color_code": "#f1c40f",
+        "animation": "breathing_light",
+        "threshold": { "min": 30, "max": 59 },
+        "message": "Some areas need attention. Review your timeline.",
+        "icon": "⚠"
+      },
+      "high": {
+        "level": "High Risk",
+        "color_code": "#e74c3c",
+        "animation": "vibration_alert",
+        "threshold": { "min": 60, "max": 100 },
+        "message": "Urgent action needed. Focus on critical deadlines.",
+        "icon": "🚨"
+      }
+    },
+    "quest_categories": {
+      "tests": {
+        "name": "Standardized Tests",
+        "icon": "📝",
+        "description": "SAT, ACT, AP exams and test preparation"
+      },
+      "recommenders": {
+        "name": "Recommendations",
+        "icon": "🤝",
+        "description": "Teacher and counselor recommendations"
+      },
+      "essays": {
+        "name": "Essays",
+        "icon": "✍️",
+        "description": "Personal statements and supplemental essays"
+      },
+      "portfolio": {
+        "name": "Portfolio",
+        "icon": "📚",
+        "description": "Activities, projects, and achievements"
+      },
+      "applications": {
+        "name": "Applications",
+        "icon": "📋",
+        "description": "College applications and submissions"
+      }
+    },
+    "plant_stages": {
+      "Seed": {
+        "icon": "🌱",
+        "description": "Newly planted - just starting your journey",
+        "progress_threshold": 0
+      },
+      "Sprout": {
+        "icon": "🌿",
+        "description": "Growing strong - making progress",
+        "progress_threshold": 25
+      },
+      "Flowering": {
+        "icon": "🌺",
+        "description": "Blooming - showing your potential",
+        "progress_threshold": 50
+      },
+      "Fruit": {
+        "icon": "🍎",
+        "description": "Fruiting - ready for harvest",
+        "progress_threshold": 75
+      },
+      "Harvest": {
+        "icon": "🌟",
+        "description": "Harvested - applications submitted!",
+        "progress_threshold": 100
+      }
+    }
+  }
+}

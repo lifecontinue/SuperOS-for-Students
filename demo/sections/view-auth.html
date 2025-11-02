@@ -1,0 +1,26 @@
+<!-- Auth View -->
+<section id="view-auth" class="view">
+  <div class="card">
+    <h2>Sign In / Sign Up</h2>
+    <div class="tabs small" role="tablist">
+      <button class="tab small active" data-auth="emailCode" data-auth-mode="signup">Sign Up · Email + Code</button>
+      <button class="tab small" data-auth="emailPass" data-auth-mode="login">Sign In · Email + Password</button>
+    </div>
+    <div id="auth-emailCode" class="auth-pane active">
+      <div class="form">
+        <input id="emailCodeEmail" placeholder="Email" inputmode="email" />
+        <div class="form inline">
+          <input id="emailCodeInput" placeholder="Verification code (e.g. 123456)" />
+          <button id="btnSendCode">Send code</button>
+        </div>
+        <button id="btnVerifyCode">Verify & Continue</button>
+      </div>
+    </div>
+
+    <div class="divider">or</div>
+    <div class="center-row">
+      <button id="btnGoogle" class="btn-google" type="button">Continue with Google</button>
+    </div>
+    <div id="authStatus" class="muted"></div>
+  </div>
+</section>

@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Task List - SuperOS for Students</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .milestone-carousel {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .milestone-carousel-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .milestone-slider {
+      display: flex;
+      transition: transform 0.3s ease;
+      gap: 16px;
+    }
+
+    .milestone-card {
+      min-width: 100%;
+      background: rgba(11,19,43,0.7);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+
+    .milestone-card.active {
+      border-color: var(--neon);
+      box-shadow: 0 0 20px rgba(110,168,254,0.3);
+    }
+
+    .milestone-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .milestone-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+      flex: 1;
+    }
+
+    .milestone-status {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .milestone-status.not-started {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-muted);
+    }
+
+    .milestone-status.in-progress {
+      background: rgba(110,168,254,0.2);
+      color: var(--neon);
+    }
+
+    .milestone-status.completed {
+      background: rgba(126,231,135,0.2);
+      color: var(--neon2);
+    }
+
+    .milestone-progress {
+      margin-bottom: 12px;
+    }
+
+    .milestone-progress-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .milestone-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon), var(--neon2));
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .milestone-progress-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .milestone-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .milestone-nav-btn {
+      background: rgba(110,168,254,0.15);
+      border: 1px solid rgba(110,168,254,0.3);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .milestone-nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .milestone-nav-btn:not(:disabled):active {
+      background: rgba(110,168,254,0.25);
+      transform: scale(0.98);
+    }
+
+    .milestone-counter {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .tasks-container {
+      margin-top: 20px;
+    }
+
+    .tasks-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .tasks-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .task-bubble {
+      position: relative;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(11,19,43,0.7);
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+    }
+
+    .task-bubble::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-right: 8px solid var(--border);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .task-bubble.has-prev::before {
+      opacity: 1;
+    }
+
+    .task-bubble::after {
+      content: '';
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 8px solid var(--border);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .task-bubble.has-next::after {
+      opacity: 1;
+    }
+
+    .task-bubble:active {
+      transform: scale(0.98);
+    }
+
+    /* Task Types */
+    .task-bubble.type-overview {
+      background: linear-gradient(135deg, rgba(110,168,254,0.15), rgba(110,168,254,0.05));
+      border-color: rgba(110,168,254,0.3);
+    }
+
+    .task-bubble.type-execution {
+      background: linear-gradient(135deg, rgba(126,231,135,0.15), rgba(126,231,135,0.05));
+      border-color: rgba(126,231,135,0.3);
+    }
+
+    .task-bubble.type-summary {
+      background: linear-gradient(135deg, rgba(255,154,169,0.15), rgba(255,154,169,0.05));
+      border-color: rgba(255,154,169,0.3);
+    }
+
+    /* Task Status */
+    .task-bubble.status-pending {
+      opacity: 0.6;
+    }
+
+    .task-bubble.status-in-progress {
+      border-color: var(--neon);
+      box-shadow: 0 0 12px rgba(110,168,254,0.2);
+    }
+
+    .task-bubble.status-completed {
+      border-color: var(--neon2);
+      opacity: 0.8;
+    }
+
+    .task-bubble.status-completed .task-title {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .task-title-wrapper {
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 4px 0;
+    }
+
+    .task-type-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .task-type-badge.overview {
+      background: rgba(110,168,254,0.2);
+      color: var(--neon);
+    }
+
+    .task-type-badge.execution {
+      background: rgba(126,231,135,0.2);
+      color: var(--neon2);
+    }
+
+    .task-type-badge.summary {
+      background: rgba(255,154,169,0.2);
+      color: var(--neon3);
+    }
+
+    .task-status-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .task-status-icon.pending {
+      opacity: 0.4;
+    }
+
+    .task-status-icon.in-progress {
+      color: var(--neon);
+    }
+
+    .task-status-icon.completed {
+      color: var(--neon2);
+    }
+
+    .task-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .task-order {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+    }
+
+    .task-dependencies {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .task-dep-tag {
+      font-size: 11px;
+      color: var(--text-muted);
+      padding: 2px 6px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+    }
+
+    .task-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .task-action-btn {
+      background: rgba(110,168,254,0.15);
+      border: 1px solid rgba(110,168,254,0.3);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .task-action-btn:active {
+      background: rgba(110,168,254,0.25);
+      transform: scale(0.98);
+    }
+
+    .task-action-btn.complete {
+      background: rgba(126,231,135,0.15);
+      border-color: rgba(126,231,135,0.3);
+    }
+
+    .complete-milestone-btn {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(126,231,135,0.2), rgba(110,168,254,0.2));
+      border: 2px solid var(--neon2);
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      margin-top: 24px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .complete-milestone-btn:active {
+      transform: scale(0.98);
+      box-shadow: 0 0 20px rgba(126,231,135,0.4);
+    }
+
+    .complete-milestone-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .component-area {
+        padding: 16px;
+      }
+
+      .milestone-card {
+        padding: 16px;
+      }
+
+      .milestone-title {
+        font-size: 16px;
+      }
+
+      .task-bubble {
+        padding: 12px;
+      }
+
+      .task-title {
+        font-size: 14px;
+      }
+
+      .task-description {
+        font-size: 12px;
+      }
+
+      .milestone-nav-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>SuperOS for Students</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <!-- Milestone Carousel -->
+    <div class="milestone-carousel">
+      <div class="milestone-carousel-container">
+        <div class="milestone-slider" id="milestoneSlider">
+          <!-- Milestone 1 -->
+          <div class="milestone-card active" data-milestone="1">
+            <div class="milestone-card-header">
+              <h3 class="milestone-title">Milestone 1: Project Initiation</h3>
+              <span class="milestone-status in-progress">In Progress</span>
+            </div>
+            <div class="milestone-progress">
+              <div class="milestone-progress-bar">
+                <div class="milestone-progress-fill" style="width: 40%"></div>
+              </div>
+              <div class="milestone-progress-text">2 of 5 tasks completed</div>
+            </div>
+            <div class="milestone-nav">
+              <button class="milestone-nav-btn prev-btn" disabled>
+                <span>←</span>
+                <span>Previous</span>
+              </button>
+              <span class="milestone-counter">1 / 4</span>
+              <button class="milestone-nav-btn next-btn" onclick="switchMilestone(1)">
+                <span>Next</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Milestone 2 -->
+          <div class="milestone-card" data-milestone="2">
+            <div class="milestone-card-header">
+              <h3 class="milestone-title">Milestone 2: Research & Planning</h3>
+              <span class="milestone-status not-started">Not Started</span>
+            </div>
+            <div class="milestone-progress">
+              <div class="milestone-progress-bar">
+                <div class="milestone-progress-fill" style="width: 0%"></div>
+              </div>
+              <div class="milestone-progress-text">0 of 6 tasks completed</div>
+            </div>
+            <div class="milestone-nav">
+              <button class="milestone-nav-btn prev-btn" onclick="switchMilestone(0)">
+                <span>←</span>
+                <span>Previous</span>
+              </button>
+              <span class="milestone-counter">2 / 4</span>
+              <button class="milestone-nav-btn next-btn" onclick="switchMilestone(2)">
+                <span>Next</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Milestone 3 -->
+          <div class="milestone-card" data-milestone="3">
+            <div class="milestone-card-header">
+              <h3 class="milestone-title">Milestone 3: Execution & Development</h3>
+              <span class="milestone-status not-started">Not Started</span>
+            </div>
+            <div class="milestone-progress">
+              <div class="milestone-progress-bar">
+                <div class="milestone-progress-fill" style="width: 0%"></div>
+              </div>
+              <div class="milestone-progress-text">0 of 8 tasks completed</div>
+            </div>
+            <div class="milestone-nav">
+              <button class="milestone-nav-btn prev-btn" onclick="switchMilestone(1)">
+                <span>←</span>
+                <span>Previous</span>
+              </button>
+              <span class="milestone-counter">3 / 4</span>
+              <button class="milestone-nav-btn next-btn" onclick="switchMilestone(3)">
+                <span>Next</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Milestone 4 -->
+          <div class="milestone-card" data-milestone="4">
+            <div class="milestone-card-header">
+              <h3 class="milestone-title">Milestone 4: Finalization & Presentation</h3>
+              <span class="milestone-status not-started">Not Started</span>
+            </div>
+            <div class="milestone-progress">
+              <div class="milestone-progress-bar">
+                <div class="milestone-progress-fill" style="width: 0%"></div>
+              </div>
+              <div class="milestone-progress-text">0 of 5 tasks completed</div>
+            </div>
+            <div class="milestone-nav">
+              <button class="milestone-nav-btn prev-btn" onclick="switchMilestone(2)">
+                <span>←</span>
+                <span>Previous</span>
+              </button>
+              <span class="milestone-counter">4 / 4</span>
+              <button class="milestone-nav-btn next-btn" disabled>
+                <span>Next</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tasks Container -->
+    <div class="card">
+      <div class="tasks-header">
+        <h2>Tasks</h2>
+      </div>
+
+      <div class="task-list" id="taskList">
+        <!-- Overview Task -->
+        <div class="task-bubble type-overview status-completed has-next" data-task="overview">
+          <div class="task-header">
+            <div class="task-title-wrapper">
+              <h4 class="task-title">Project Overview</h4>
+              <span class="task-type-badge overview">Overview</span>
+            </div>
+            <span class="task-status-icon completed">✓</span>
+          </div>
+          <p class="task-description">
+            Understand the project scope, objectives, and requirements. Review the capstone project guidelines and set initial goals.
+          </p>
+          <div class="task-meta">
+            <span class="task-order">Task 1</span>
+            <div class="task-dependencies"></div>
+          </div>
+        </div>
+
+        <!-- Execution Tasks -->
+        <div class="task-bubble type-execution status-in-progress has-prev has-next" data-task="exec-1">
+          <div class="task-header">
+            <div class="task-title-wrapper">
+              <h4 class="task-title">Define Research Question</h4>
+              <span class="task-type-badge execution">Execution</span>
+            </div>
+            <span class="task-status-icon in-progress">◐</span>
+          </div>
+          <p class="task-description">
+            Formulate a clear, focused research question that addresses a real-world problem in your field of interest.
+          </p>
+          <div class="task-meta">
+            <span class="task-order">Task 2</span>
+            <div class="task-dependencies">
+              <span class="task-dep-tag">← Task 1</span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="task-action-btn">View Details</button>
+            <button class="task-action-btn complete">Mark Complete</button>
+          </div>
+        </div>
+
+        <div class="task-bubble type-execution status-pending has-prev has-next" data-task="exec-2">
+          <div class="task-header">
+            <div class="task-title-wrapper">
+              <h4 class="task-title">Conduct Literature Review</h4>
+              <span class="task-type-badge execution">Execution</span>
+            </div>
+            <span class="task-status-icon pending">○</span>
+          </div>
+          <p class="task-description">
+            Research existing academic sources, identify gaps in current knowledge, and analyze relevant studies related to your topic.
+          </p>
+          <div class="task-meta">
+            <span class="task-order">Task 3</span>
+            <div class="task-dependencies">
+              <span class="task-dep-tag">← Task 2</span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="task-action-btn">View Details</button>
+            <button class="task-action-btn complete">Mark Complete</button>
+          </div>
+        </div>
+
+        <div class="task-bubble type-execution status-pending has-prev has-next" data-task="exec-3">
+          <div class="task-header">
+            <div class="task-title-wrapper">
+              <h4 class="task-title">Develop Research Methodology</h4>
+              <span class="task-type-badge execution">Execution</span>
+            </div>
+            <span class="task-status-icon pending">○</span>
+          </div>
+          <p class="task-description">
+            Design your research approach, select appropriate methods for data collection, and establish ethical guidelines.
+          </p>
+          <div class="task-meta">
+            <span class="task-order">Task 4</span>
+            <div class="task-dependencies">
+              <span class="task-dep-tag">← Task 3</span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="task-action-btn">View Details</button>
+            <button class="task-action-btn complete">Mark Complete</button>
+          </div>
+        </div>
+
+        <div class="task-bubble type-execution status-pending has-prev has-next" data-task="exec-4">
+          <div class="task-header">
+            <div class="task-title-wrapper">
+              <h4 class="task-title">Collect Initial Data</h4>
+              <span class="task-type-badge execution">Execution</span>
+            </div>
+            <span class="task-status-icon pending">○</span>
+          </div>
+          <p class="task-description">
+            Begin gathering data according to your research methodology. Document your process and maintain research integrity.
+          </p>
+          <div class="task-meta">
+            <span class="task-order">Task 5</span>
+            <div class="task-dependencies">
+              <span class="task-dep-tag">← Task 4</span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="task-action-btn">View Details</button>
+            <button class="task-action-btn complete">Mark Complete</button>
+          </div>
+        </div>
+
+        <!-- Summary Task -->
+        <div class="task-bubble type-summary status-pending has-prev" data-task="summary">
+          <div class="task-header">
+            <div class="task-title-wrapper">
+              <h4 class="task-title">Milestone 1 Summary</h4>
+              <span class="task-type-badge summary">Summary</span>
+            </div>
+            <span class="task-status-icon pending">○</span>
+          </div>
+          <p class="task-description">
+            Review and summarize your progress in Milestone 1. Reflect on achievements, challenges, and prepare for the next milestone.
+          </p>
+          <div class="task-meta">
+            <span class="task-order">Task 6</span>
+            <div class="task-dependencies">
+              <span class="task-dep-tag">← Task 5</span>
+            </div>
+          </div>
+          <div class="task-actions">
+            <button class="task-action-btn">View Details</button>
+            <button class="task-action-btn complete">Mark Complete</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="complete-milestone-btn" id="completeMilestoneBtn" disabled>
+        <span>✓</span>
+        <span>Complete Milestone 1</span>
+      </button>
+    </div>
+  </main>
+
+  <script>
+    let currentMilestone = 0;
+    const totalMilestones = 4;
+
+    function switchMilestone(index) {
+      if (index < 0 || index >= totalMilestones) return;
+      
+      const slider = document.getElementById('milestoneSlider');
+      const cards = document.querySelectorAll('.milestone-card');
+      const prevBtns = document.querySelectorAll('.prev-btn');
+      const nextBtns = document.querySelectorAll('.next-btn');
+      
+      currentMilestone = index;
+      slider.style.transform = `translateX(-${index * 100}%)`;
+      
+      cards.forEach((card, i) => {
+        card.classList.toggle('active', i === index);
+      });
+
+      // Update button states based on current milestone
+      prevBtns.forEach(btn => {
+        btn.disabled = index === 0;
+      });
+
+      nextBtns.forEach(btn => {
+        btn.disabled = index === totalMilestones - 1;
+      });
+
+      loadTasksForMilestone(index + 1);
+    }
+
+    function loadTasksForMilestone(milestoneNum) {
+      // Update task list for the selected milestone
+      // This would typically load from a data source
+      console.log(`Loading tasks for milestone ${milestoneNum}`);
+      
+      // Update complete button text
+      const completeBtn = document.getElementById('completeMilestoneBtn');
+      if (completeBtn) {
+        completeBtn.innerHTML = `<span>✓</span><span>Complete Milestone ${milestoneNum}</span>`;
+      }
+    }
+
+    // Initialize navigation buttons
+    document.addEventListener('DOMContentLoaded', function() {
+      const prevBtns = document.querySelectorAll('.prev-btn');
+      const nextBtns = document.querySelectorAll('.next-btn');
+      
+      prevBtns[0].disabled = true;
+      nextBtns[totalMilestones - 1].disabled = true;
+    });
+
+    // Task completion logic
+    function setupTaskActions() {
+      const completeButtons = document.querySelectorAll('.task-action-btn.complete');
+      completeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const taskBubble = this.closest('.task-bubble');
+          const taskId = taskBubble.dataset.task;
+          
+          // Update task status
+          taskBubble.classList.remove('status-pending', 'status-in-progress');
+          taskBubble.classList.add('status-completed');
+          
+          // Update icon
+          const icon = taskBubble.querySelector('.task-status-icon');
+          icon.textContent = '✓';
+          icon.classList.remove('pending', 'in-progress');
+          icon.classList.add('completed');
+          
+          // Check if all tasks are completed
+          checkMilestoneCompletion();
+        });
+      });
+    }
+
+    function checkMilestoneCompletion() {
+      const tasks = document.querySelectorAll('.task-bubble');
+      const completedTasks = document.querySelectorAll('.task-bubble.status-completed');
+      
+      if (tasks.length === completedTasks.length) {
+        const completeBtn = document.getElementById('completeMilestoneBtn');
+        completeBtn.disabled = false;
+        completeBtn.addEventListener('click', function() {
+          if (currentMilestone < totalMilestones - 1) {
+            switchMilestone(currentMilestone + 1);
+            // Reset tasks for new milestone
+            const newTasks = document.querySelectorAll('.task-bubble');
+            newTasks.forEach(task => {
+              task.classList.remove('status-completed');
+              task.classList.add('status-pending');
+              const icon = task.querySelector('.task-status-icon');
+              icon.textContent = '○';
+              icon.classList.remove('completed');
+              icon.classList.add('pending');
+            });
+            completeBtn.disabled = true;
+          }
+        });
+      }
+    }
+
+    // Initialize
+    updateMilestoneNav();
+    setupTaskActions();
+  </script>
+</body>
+</html>
+

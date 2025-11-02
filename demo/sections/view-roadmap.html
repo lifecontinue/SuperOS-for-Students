@@ -1,0 +1,3794 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Roadmap View - SuperOS for Students</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Override view.active to show roadmap by default */
+    #view-roadmap {
+      display: block !important;
+    }
+    /* Ensure profile-nav is visible */
+    .profile-nav {
+      display: block !important;
+    }
+    
+    /* Roadmap-specific styles */
+    .roadmap-view {
+      padding-bottom: 24px;
+    }
+    
+    .goal-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .goal-form input {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    .goal-form button {
+      padding: 10px 20px;
+      white-space: nowrap;
+    }
+    
+    .list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .list li {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+    
+    .list li:hover {
+      background: rgba(110, 168, 254, 0.1);
+      border-color: rgba(110, 168, 254, 0.3);
+    }
+    
+    .list li span {
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    .timeline-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .timeline-column {
+      background: rgba(11, 19, 43, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    
+    .timeline-column h4 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neon);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .node {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .node:hover {
+      background: rgba(110, 168, 254, 0.15);
+      border-color: rgba(110, 168, 254, 0.4);
+      transform: translateX(4px);
+    }
+    
+    .node.done {
+      opacity: 0.6;
+      border-color: rgba(126, 231, 135, 0.4);
+    }
+    
+    .node.done::before {
+      content: '✓ ';
+      color: var(--neon2);
+      font-weight: bold;
+    }
+    
+    .node strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    .node .meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    .node .tags {
+      margin-top: 8px;
+    }
+    
+    .badge-achv {
+      display: inline-block;
+      padding: 4px 8px;
+      background: rgba(126, 231, 135, 0.2);
+      border: 1px solid rgba(126, 231, 135, 0.4);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--neon2);
+      font-weight: 500;
+    }
+    
+    .sheet {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      padding: 24px;
+      max-height: 80vh;
+      overflow-y: auto;
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .sheet:not(.hidden) {
+      transform: translateY(0);
+    }
+    
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .sheet-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .sheet-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .sheet-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+    
+    .sheet-content {
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    
+    .sheet-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+    
+    .stages-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .stage-card {
+      background: rgba(11, 19, 43, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .stage-card:hover {
+      border-color: rgba(110, 168, 254, 0.4);
+      box-shadow: 0 4px 16px rgba(110, 168, 254, 0.2);
+    }
+    
+    .stage-card.locked {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    .stage-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .stage-icon {
+      font-size: 32px;
+      filter: drop-shadow(0 0 8px rgba(110, 168, 254, 0.5));
+    }
+    
+    .stage-info {
+      flex: 1;
+    }
+    
+    .stage-info h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .stage-theme {
+      font-size: 13px;
+      color: var(--neon);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    
+    .stage-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    
+    .stage-progress {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    
+    .progress-bar {
+      width: 100px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon), var(--neon2));
+      transition: width 0.3s ease;
+    }
+    
+    .progress-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    .stage-milestones {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .milestones-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    .locked-badge {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+    
+    .milestones-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .milestone-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .milestone-item:hover {
+      background: rgba(110, 168, 254, 0.1);
+      border-color: rgba(110, 168, 254, 0.3);
+    }
+    
+    .milestone-item.completed {
+      opacity: 0.7;
+      border-color: rgba(126, 231, 135, 0.4);
+    }
+    
+    .milestone-item.deadline-sensitive {
+      border-left: 3px solid var(--neon3);
+    }
+    
+    .milestone-status {
+      font-size: 18px;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    
+    .milestone-item.completed .milestone-status {
+      color: var(--neon2);
+    }
+    
+    .milestone-content {
+      flex: 1;
+    }
+    
+    .milestone-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .milestone-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    
+    .milestone-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .milestone-category,
+    .quest-category {
+      font-size: 11px;
+      padding: 4px 8px;
+      background: rgba(110, 168, 254, 0.15);
+      border: 1px solid rgba(110, 168, 254, 0.3);
+      border-radius: 4px;
+      color: var(--text);
+    }
+    
+    /* Achievement Panel Styles */
+    .achievement-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .achievement-stats {
+      font-size: 14px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .achievement-stats #unlockedCount {
+      color: var(--neon2);
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .achievement-carousel-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .achievement-nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(110, 168, 254, 0.15);
+      border: 1px solid rgba(110, 168, 254, 0.3);
+      color: var(--neon);
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    
+    .achievement-nav-btn:hover {
+      background: rgba(110, 168, 254, 0.25);
+      border-color: var(--neon);
+      box-shadow: 0 0 12px rgba(110, 168, 254, 0.4);
+      transform: scale(1.1);
+    }
+    
+    .achievement-nav-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .achievement-nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    
+    .achievement-carousel {
+      display: flex;
+      gap: 16px;
+      overflow-x: hidden;
+      overflow-y: visible;
+      padding: 12px 0;
+      scroll-behavior: smooth;
+      flex: 1;
+      position: relative;
+      min-height: 180px;
+      cursor: grab;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .achievement-carousel:active {
+      cursor: grabbing;
+    }
+    
+    .achievement-badge {
+      min-width: 160px;
+      max-width: 160px;
+      padding: 20px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid var(--border-light);
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .achievement-badge::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.1), rgba(126, 231, 135, 0.05));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .achievement-badge:hover {
+      transform: translateY(-4px) scale(1.02);
+      border-color: rgba(110, 168, 254, 0.5);
+      box-shadow: 0 8px 24px rgba(110, 168, 254, 0.3);
+    }
+    
+    .achievement-badge:hover::before {
+      opacity: 1;
+    }
+    
+    .achievement-badge.unlocked {
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.25), rgba(126, 231, 135, 0.2));
+      border-color: var(--neon);
+      box-shadow: 0 4px 16px rgba(110, 168, 254, 0.4);
+      animation: achievementGlow 2s ease-in-out infinite;
+    }
+    
+    .achievement-badge.unlocked::after {
+      content: '✨';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 16px;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes achievementGlow {
+      0%, 100% {
+        box-shadow: 0 4px 16px rgba(110, 168, 254, 0.4);
+      }
+      50% {
+        box-shadow: 0 4px 24px rgba(110, 168, 254, 0.6), 0 0 40px rgba(126, 231, 135, 0.3);
+      }
+    }
+    
+    @keyframes sparkle {
+      0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+    
+    .achievement-badge.locked {
+      opacity: 0.5;
+      filter: grayscale(0.7);
+    }
+    
+    .achievement-badge.locked:hover {
+      opacity: 0.7;
+      filter: grayscale(0.5);
+    }
+    
+    .achievement-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      transition: transform 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-badge.unlocked .achievement-icon {
+      animation: iconBounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes iconBounce {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-4px) rotate(5deg);
+      }
+    }
+    
+    .achievement-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-badge.unlocked .achievement-title {
+      color: var(--neon);
+      text-shadow: 0 0 8px rgba(110, 168, 254, 0.5);
+    }
+    
+    .achievement-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-badge.unlocked .achievement-desc {
+      color: var(--text);
+    }
+    
+    .achievement-date {
+      font-size: 10px;
+      color: var(--neon2);
+      margin-top: 8px;
+      font-style: italic;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-rarity {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 2;
+    }
+    
+    .achievement-rarity.common {
+      background: rgba(110, 168, 254, 0.2);
+      color: var(--neon);
+      border: 1px solid rgba(110, 168, 254, 0.4);
+    }
+    
+    .achievement-rarity.rare {
+      background: rgba(126, 231, 135, 0.2);
+      color: var(--neon2);
+      border: 1px solid rgba(126, 231, 135, 0.4);
+    }
+    
+    .achievement-rarity.epic {
+      background: rgba(255, 154, 169, 0.2);
+      color: var(--neon3);
+      border: 1px solid rgba(255, 154, 169, 0.4);
+    }
+    
+    .achievement-rarity.legendary {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
+      color: #ffd700;
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+    
+    .achievement-progress {
+      width: 100%;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    
+    .achievement-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon), var(--neon2));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    
+    .achievement-progress-text {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-align: center;
+    }
+    
+    .achievement-points {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(110, 168, 254, 0.15);
+      border: 1px solid rgba(110, 168, 254, 0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--neon);
+      margin-top: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-badge.unlocked .achievement-points {
+      background: rgba(126, 231, 135, 0.2);
+      border-color: rgba(126, 231, 135, 0.4);
+      color: var(--neon2);
+    }
+    
+    .achievement-category {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    
+    .achievement-stat-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neon);
+    }
+    
+    .achievement-badge.unlocked .achievement-stat-value {
+      color: var(--neon2);
+    }
+    
+    .achievement-stat-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .achievement-milestone {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-style: italic;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .achievement-badge.locked .achievement-milestone {
+      color: var(--neon);
+      font-weight: 500;
+    }
+    
+    .achievement-carousel-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .achievement-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .achievement-indicator:hover {
+      background: rgba(110, 168, 254, 0.5);
+      transform: scale(1.2);
+    }
+    
+    .achievement-indicator.active {
+      background: var(--neon);
+      width: 24px;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(110, 168, 254, 0.6);
+    }
+    
+    .garden-container {
+      margin: 16px 0;
+    }
+    
+    .garden-carousel {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 12px 0;
+    }
+    
+    .plant-pot {
+      min-width: 120px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .plant-pot:hover {
+      transform: translateY(-4px);
+      border-color: rgba(110, 168, 254, 0.4);
+    }
+    
+    .plant-pot.wilted {
+      opacity: 0.5;
+      filter: grayscale(0.5);
+    }
+    
+    .plant-visual {
+      margin-bottom: 8px;
+    }
+    
+    .pot {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+    
+    .plant-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    
+    .plant-progress {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    
+    .garden-info {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(255, 154, 169, 0.1);
+      border: 1px solid rgba(255, 154, 169, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--neon3);
+    }
+    
+    /* Roadmap Neo Header */
+    .roadmap-neo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .roadmap-neo-header h3 {
+      margin: 0;
+    }
+    
+    .roadmap-stats {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    
+    .stat-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--neon);
+      line-height: 1;
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .roadmap-neo {
+      position: relative;
+      min-height: 400px;
+    }
+    
+    /* Garden Section */
+    .garden-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .garden-header h4 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    
+    .garden-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    
+    .hex-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+      padding: 16px 0;
+    }
+    
+    .hex-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .hex-container:hover {
+      transform: translateY(-4px);
+    }
+    
+    .hex-container:hover .hex {
+      transform: scale(1.1);
+      border-color: var(--neon);
+      box-shadow: 0 0 24px rgba(110, 168, 254, 0.6);
+    }
+    
+    .hex {
+      width: 70px;
+      height: 70px;
+      background: rgba(110, 168, 254, 0.15);
+      border: 2px solid rgba(110, 168, 254, 0.3);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: visible;
+    }
+    
+    .hex.active {
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.3), rgba(126, 231, 135, 0.2));
+      border-color: var(--neon);
+      box-shadow: 0 0 20px rgba(110, 168, 254, 0.5);
+    }
+    
+    .hex-icon {
+      font-size: 32px;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+    
+    .hex-progress-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px;
+      height: 70px;
+      z-index: 1;
+    }
+    
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+    
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.5s ease;
+    }
+    
+    .progress-ring-fill {
+      transition: stroke-dashoffset 0.5s ease;
+      stroke-linecap: round;
+    }
+    
+    .hex-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      margin-top: 4px;
+    }
+    
+    .hex-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .hex-progress-text {
+      font-size: 10px;
+      color: var(--neon);
+      font-weight: 500;
+    }
+    
+    .garden-summary {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+    
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .summary-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .summary-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--neon);
+    }
+    
+    /* Risk Dashboard Enhanced */
+    .risk-fab {
+      position: fixed;
+      bottom: 100px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon), var(--neon2));
+      border: none;
+      color: var(--bg);
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(110, 168, 254, 0.4);
+      z-index: 999;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .risk-fab .risk-indicator {
+      position: relative;
+      z-index: 2;
+    }
+    
+    .risk-pulse {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: inherit;
+      animation: riskPulse 2s ease-in-out infinite;
+      opacity: 0.6;
+    }
+    
+    @keyframes riskPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0;
+      }
+    }
+    
+    .risk-fab:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(110, 168, 254, 0.6);
+    }
+    
+    .risk-fab.risk-high {
+      background: linear-gradient(135deg, var(--neon3), #ff6b6b);
+    }
+    
+    .risk-fab.risk-medium {
+      background: linear-gradient(135deg, #ffd700, #ffb347);
+    }
+    
+    .risk-panel {
+      position: fixed;
+      bottom: 170px;
+      right: 24px;
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      min-width: 300px;
+      max-width: 350px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      z-index: 998;
+    }
+    
+    .risk-panel.hidden {
+      display: none;
+    }
+    
+    .risk-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .risk-panel-header h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    
+    .risk-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .risk-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+    
+    .radar {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 20px;
+      border: 2px solid var(--border-light);
+      border-radius: 50%;
+      background: rgba(11, 19, 43, 0.5);
+    }
+    
+    .radar-line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(110, 168, 254, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    
+    .radar-line-1 {
+      width: 80px;
+      height: 80px;
+    }
+    
+    .radar-line-2 {
+      width: 110px;
+      height: 110px;
+    }
+    
+    .radar-line-3 {
+      width: 140px;
+      height: 140px;
+      border: none;
+    }
+    
+    .dot {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--neon);
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 8px currentColor;
+      animation: dotPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes dotPulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.3);
+      }
+    }
+    
+    .dot.near {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--neon3);
+      color: var(--neon3);
+    }
+    
+    .dot.mid {
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      background: #ffd700;
+      color: #ffd700;
+    }
+    
+    .dot.far {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--neon);
+      color: var(--neon);
+    }
+    
+    .risk-content {
+      text-align: left;
+    }
+    
+    .risk-level {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: rgba(110, 168, 254, 0.1);
+      border: 1px solid rgba(110, 168, 254, 0.3);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .risk-level-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    
+    .risk-level-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--neon2);
+    }
+    
+    .risk-level-value.medium {
+      color: #ffd700;
+    }
+    
+    .risk-level-value.high {
+      color: var(--neon3);
+    }
+    
+    .microcopy {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 16px;
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+    }
+    
+    .risk-details {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .risk-metric {
+      flex: 1;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .metric-label {
+      display: block;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .metric-value {
+      display: block;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--neon);
+    }
+    
+    .risk-factors {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px 0;
+      text-align: left;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    
+    .risk-factors li {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border-light);
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.2s ease;
+    }
+    
+    .risk-factors li:hover {
+      background: rgba(110, 168, 254, 0.1);
+      padding-left: 16px;
+    }
+    
+    .risk-factors li:last-child {
+      border-bottom: none;
+    }
+    
+    .risk-factors::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .risk-factors::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .risk-factors::-webkit-scrollbar-thumb {
+      background: rgba(110, 168, 254, 0.3);
+      border-radius: 2px;
+    }
+    
+    .risk-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .risk-action-btn {
+      flex: 1;
+      padding: 10px;
+      background: rgba(110, 168, 254, 0.15);
+      border: 1px solid rgba(110, 168, 254, 0.3);
+      border-radius: 8px;
+      color: var(--neon);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .risk-action-btn:hover {
+      background: rgba(110, 168, 254, 0.25);
+      border-color: var(--neon);
+      transform: translateY(-2px);
+    }
+    
+    /* Quest Map Enhanced */
+    .quest-map {
+      margin: 32px 0;
+      position: relative;
+      min-height: 280px;
+    }
+    
+    .quest-map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .quest-map-header h4 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    
+    .quest-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .quest-progress-text {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    
+    .quest-progress-text #questProgressPercent {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--neon);
+    }
+    
+    .scroll {
+      position: relative;
+      width: 100%;
+      height: 240px;
+      background: linear-gradient(90deg, rgba(11, 19, 43, 0.8), rgba(110, 168, 254, 0.15), rgba(11, 19, 43, 0.8));
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .landmark {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 2;
+      padding: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(110, 168, 254, 0.3);
+      user-select: none;
+    }
+    
+    .landmark:hover {
+      transform: scale(1.15) translateY(-4px);
+      z-index: 3;
+      box-shadow: 0 8px 20px rgba(110, 168, 254, 0.5);
+    }
+    
+    .landmark.completed {
+      filter: drop-shadow(0 0 16px rgba(126, 231, 135, 0.8));
+      animation: completedPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes completedPulse {
+      0%, 100% {
+        box-shadow: 0 4px 12px rgba(126, 231, 135, 0.4);
+      }
+      50% {
+        box-shadow: 0 4px 20px rgba(126, 231, 135, 0.8);
+      }
+    }
+    
+    .landmark-icon {
+      font-size: 28px;
+      margin-bottom: 4px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+    
+    .landmark-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .landmark-progress {
+      font-size: 9px;
+      color: var(--neon2);
+      font-weight: 600;
+    }
+    
+    .landmark.completed .landmark-progress {
+      color: var(--neon2);
+      font-size: 14px;
+    }
+    
+    .landmark.castle {
+      top: 30px;
+      left: 8%;
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.4), rgba(110, 168, 254, 0.2));
+      border: 2px solid var(--neon);
+    }
+    
+    .landmark.mountain {
+      top: 30px;
+      left: 28%;
+      background: linear-gradient(135deg, rgba(126, 231, 135, 0.4), rgba(126, 231, 135, 0.2));
+      border: 2px solid var(--neon2);
+    }
+    
+    .landmark.volcano {
+      top: 30px;
+      left: 48%;
+      background: linear-gradient(135deg, rgba(255, 154, 169, 0.4), rgba(255, 154, 169, 0.2));
+      border: 2px solid var(--neon3);
+    }
+    
+    .landmark.library {
+      top: 30px;
+      left: 68%;
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.2));
+      border: 2px solid #ffd700;
+    }
+    
+    .landmark.gate {
+      top: 30px;
+      right: 8%;
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.4), rgba(110, 168, 254, 0.2));
+      border: 2px solid var(--neon);
+    }
+    
+    .journey-start,
+    .journey-end {
+      position: absolute;
+      bottom: 10px;
+      z-index: 1;
+    }
+    
+    .journey-start {
+      left: 4%;
+    }
+    
+    .journey-end {
+      right: 4%;
+    }
+    
+    .journey-marker {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    .quest-categories {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .quest-category-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      min-width: 100px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(110, 168, 254, 0.2);
+      user-select: none;
+    }
+    
+    .quest-category-item:hover {
+      background: rgba(110, 168, 254, 0.15);
+      border-color: rgba(110, 168, 254, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .quest-category-item.completed {
+      background: rgba(126, 231, 135, 0.15);
+      border-color: rgba(126, 231, 135, 0.4);
+    }
+    
+    .category-icon {
+      font-size: 20px;
+    }
+    
+    .category-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    .category-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    .category-progress {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    
+    .quest-category-item.completed .category-progress {
+      color: var(--neon2);
+    }
+    
+    .avatar {
+      position: absolute;
+      bottom: 30px;
+      left: 8%;
+      width: 50px;
+      height: 50px;
+      transition: left 0.5s ease;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .fox-icon {
+      font-size: 36px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+      animation: foxBounce 3s ease-in-out infinite;
+    }
+    
+    @keyframes foxBounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+    
+    .fox-trail {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(to top, rgba(110, 168, 254, 0.6), transparent);
+      border-radius: 2px;
+      animation: trailGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes trailGlow {
+      0%, 100% {
+        opacity: 0.4;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+    
+    .path {
+      position: absolute;
+      bottom: 40px;
+      left: 8%;
+      height: 8px;
+      background: linear-gradient(90deg, var(--neon), var(--neon2));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+      z-index: 1;
+    }
+    
+    .path.glow {
+      box-shadow: 0 0 20px rgba(110, 168, 254, 0.6);
+    }
+    
+    .avatar {
+      position: absolute;
+      bottom: 20px;
+      left: 8%;
+      width: 40px;
+      height: 40px;
+      font-size: 32px;
+      transition: left 0.5s ease;
+      z-index: 2;
+    }
+    
+    /* AI Buddy Enhanced */
+    .buddy {
+      position: relative;
+      margin: 32px 0;
+      text-align: center;
+      min-height: 180px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+    }
+    
+    .buddy-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .buddy-header h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+    
+    .buddy-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neon2);
+      animation: statusBlink 2s ease-in-out infinite;
+    }
+    
+    @keyframes statusBlink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    
+    .deer-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+    }
+    
+    .deer {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    
+    .deer:hover {
+      transform: scale(1.05);
+    }
+    
+    .deer .ear {
+      position: absolute;
+      width: 24px;
+      height: 28px;
+      background: linear-gradient(135deg, rgba(139, 69, 19, 0.9), rgba(160, 82, 45, 0.8));
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .deer .ear.left {
+      top: 0;
+      left: 12px;
+      transform: rotate(-25deg);
+    }
+    
+    .deer .ear.right {
+      top: 0;
+      right: 12px;
+      transform: rotate(25deg);
+    }
+    
+    .deer .face {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, rgba(255, 220, 177, 0.95), rgba(255, 200, 150, 0.9));
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .deer .eye {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #000;
+      border-radius: 50%;
+      top: 20px;
+    }
+    
+    .deer .eye.left {
+      left: 18px;
+    }
+    
+    .deer .eye.right {
+      right: 18px;
+    }
+    
+    .deer .nose {
+      position: absolute;
+      width: 6px;
+      height: 8px;
+      background: #ff69b4;
+      border-radius: 50% 50% 60% 60%;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    
+    .deer .body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 30px;
+      background: linear-gradient(135deg, rgba(139, 69, 19, 0.8), rgba(160, 82, 45, 0.7));
+      border-radius: 25px 25px 0 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .deer-pulse {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border: 2px solid rgba(110, 168, 254, 0.3);
+      border-radius: 50%;
+      animation: deerPulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes deerPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.3;
+      }
+    }
+    
+    .deer-alert .ear {
+      animation: alertEar 0.5s ease infinite;
+    }
+    
+    .deer-celebrate {
+      animation: celebrate 1s ease infinite;
+    }
+    
+    @keyframes alertEar {
+      0%, 100% { transform: rotate(-25deg); }
+      50% { transform: rotate(-15deg); }
+    }
+    
+    @keyframes celebrate {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .bubble {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(11, 19, 43, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0;
+      max-width: 320px;
+      width: 90%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+    }
+    
+    .bubble.hidden {
+      display: none;
+    }
+    
+    .bubble-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .bubble-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--neon);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .bubble-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .bubble-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+    
+    .bubble span {
+      display: block;
+      padding: 16px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    
+    .bubble-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .bubble-btn {
+      flex: 1;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    
+    .bubble-btn.primary {
+      background: linear-gradient(135deg, var(--neon), var(--neon2));
+      border-color: var(--neon);
+      color: var(--bg);
+    }
+    
+    .bubble-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(110, 168, 254, 0.4);
+    }
+    
+    .bubble-btn.secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-light);
+      color: var(--text);
+    }
+    
+    .bubble-btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border);
+    }
+    
+    .buddy-quick-tips {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+    }
+    
+    .tip-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    .tip-icon {
+      font-size: 14px;
+    }
+    
+    .bottom-pill {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background: rgba(11, 19, 43, 0.9);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      margin-top: 24px;
+      z-index: 100;
+    }
+    
+    .nav-btn {
+      flex: 1;
+      min-width: 60px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-light);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      position: relative;
+    }
+    
+    .nav-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    
+    .nav-label {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+    }
+    
+    .nav-btn:hover {
+      background: rgba(110, 168, 254, 0.15);
+      border-color: rgba(110, 168, 254, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(110, 168, 254, 0.25), rgba(126, 231, 135, 0.15));
+      border-color: var(--neon);
+      color: var(--text);
+      box-shadow: 0 4px 12px rgba(110, 168, 254, 0.3);
+    }
+    
+    .nav-btn.active .nav-label {
+      color: var(--neon);
+      opacity: 1;
+    }
+    
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 2000;
+    }
+    
+    .confetti-container.hidden {
+      display: none;
+    }
+    
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      animation: confettiFall 2s ease-out forwards;
+    }
+    
+    @keyframes confettiFall {
+      to {
+        transform: translate(var(--tx, 0), var(--ty, 0)) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    .break-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+    
+    .break-modal.hidden {
+      display: none;
+    }
+    
+    .break-content {
+      background: rgba(11, 19, 43, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .break-content h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    
+    .break-content p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    
+    .bubble-wrap {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      margin-bottom: 24px;
+    }
+    
+    .bubble-pop {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(110, 168, 254, 0.3);
+      border: 2px solid rgba(110, 168, 254, 0.5);
+      cursor: pointer;
+      animation: bubbleFloat 3s ease-in-out infinite;
+    }
+    
+    @keyframes bubbleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    .achievement-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+    
+    .achievement-modal.hidden {
+      display: none;
+    }
+    
+    .achievement-modal-content {
+      background: rgba(11, 19, 43, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .achievement-icon-large {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .achievement-modal-content h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    
+    .achievement-modal-content p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Particle effect styles */
+    .particle {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 2000;
+      animation: particleExplode 1s ease-out forwards;
+    }
+    
+    @keyframes particleExplode {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx, 0), var(--ty, 0)) scale(0);
+      }
+    }
+    
+    /* Application sprite celebration */
+    @keyframes spriteCelebration {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(1);
+      }
+    }
+    
+    .application-sprite {
+      pointer-events: none;
+    }
+    
+    /* Swipe hint */
+    .swipe-hint {
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .timeline-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .achievement-panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .achievement-carousel-wrapper {
+        gap: 4px;
+      }
+      
+      .achievement-nav-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+      }
+      
+      .achievement-badge {
+        min-width: 140px;
+        max-width: 140px;
+        padding: 16px 12px;
+      }
+      
+      .achievement-icon {
+        font-size: 40px;
+        margin-bottom: 8px;
+      }
+      
+      .achievement-title {
+        font-size: 14px;
+      }
+      
+      .achievement-desc {
+        font-size: 11px;
+      }
+      
+      .risk-fab {
+        bottom: 80px;
+        right: 16px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+      
+      .risk-panel {
+        bottom: 140px;
+        right: 16px;
+        left: 16px;
+        min-width: auto;
+      }
+      
+      .bottom-pill {
+        padding: 8px;
+      }
+      
+      .nav-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+      
+      /* Quest Map Mobile Optimization */
+      .quest-map-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      
+      .quest-map-header h4 {
+        font-size: 16px;
+      }
+      
+      .quest-progress-text {
+        font-size: 12px;
+      }
+      
+      .scroll {
+        height: 180px;
+        border-radius: 12px;
+      }
+      
+      .landmark {
+        width: 55px;
+        height: 55px;
+        padding: 6px;
+      }
+      
+      .landmark.castle {
+        top: 20px;
+        left: 5%;
+      }
+      
+      .landmark.mountain {
+        top: 20px;
+        left: 24%;
+      }
+      
+      .landmark.volcano {
+        top: 20px;
+        left: 43%;
+      }
+      
+      .landmark.library {
+        top: 20px;
+        left: 62%;
+      }
+      
+      .landmark.gate {
+        top: 20px;
+        right: 5%;
+      }
+      
+      .landmark-icon {
+        font-size: 22px;
+        margin-bottom: 2px;
+      }
+      
+      .landmark-label {
+        font-size: 9px;
+      }
+      
+      .landmark-progress {
+        font-size: 8px;
+      }
+      
+      .landmark.completed .landmark-progress {
+        font-size: 12px;
+      }
+      
+      .landmark:active {
+        transform: scale(1.05);
+      }
+      
+      .avatar {
+        bottom: 20px;
+        width: 40px;
+        height: 40px;
+      }
+      
+      .fox-trail {
+        height: 15px;
+      }
+      
+      .fox-icon {
+        font-size: 28px;
+      }
+      
+      .path {
+        bottom: 30px;
+        height: 6px;
+      }
+      
+      .journey-start,
+      .journey-end {
+        bottom: 8px;
+      }
+      
+      .journey-marker {
+        font-size: 9px;
+      }
+      
+      .quest-categories {
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      
+      .quest-category-item {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px 14px;
+        min-width: auto;
+        width: 100%;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(110, 168, 254, 0.2);
+      }
+      
+      .quest-category-item:active {
+        transform: scale(0.98);
+        background: rgba(110, 168, 254, 0.2);
+      }
+      
+      .category-icon {
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+      
+      .category-info {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+        justify-content: space-between;
+      }
+      
+      .category-name {
+        font-size: 13px;
+        flex: 1;
+      }
+      
+      .category-progress {
+        font-size: 12px;
+        font-weight: 600;
+        flex-shrink: 0;
+        min-width: 50px;
+        text-align: right;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .achievement-nav-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+      }
+      
+      .achievement-badge {
+        min-width: 120px;
+        max-width: 120px;
+        padding: 14px 10px;
+      }
+      
+      .achievement-icon {
+        font-size: 36px;
+      }
+      
+      /* Quest Map Small Mobile Optimization */
+      .scroll {
+        height: 160px;
+      }
+      
+      .landmark {
+        width: 50px;
+        height: 50px;
+        padding: 4px;
+      }
+      
+      .landmark.castle {
+        left: 3%;
+      }
+      
+      .landmark.mountain {
+        left: 22%;
+      }
+      
+      .landmark.volcano {
+        left: 41%;
+      }
+      
+      .landmark.library {
+        left: 60%;
+      }
+      
+      .landmark.gate {
+        right: 3%;
+      }
+      
+      .landmark-icon {
+        font-size: 20px;
+      }
+      
+      .landmark-label {
+        font-size: 8px;
+      }
+      
+      .landmark-progress {
+        font-size: 7px;
+      }
+      
+      .landmark:active {
+        transform: scale(1.02);
+      }
+      
+      .avatar {
+        width: 36px;
+        height: 36px;
+        bottom: 18px;
+      }
+      
+      .fox-icon {
+        font-size: 24px;
+      }
+      
+      .fox-trail {
+        height: 12px;
+        width: 3px;
+      }
+      
+      .quest-category-item {
+        padding: 8px 12px;
+      }
+      
+      .category-icon {
+        font-size: 20px;
+      }
+      
+      .category-name {
+        font-size: 12px;
+      }
+      
+      .category-progress {
+        font-size: 11px;
+        min-width: 45px;
+      }
+      
+      .quest-map-header h4 {
+        font-size: 15px;
+      }
+      
+      .quest-progress-text {
+        font-size: 11px;
+      }
+      
+      .quest-progress-text #questProgressPercent {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>SuperOS for Students - Roadmap</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <!-- Authenticated Application -->
+    <section id="route-app" class="route-shell">
+      <!-- Top Tabs Navigation (profile routes only) -->
+      <div id="profileNav" class="profile-nav">
+        <div class="tabs top" id="topTabs">
+          <button type="button" class="tab small" data-tab-route="profile">Profile</button>
+          <button type="button" class="tab small" data-tab-route="persona">Persona</button>
+          <button type="button" class="tab small" data-tab-route="gap">GAP</button>
+          <button type="button" class="tab small" data-tab-route="advisor">Major Advisor</button>
+          <button type="button" class="tab small active" data-tab-route="roadmap">Roadmap</button>
+        </div>
+      </div>
+
+      <!-- Goals & Roadmap -->
+      <section id="view-roadmap" class="view active roadmap-view">
+        <!-- Achievement Panel (Top) -->
+        <div class="card" id="achievementPanel">
+          <div class="achievement-panel-header">
+            <h3>Achievements</h3>
+            <div class="achievement-stats">
+              <span id="achievementProgress">
+                <span id="unlockedCount">2</span> / <span id="totalCount">8</span>
+              </span>
+            </div>
+          </div>
+          <div class="achievement-carousel-wrapper">
+            <button type="button" class="achievement-nav-btn achievement-nav-prev" id="achievementPrev" aria-label="Previous achievement">
+              <span>‹</span>
+            </button>
+            <div class="achievement-carousel" id="achievementCarousel">
+              <!-- Achievements will be rendered here -->
+              <!-- Sample achievement cards (will be replaced by JavaScript) -->
+              <div class="achievement-badge unlocked" data-id="first_goal">
+                <div class="achievement-icon">🎯</div>
+                <div class="achievement-title">Goal Setter</div>
+                <div class="achievement-desc">Set your first goal and start your journey</div>
+                <div class="achievement-date">Unlocked: 5 days ago</div>
+                <div class="achievement-points">
+                  <span>⭐</span>
+                  <span>10 pts</span>
+                </div>
+                <div class="achievement-category">Planning</div>
+                <div class="achievement-stats">
+                  <div class="achievement-stat-item">
+                    <div class="achievement-stat-value">2</div>
+                    <div class="achievement-stat-label">goals</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="achievement-badge unlocked" data-id="first_essay">
+                <div class="achievement-icon">✍️</div>
+                <div class="achievement-title">Writer</div>
+                <div class="achievement-desc">Complete your first essay draft</div>
+                <div class="achievement-date">Unlocked: 2 days ago</div>
+                <div class="achievement-points">
+                  <span>⭐</span>
+                  <span>15 pts</span>
+                </div>
+                <div class="achievement-category">Writing</div>
+                <div class="achievement-stats">
+                  <div class="achievement-stat-item">
+                    <div class="achievement-stat-value">1</div>
+                    <div class="achievement-stat-label">essays</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="achievement-badge locked" data-id="three_days">
+                <div class="achievement-rarity rare">Rare</div>
+                <div class="achievement-icon">🔒</div>
+                <div class="achievement-title">Consistent</div>
+                <div class="achievement-desc">Complete tasks for 3 consecutive days</div>
+                <div class="achievement-progress">
+                  <div class="achievement-progress-bar">
+                    <div class="achievement-progress-fill" style="width: 67%"></div>
+                  </div>
+                  <div class="achievement-progress-text">67%</div>
+                </div>
+                <div class="achievement-milestone">Complete 3 consecutive days</div>
+                <div class="achievement-category">Consistency</div>
+                <div class="achievement-stats">
+                  <div class="achievement-stat-item">
+                    <div class="achievement-stat-value">2</div>
+                    <div class="achievement-stat-label">days</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="achievement-badge locked" data-id="sat_master">
+                <div class="achievement-rarity epic">Epic</div>
+                <div class="achievement-icon">🔒</div>
+                <div class="achievement-title">SAT Master</div>
+                <div class="achievement-desc">Achieve target SAT score</div>
+                <div class="achievement-progress">
+                  <div class="achievement-progress-bar">
+                    <div class="achievement-progress-fill" style="width: 45%"></div>
+                  </div>
+                  <div class="achievement-progress-text">45%</div>
+                </div>
+                <div class="achievement-milestone">Achieve target SAT score</div>
+                <div class="achievement-category">Academic</div>
+                <div class="achievement-stats">
+                  <div class="achievement-stat-item">
+                    <div class="achievement-stat-value">45</div>
+                    <div class="achievement-stat-label">progress</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="achievement-badge locked" data-id="recommenders">
+                <div class="achievement-rarity epic">Epic</div>
+                <div class="achievement-icon">🔒</div>
+                <div class="achievement-title">Networker</div>
+                <div class="achievement-desc">Secure 3 recommendation letters</div>
+                <div class="achievement-progress">
+                  <div class="achievement-progress-bar">
+                    <div class="achievement-progress-fill" style="width: 50%"></div>
+                  </div>
+                  <div class="achievement-progress-text">50%</div>
+                </div>
+                <div class="achievement-milestone">Secure 3 recommenders</div>
+                <div class="achievement-category">Networking</div>
+                <div class="achievement-stats">
+                  <div class="achievement-stat-item">
+                    <div class="achievement-stat-value">1</div>
+                    <div class="achievement-stat-label">secured</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="achievement-badge locked" data-id="applications">
+                <div class="achievement-rarity legendary">Legendary</div>
+                <div class="achievement-icon">🔒</div>
+                <div class="achievement-title">Applicant</div>
+                <div class="achievement-desc">Submit 5 college applications</div>
+                <div class="achievement-progress">
+                  <div class="achievement-progress-bar">
+                    <div class="achievement-progress-fill" style="width: 40%"></div>
+                  </div>
+                  <div class="achievement-progress-text">40%</div>
+                </div>
+                <div class="achievement-milestone">Submit 5 applications</div>
+                <div class="achievement-category">Application</div>
+                <div class="achievement-stats">
+                  <div class="achievement-stat-item">
+                    <div class="achievement-stat-value">2</div>
+                    <div class="achievement-stat-label">submitted</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="achievement-nav-btn achievement-nav-next" id="achievementNext" aria-label="Next achievement">
+              <span>›</span>
+            </button>
+          </div>
+          <div class="achievement-carousel-indicators" id="achievementIndicators">
+            <!-- Indicators will be rendered here -->
+            <div class="achievement-indicator active"></div>
+            <div class="achievement-indicator"></div>
+            <div class="achievement-indicator"></div>
+          </div>
+        </div>
+        
+        <!-- Timeline -->
+        <div class="card">
+          <h3>Your Timeline</h3>
+          <div class="timeline-container">
+            <div class="timeline-column">
+              <h4>Near (This Week)</h4>
+              <div id="timelineNear"></div>
+            </div>
+            <div class="timeline-column">
+              <h4>Mid (This Month)</h4>
+              <div id="timelineMid"></div>
+            </div>
+            <div class="timeline-column">
+              <h4>Far (Next 3 Months)</h4>
+              <div id="timelineFar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Garden & Risk Systems -->
+        <div class="card">
+          <h3>Your Application Garden</h3>
+          <div class="garden-container">
+            <div class="garden-carousel" id="gardenCarousel">
+              <!-- Plants will be rendered here -->
+            </div>
+          </div>
+          <div class="garden-info" id="gardenInfo"></div>
+        </div>
+
+        <!-- Roadmap Neo -->
+        <div class="card">
+          <div class="roadmap-neo-header">
+            <h3>Roadmap – Neo</h3>
+            <div class="roadmap-stats">
+              <div class="stat-item">
+                <span class="stat-value" id="totalProgress">32%</span>
+                <span class="stat-label">Overall</span>
+              </div>
+            </div>
+          </div>
+          <div class="roadmap-neo">
+            <section class="garden" aria-label="Dream School Garden">
+              <div class="garden-header">
+                <h4>Your Dream School Garden</h4>
+                <p class="garden-subtitle">Track your application progress for each school</p>
+              </div>
+              <div class="hex-grid" id="hexGrid">
+                <div class="hex-container" data-school="MIT">
+                  <div class="hex plant active" data-name="MIT" data-progress="45">
+                    <div class="hex-icon">🏛️</div>
+                    <div class="hex-progress-ring">
+                      <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="26" fill="none" stroke="rgba(110, 168, 254, 0.3)" stroke-width="3"/>
+                        <circle class="progress-ring-fill" cx="30" cy="30" r="26" fill="none" stroke="var(--neon)" stroke-width="3" stroke-dasharray="163" stroke-dashoffset="90" transform="rotate(-90 30 30)"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="hex-info">
+                    <div class="hex-name">MIT</div>
+                    <div class="hex-progress-text">45%</div>
+                  </div>
+                </div>
+                
+                <div class="hex-container" data-school="Stanford">
+                  <div class="hex plant" data-name="Stanford" data-progress="25">
+                    <div class="hex-icon">🌲</div>
+                    <div class="hex-progress-ring">
+                      <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="26" fill="none" stroke="rgba(110, 168, 254, 0.3)" stroke-width="3"/>
+                        <circle class="progress-ring-fill" cx="30" cy="30" r="26" fill="none" stroke="var(--neon)" stroke-width="3" stroke-dasharray="163" stroke-dashoffset="122" transform="rotate(-90 30 30)"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="hex-info">
+                    <div class="hex-name">Stanford</div>
+                    <div class="hex-progress-text">25%</div>
+                  </div>
+                </div>
+                
+                <div class="hex-container" data-school="Harvard">
+                  <div class="hex plant" data-name="Harvard" data-progress="15">
+                    <div class="hex-icon">🎓</div>
+                    <div class="hex-progress-ring">
+                      <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="26" fill="none" stroke="rgba(110, 168, 254, 0.3)" stroke-width="3"/>
+                        <circle class="progress-ring-fill" cx="30" cy="30" r="26" fill="none" stroke="var(--neon)" stroke-width="3" stroke-dasharray="163" stroke-dashoffset="138" transform="rotate(-90 30 30)"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="hex-info">
+                    <div class="hex-name">Harvard</div>
+                    <div class="hex-progress-text">15%</div>
+                  </div>
+                </div>
+                
+                <div class="hex-container" data-school="CMU">
+                  <div class="hex plant" data-name="CMU" data-progress="35">
+                    <div class="hex-icon">💻</div>
+                    <div class="hex-progress-ring">
+                      <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="26" fill="none" stroke="rgba(110, 168, 254, 0.3)" stroke-width="3"/>
+                        <circle class="progress-ring-fill" cx="30" cy="30" r="26" fill="none" stroke="var(--neon)" stroke-width="3" stroke-dasharray="163" stroke-dashoffset="106" transform="rotate(-90 30 30)"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="hex-info">
+                    <div class="hex-name">CMU</div>
+                    <div class="hex-progress-text">35%</div>
+                  </div>
+                </div>
+                
+                <div class="hex-container" data-school="Berkeley">
+                  <div class="hex plant" data-name="Berkeley" data-progress="40">
+                    <div class="hex-icon">🌉</div>
+                    <div class="hex-progress-ring">
+                      <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="26" fill="none" stroke="rgba(110, 168, 254, 0.3)" stroke-width="3"/>
+                        <circle class="progress-ring-fill" cx="30" cy="30" r="26" fill="none" stroke="var(--neon)" stroke-width="3" stroke-dasharray="163" stroke-dashoffset="98" transform="rotate(-90 30 30)"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="hex-info">
+                    <div class="hex-name">Berkeley</div>
+                    <div class="hex-progress-text">40%</div>
+                  </div>
+                </div>
+                
+                <div class="hex-container" data-school="Caltech">
+                  <div class="hex plant" data-name="Caltech" data-progress="20">
+                    <div class="hex-icon">🔬</div>
+                    <div class="hex-progress-ring">
+                      <svg class="progress-ring" width="60" height="60">
+                        <circle class="progress-ring-circle" cx="30" cy="30" r="26" fill="none" stroke="rgba(110, 168, 254, 0.3)" stroke-width="3"/>
+                        <circle class="progress-ring-fill" cx="30" cy="30" r="26" fill="none" stroke="var(--neon)" stroke-width="3" stroke-dasharray="163" stroke-dashoffset="130" transform="rotate(-90 30 30)"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="hex-info">
+                    <div class="hex-name">Caltech</div>
+                    <div class="hex-progress-text">20%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="garden-summary" id="gardenSummary">
+                <div class="summary-item">
+                  <span class="summary-label">Total Schools:</span>
+                  <span class="summary-value">6</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Avg Progress:</span>
+                  <span class="summary-value">30%</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Risk Dashboard (Enhanced) -->
+            <button id="riskFab" class="risk-fab" aria-label="Risk radar">
+              <span class="risk-indicator" id="riskIndicator">●</span>
+              <span class="risk-pulse"></span>
+            </button>
+            <div id="riskPanel" class="risk-panel hidden">
+              <div class="risk-panel-header">
+                <h4>Risk Assessment</h4>
+                <button type="button" class="risk-close" aria-label="Close risk panel">×</button>
+              </div>
+              <div class="radar">
+                <div class="radar-line radar-line-1"></div>
+                <div class="radar-line radar-line-2"></div>
+                <div class="radar-line radar-line-3"></div>
+                <div class="dot near" title="Near-term risks"></div>
+                <div class="dot mid" title="Mid-term risks"></div>
+                <div class="dot far" title="Far-term risks"></div>
+              </div>
+              <div class="risk-content">
+                <div class="risk-level" id="riskLevel">
+                  <span class="risk-level-label">Risk Level:</span>
+                  <span class="risk-level-value" id="riskLevelValue">Low</span>
+                </div>
+                <div class="microcopy" id="riskMessage">All clear! You're on track.</div>
+                <div class="risk-details">
+                  <div class="risk-metric">
+                    <span class="metric-label">Upcoming Deadlines:</span>
+                    <span class="metric-value" id="deadlineCount">2</span>
+                  </div>
+                  <div class="risk-metric">
+                    <span class="metric-label">Blocked Tasks:</span>
+                    <span class="metric-value" id="blockedCount">0</span>
+                  </div>
+                </div>
+                <ul class="risk-factors" id="riskFactors">
+                  <li>SAT registration closes in 14 days</li>
+                  <li>Essay draft due in 7 days</li>
+                </ul>
+                <div class="risk-actions">
+                  <button type="button" class="risk-action-btn" id="viewDeadlines">View Deadlines</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adventure Map -->
+            <section class="quest-map" aria-label="Quest Map">
+              <div class="quest-map-header">
+                <h4>Your Application Journey</h4>
+                <div class="quest-stats">
+                  <span class="quest-progress-text">
+                    <span id="questProgressPercent">32%</span> Complete
+                  </span>
+                </div>
+              </div>
+              <div class="scroll">
+                <div class="landmark castle" data-category="tests" data-progress="45" title="Standardized Tests - 45% Complete">
+                  <div class="landmark-icon">🏰</div>
+                  <div class="landmark-label">Tests</div>
+                  <div class="landmark-progress">45%</div>
+                </div>
+                <div class="landmark mountain" data-category="recommenders" data-progress="50" title="Recommendations - 50% Complete">
+                  <div class="landmark-icon">⛰️</div>
+                  <div class="landmark-label">Rec-letter</div>
+                  <div class="landmark-progress">50%</div>
+                </div>
+                <div class="landmark volcano completed" data-category="essays" data-progress="100" title="Essays - Completed">
+                  <div class="landmark-icon">🌋</div>
+                  <div class="landmark-label">Essays</div>
+                  <div class="landmark-progress">✓</div>
+                </div>
+                <div class="landmark library completed" data-category="portfolio" data-progress="100" title="Portfolio - Completed">
+                  <div class="landmark-icon">📚</div>
+                  <div class="landmark-label">Portfolio</div>
+                  <div class="landmark-progress">✓</div>
+                </div>
+                <div class="landmark gate" data-category="applications" data-progress="40" title="Applications - 40% Complete">
+                  <div class="landmark-icon">🚪</div>
+                  <div class="landmark-label">Applications</div>
+                  <div class="landmark-progress">40%</div>
+                </div>
+                <div class="path glow" id="questPath"></div>
+                <div class="avatar fox" title="Buddy Fox - Your Progress Companion" id="questAvatar">
+                  <div class="fox-icon">🦊</div>
+                  <div class="fox-trail"></div>
+                </div>
+                <div class="journey-start">
+                  <div class="journey-marker">Start</div>
+                </div>
+                <div class="journey-end">
+                  <div class="journey-marker">Finish</div>
+                </div>
+              </div>
+              <div class="quest-categories">
+                <div class="quest-category-item" data-category="tests">
+                  <div class="category-icon">🏰</div>
+                  <div class="category-info">
+                    <div class="category-name">Tests</div>
+                    <div class="category-progress">45%</div>
+                  </div>
+                </div>
+                <div class="quest-category-item" data-category="recommenders">
+                  <div class="category-icon">⛰️</div>
+                  <div class="category-info">
+                    <div class="category-name">Recommendations</div>
+                    <div class="category-progress">50%</div>
+                  </div>
+                </div>
+                <div class="quest-category-item completed" data-category="essays">
+                  <div class="category-icon">🌋</div>
+                  <div class="category-info">
+                    <div class="category-name">Essays</div>
+                    <div class="category-progress">Complete</div>
+                  </div>
+                </div>
+                <div class="quest-category-item completed" data-category="portfolio">
+                  <div class="category-icon">📚</div>
+                  <div class="category-info">
+                    <div class="category-name">Portfolio</div>
+                    <div class="category-progress">Complete</div>
+                  </div>
+                </div>
+                <div class="quest-category-item" data-category="applications">
+                  <div class="category-icon">🚪</div>
+                  <div class="category-info">
+                    <div class="category-name">Applications</div>
+                    <div class="category-progress">40%</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- AI Assistant (Deer) -->
+            <section class="buddy" aria-label="AI Buddy">
+              <div class="buddy-header">
+                <h4>AI Study Companion</h4>
+                <div class="buddy-status" id="buddyStatus">
+                  <span class="status-dot"></span>
+                  <span class="status-text">Ready to help</span>
+                </div>
+              </div>
+              <div class="deer-container">
+                <div class="deer" id="aiDeer">
+                  <div class="ear left"></div>
+                  <div class="ear right"></div>
+                  <div class="face">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                    <div class="nose"></div>
+                  </div>
+                  <div class="body"></div>
+                </div>
+                <div class="deer-pulse"></div>
+              </div>
+              <div class="bubble hidden" id="deerBubble">
+                <div class="bubble-header">
+                  <span class="bubble-title">💡 Suggestion</span>
+                  <button type="button" class="bubble-close" aria-label="Dismiss">×</button>
+                </div>
+                <span id="deerMessage">Great progress on your essays! Consider adding AP Chemistry to strengthen your MIT application.</span>
+                <div class="bubble-actions">
+                  <button type="button" id="ctaDoIt" class="bubble-btn primary">Add to Plan</button>
+                  <button type="button" class="bubble-btn secondary" id="ctaLater">Maybe Later</button>
+                </div>
+              </div>
+              <div class="buddy-quick-tips">
+                <div class="tip-item">
+                  <span class="tip-icon">💡</span>
+                  <span class="tip-text">Click me for personalized advice</span>
+                </div>
+              </div>
+            </section>
+
+           
+          </div>
+        </div>
+
+        <!-- Task Detail Sheet -->
+        <div id="sheet" class="sheet hidden">
+          <div class="sheet-header">
+            <h3 class="sheet-title" id="sheetTitle">Task Details</h3>
+            <button type="button" class="sheet-close" id="sheetClose">×</button>
+          </div>
+          <div class="sheet-content" id="sheetContent">
+            <!-- Content will be populated here -->
+          </div>
+          <div class="sheet-actions">
+            <button type="button" id="sheetDone" class="chip">Mark as Done</button>
+          </div>
+        </div>
+
+        <!-- Confetti Container -->
+        <div id="confettiContainer" class="confetti-container hidden"></div>
+
+        <!-- Break Modal -->
+        <div id="breakModal" class="break-modal hidden">
+          <div class="break-content">
+            <h3>Time for a quick break!</h3>
+            <p>You've been working for 30 minutes. Let's take a moment to relax.</p>
+            <div class="bubble-wrap" id="bubbleWrap">
+              <!-- Bubbles will be generated here -->
+            </div>
+            <button type="button" id="closeBreakModal" class="chip">Continue</button>
+          </div>
+        </div>
+
+        <!-- Achievement Modal -->
+        <div id="achievementModal" class="achievement-modal hidden">
+          <div class="achievement-modal-content">
+            <div class="achievement-icon-large" id="modalAchievementIcon"></div>
+            <h3 id="modalAchievementTitle"></h3>
+            <p id="modalAchievementDesc"></p>
+            <button type="button" id="closeAchievementModal" class="chip">Got it!</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="../js/state.js"></script>
+  <script src="../js/utils.js"></script>
+  
+  <script>
+    // Initialize state early (before roadmap.js loads)
+    if (typeof window.state === 'undefined') {
+      window.state = {
+        goals: [
+          { id: '1', title: 'Complete SAT preparation' },
+          { id: '2', title: 'Write personal statement' }
+        ],
+        roadmap: { near: [], mid: [], far: [] },
+        questProgress: {
+          tests: 45,
+          recommenders: 30,
+          essays: 20,
+          portfolio: 60,
+          applications: 40
+        },
+        achievements: [
+          { 
+            id: 'first_goal', 
+            title: 'Goal Setter', 
+            description: 'Set your first goal and start your journey', 
+            unlocked: true, 
+            unlockedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            icon_locked: '🔒', 
+            icon_unlocked: '🎯' 
+          },
+          { 
+            id: 'three_days', 
+            title: 'Consistent', 
+            description: 'Complete tasks for 3 consecutive days', 
+            unlocked: false, 
+            icon_locked: '🔒', 
+            icon_unlocked: '🔥' 
+          },
+          { 
+            id: 'first_essay', 
+            title: 'Writer', 
+            description: 'Complete your first essay draft', 
+            unlocked: true, 
+            unlockedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            icon_locked: '🔒', 
+            icon_unlocked: '✍️' 
+          },
+          { 
+            id: 'recommenders', 
+            title: 'Networker', 
+            description: 'Secure 3 recommendation letters', 
+            unlocked: false, 
+            icon_locked: '🔒', 
+            icon_unlocked: '🤝' 
+          },
+          { 
+            id: 'applications', 
+            title: 'Applicant', 
+            description: 'Submit 5 college applications', 
+            unlocked: false, 
+            icon_locked: '🔒', 
+            icon_unlocked: '📝' 
+          },
+          { 
+            id: 'sat_master', 
+            title: 'SAT Master', 
+            description: 'Achieve target SAT score', 
+            unlocked: false, 
+            icon_locked: '🔒', 
+            icon_unlocked: '📊' 
+          },
+          { 
+            id: 'profile_complete', 
+            title: 'Profile Complete', 
+            description: 'Complete 100% of your profile', 
+            unlocked: false, 
+            icon_locked: '🔒', 
+            icon_unlocked: '✅' 
+          },
+          { 
+            id: 'early_bird', 
+            title: 'Early Bird', 
+            description: 'Submit early decision application', 
+            unlocked: false, 
+            icon_locked: '🔒', 
+            icon_unlocked: '🐦' 
+          }
+        ],
+        consecutiveDays: 2,
+        lastActivityDate: new Date().toDateString(),
+        plants: [
+          {
+            id: 'mit',
+            name: 'MIT',
+            stage: 1,
+            progress: 45,
+            lastWatered: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            milestones: [
+              { title: 'Application started', date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString() }
+            ]
+          },
+          {
+            id: 'stanford',
+            name: 'Stanford',
+            stage: 0,
+            progress: 25,
+            lastWatered: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            milestones: []
+          }
+        ],
+        plantStages: ['sprout', 'seedling', 'flowering', 'fruiting'],
+        spriteCelebrated: false,
+        profile: {
+          targetSchools: ['MIT', 'Stanford', 'Harvard'],
+          targetMajors: ['Computer Science', 'Engineering']
+        }
+      };
+    }
+
+    // Initialize roadmapData structure early
+    window.roadmapData = window.roadmapData || {
+      stages: [],
+      achievements: [],
+      quest_categories: {},
+      plant_stages: {}
+    };
+  </script>
+  
+  <script src="../js/roadmap.js"></script>
+  
+  <script>
+    // Load roadmap content data and initialize
+    (function() {
+      // Try to load roadmap_content.json
+      fetch('../roadmap_content.json')
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.roadmap) {
+            // Set roadmapData before roadmap.js uses it
+            window.roadmapData = data.roadmap;
+            // Merge quest_categories if available
+            if (data.roadmap.quest_categories) {
+              Object.assign(window.roadmapData.quest_categories || {}, data.roadmap.quest_categories);
+            }
+            // Merge achievements if available
+            if (data.roadmap.achievements && Array.isArray(data.roadmap.achievements)) {
+              // Achievements will be merged in initRoadmapEnhancements
+            }
+            
+            // If roadmap.js is already loaded, update its internal roadmapData reference
+            // Since roadmap.js uses: const roadmapData = window.roadmapData || {...}
+            // We just need to ensure window.roadmapData is set correctly
+          }
+          // Initialize after data is loaded
+          initializeRoadmap();
+        })
+        .catch(error => {
+          console.warn('Could not load roadmap_content.json:', error);
+          // Initialize anyway with default data
+          initializeRoadmap();
+        });
+
+      function initializeRoadmap() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
+        } else {
+          init();
+        }
+
+        function init() {
+          // Ensure view-roadmap element exists
+          const roadmapView = document.getElementById('view-roadmap');
+          if (!roadmapView) {
+            console.warn('view-roadmap element not found');
+            return;
+          }
+
+          // Call regenRoadmap if available (will initialize default roadmap data)
+          // This will also call renderRoadmapStages internally
+          if (typeof window.regenRoadmap === 'function') {
+            window.regenRoadmap();
+          }
+
+          // Initialize roadmap enhancements
+          // This will render achievements, plants, update risk dashboard, etc.
+          if (typeof window.initRoadmapEnhancements === 'function') {
+            window.initRoadmapEnhancements();
+          }
+
+          // Ensure roadmapData is properly set for roadmap.js internal use
+          // roadmap.js uses: const roadmapData = window.roadmapData || {...}
+          // Since roadmap.js assigns it at load time, we need to ensure window.roadmapData
+          // is set before roadmap.js loads, OR we trigger a re-render after setting it
+          // For now, regenRoadmap() will call renderRoadmapStages() which uses the global roadmapData
+          // If roadmapData.stages exists, it will render them
+
+          // Bind back button
+          const backBtn = document.getElementById('btnBackProfileR');
+          if (backBtn) {
+            backBtn.addEventListener('click', () => {
+              if (typeof window.setRoute === 'function') {
+                window.setRoute('profile');
+              } else if (typeof window.routerSetRoute === 'function') {
+                window.routerSetRoute('profile');
+              } else {
+                console.log('Navigate to profile');
+                // Fallback: try to navigate manually
+                window.location.hash = '#profile';
+              }
+            });
+          }
+
+          // Additional initialization: ensure achievements are rendered and carousel is set up
+          setupAchievementCarousel();
+          
+          // Additional initialization: ensure goals are rendered
+          if (typeof window.renderGoals === 'function') {
+            window.renderGoals();
+          }
+
+          // Additional initialization: ensure timeline is rendered
+          if (typeof window.renderTimeline === 'function') {
+            window.renderTimeline();
+          }
+
+          // Additional initialization: ensure quest path is updated
+          if (typeof window.updateQuestPath === 'function') {
+            window.updateQuestPath();
+          }
+
+          // Additional initialization: ensure risk dashboard is updated
+          if (typeof window.updateRiskDashboard === 'function') {
+            window.updateRiskDashboard();
+          }
+
+          // Force re-render of roadmap stages if roadmapData was loaded
+          // This handles the case where roadmapData is loaded after roadmap.js initializes
+          if (window.roadmapData && window.roadmapData.stages && window.roadmapData.stages.length > 0) {
+            // Trigger a re-render by calling regenRoadmap again
+            // regenRoadmap calls renderRoadmapStages which will use the updated roadmapData
+            setTimeout(() => {
+              if (typeof window.regenRoadmap === 'function') {
+                window.regenRoadmap();
+              }
+            }, 100);
+          }
+        }
+      }
+    })();
+    
+    // Achievement Carousel Control Functions
+    function setupAchievementCarousel() {
+      const carousel = document.getElementById('achievementCarousel');
+      const prevBtn = document.getElementById('achievementPrev');
+      const nextBtn = document.getElementById('achievementNext');
+      const indicators = document.getElementById('achievementIndicators');
+      
+      if (!carousel) return;
+      
+      let currentIndex = 0;
+      let achievements = [];
+      let itemsPerView = 3; // Number of achievements visible at once
+      
+      // Update items per view based on screen size
+      function updateItemsPerView() {
+        const width = window.innerWidth;
+        if (width < 600) {
+          itemsPerView = 1;
+        } else if (width < 900) {
+          itemsPerView = 2;
+        } else {
+          itemsPerView = 3;
+        }
+      }
+      
+      updateItemsPerView();
+      window.addEventListener('resize', updateItemsPerView);
+      
+      function updateCarousel() {
+        if (!carousel || achievements.length === 0) return;
+        
+        const maxIndex = Math.max(0, achievements.length - itemsPerView);
+        currentIndex = Math.min(currentIndex, maxIndex);
+        currentIndex = Math.max(0, currentIndex);
+        
+        // Update navigation buttons
+        if (prevBtn) {
+          prevBtn.disabled = currentIndex === 0;
+        }
+        if (nextBtn) {
+          nextBtn.disabled = currentIndex >= maxIndex;
+        }
+        
+        // Scroll carousel
+        const badgeWidth = 176; // 160px + 16px gap
+        const scrollPosition = currentIndex * badgeWidth;
+        carousel.scrollTo({
+          left: scrollPosition,
+          behavior: 'smooth'
+        });
+        
+        // Update indicators
+        updateIndicators();
+      }
+      
+      function updateIndicators() {
+        if (!indicators) return;
+        
+        const totalPages = Math.ceil(achievements.length / itemsPerView);
+        indicators.innerHTML = '';
+        
+        for (let i = 0; i < totalPages; i++) {
+          const indicator = document.createElement('div');
+          indicator.className = `achievement-indicator ${i === Math.floor(currentIndex / itemsPerView) ? 'active' : ''}`;
+          indicator.addEventListener('click', () => {
+            currentIndex = i * itemsPerView;
+            updateCarousel();
+          });
+          indicators.appendChild(indicator);
+        }
+      }
+      
+      function updateAchievementStats() {
+        const unlockedCount = achievements.filter(a => a.unlocked).length;
+        const totalCount = achievements.length;
+        
+        const unlockedEl = document.getElementById('unlockedCount');
+        const totalEl = document.getElementById('totalCount');
+        
+        if (unlockedEl) unlockedEl.textContent = unlockedCount;
+        if (totalEl) totalEl.textContent = totalCount;
+      }
+      
+      // Navigation button handlers
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          currentIndex = Math.max(0, currentIndex - itemsPerView);
+          updateCarousel();
+        });
+      }
+      
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          const maxIndex = Math.max(0, achievements.length - itemsPerView);
+          currentIndex = Math.min(maxIndex, currentIndex + itemsPerView);
+          updateCarousel();
+        });
+      }
+      
+      // Touch/swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      carousel.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+      
+      carousel.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+      
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // Swipe left - next
+            const maxIndex = Math.max(0, achievements.length - itemsPerView);
+            currentIndex = Math.min(maxIndex, currentIndex + itemsPerView);
+          } else {
+            // Swipe right - previous
+            currentIndex = Math.max(0, currentIndex - itemsPerView);
+          }
+          updateCarousel();
+        }
+      }
+      
+      // Mouse drag support
+      let isDragging = false;
+      let startX = 0;
+      let scrollLeft = 0;
+      
+      carousel.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.pageX - carousel.offsetLeft;
+        scrollLeft = carousel.scrollLeft;
+        carousel.style.cursor = 'grabbing';
+      });
+      
+      carousel.addEventListener('mouseleave', () => {
+        isDragging = false;
+        carousel.style.cursor = 'grab';
+      });
+      
+      carousel.addEventListener('mouseup', () => {
+        isDragging = false;
+        carousel.style.cursor = 'grab';
+      });
+      
+      carousel.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - carousel.offsetLeft;
+        const walk = (x - startX) * 2;
+        carousel.scrollLeft = scrollLeft - walk;
+      });
+      
+      // Keyboard navigation
+      carousel.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+          currentIndex = Math.max(0, currentIndex - itemsPerView);
+          updateCarousel();
+        } else if (e.key === 'ArrowRight') {
+          const maxIndex = Math.max(0, achievements.length - itemsPerView);
+          currentIndex = Math.min(maxIndex, currentIndex + itemsPerView);
+          updateCarousel();
+        }
+      });
+      
+      // Override renderAchievements to update carousel
+      const originalRenderAchievements = window.renderAchievements;
+      if (originalRenderAchievements) {
+        window.renderAchievements = function() {
+          // Enhanced achievement rendering with more content
+          const achievementCarousel = document.getElementById('achievementCarousel');
+          if (!achievementCarousel) {
+            originalRenderAchievements();
+            return;
+          }
+          
+          // Get achievements from state (use external achievements array)
+          const stateAchievements = (window.state && window.state.achievements) || [];
+          
+          // Achievement metadata mapping with real content
+          const achievementMetadata = {
+            'first_goal': {
+              rarity: 'common',
+              points: 10,
+              category: 'Planning',
+              progress: (stateAchievements.find(a => a.id === 'first_goal')?.unlocked) ? 100 : 0,
+              milestone: 'Set your first goal',
+              stats: { goals: (window.state?.goals?.length || 0) }
+            },
+            'three_days': {
+              rarity: 'rare',
+              points: 25,
+              category: 'Consistency',
+              progress: Math.min(100, ((window.state?.consecutiveDays || 0) / 3) * 100),
+              milestone: 'Complete 3 consecutive days',
+              stats: { days: window.state?.consecutiveDays || 0 }
+            },
+            'first_essay': {
+              rarity: 'common',
+              points: 15,
+              category: 'Writing',
+              progress: (stateAchievements.find(a => a.id === 'first_essay')?.unlocked) ? 100 : 
+                        ((window.state?.questProgress?.essays || 0) >= 20 ? 100 : (window.state?.questProgress?.essays || 0) / 20 * 100),
+              milestone: 'Complete essay draft',
+              stats: { essays: Math.floor((window.state?.questProgress?.essays || 0) / 20) }
+            },
+            'recommenders': {
+              rarity: 'epic',
+              points: 50,
+              category: 'Networking',
+              progress: Math.min(100, ((window.state?.questProgress?.recommenders || 0) / 60) * 100),
+              milestone: 'Secure 3 recommenders',
+              stats: { secured: Math.floor((window.state?.questProgress?.recommenders || 0) / 20) }
+            },
+            'applications': {
+              rarity: 'legendary',
+              points: 100,
+              category: 'Application',
+              progress: Math.min(100, ((window.state?.questProgress?.applications || 0) / 100) * 100),
+              milestone: 'Submit 5 applications',
+              stats: { submitted: Math.floor((window.state?.questProgress?.applications || 0) / 20) }
+            },
+            'sat_master': {
+              rarity: 'epic',
+              points: 75,
+              category: 'Academic',
+              progress: Math.min(100, ((window.state?.questProgress?.tests || 0) / 100) * 100),
+              milestone: 'Achieve target SAT score',
+              stats: { progress: window.state?.questProgress?.tests || 0 }
+            },
+            'profile_complete': {
+              rarity: 'rare',
+              points: 30,
+              category: 'Profile',
+              progress: 85, // Assume profile is 85% complete
+              milestone: 'Complete 100% profile',
+              stats: { complete: 85 }
+            },
+            'early_bird': {
+              rarity: 'legendary',
+              points: 150,
+              category: 'Application',
+              progress: 0,
+              milestone: 'Submit early decision',
+              stats: { days_left: 45 }
+            }
+          };
+          
+          achievementCarousel.innerHTML = stateAchievements.map((achievement) => {
+            const meta = achievementMetadata[achievement.id] || {
+              rarity: 'common',
+              points: 10,
+              category: 'General',
+              progress: achievement.unlocked ? 100 : 0,
+              milestone: achievement.description || 'Complete task',
+              stats: {}
+            };
+            
+            // Calculate progress based on state
+            let progressPercent = meta.progress || (achievement.unlocked ? 100 : 0);
+            if (!achievement.unlocked && meta.progress) {
+              progressPercent = meta.progress;
+            }
+            
+            const unlockedDate = achievement.unlockedDate ? new Date(achievement.unlockedDate).toLocaleDateString() : null;
+            
+            return `
+              <div class="achievement-badge ${achievement.unlocked ? 'unlocked' : 'locked'}" 
+                   data-id="${achievement.id || ''}" 
+                   tabindex="0"
+                   role="button"
+                   aria-label="${achievement.title}: ${achievement.description}">
+                ${achievement.unlocked ? '' : `<div class="achievement-rarity ${meta.rarity}">${meta.rarity}</div>`}
+                <div class="achievement-icon">${achievement.unlocked ? (achievement.icon_unlocked || '🎯') : (achievement.icon_locked || '🔒')}</div>
+                <div class="achievement-title">${achievement.title || 'Achievement'}</div>
+                <div class="achievement-desc">${achievement.description || ''}</div>
+                ${achievement.unlocked && unlockedDate ? `<div class="achievement-date">Unlocked: ${unlockedDate}</div>` : ''}
+                ${!achievement.unlocked && progressPercent > 0 ? `
+                  <div class="achievement-progress">
+                    <div class="achievement-progress-bar">
+                      <div class="achievement-progress-fill" style="width: ${progressPercent}%"></div>
+                    </div>
+                    <div class="achievement-progress-text">${Math.round(progressPercent)}%</div>
+                  </div>
+                ` : ''}
+                ${achievement.unlocked ? `
+                  <div class="achievement-points">
+                    <span>⭐</span>
+                    <span>${meta.points} pts</span>
+                  </div>
+                ` : `
+                  <div class="achievement-milestone">${meta.milestone}</div>
+                `}
+                <div class="achievement-category">${meta.category}</div>
+                ${Object.keys(meta.stats).length > 0 ? `
+                  <div class="achievement-stats">
+                    ${Object.entries(meta.stats).map(([key, value]) => `
+                      <div class="achievement-stat-item">
+                        <div class="achievement-stat-value">${value}</div>
+                        <div class="achievement-stat-label">${key}</div>
+                      </div>
+                    `).join('')}
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+          
+          // Add click handlers
+          achievementCarousel.querySelectorAll('.achievement-badge').forEach((badge) => {
+            badge.addEventListener('click', () => {
+              const { id } = badge.dataset;
+              const achievement = stateAchievements.find((entry) => entry.id === id);
+              if (achievement) {
+                if (typeof window.showAchievementModal === 'function') {
+                  window.showAchievementModal(achievement);
+                } else if (typeof originalRenderAchievements === 'function') {
+                  // Fallback: use original modal if available
+                  const modal = document.getElementById('achievementModal');
+                  if (modal) {
+                    const iconEl = document.getElementById('modalAchievementIcon');
+                    const titleEl = document.getElementById('modalAchievementTitle');
+                    const descEl = document.getElementById('modalAchievementDesc');
+                    if (iconEl && titleEl && descEl) {
+                      iconEl.textContent = achievement.unlocked ? achievement.icon_unlocked : achievement.icon_locked;
+                      titleEl.textContent = achievement.title;
+                      descEl.textContent = achievement.unlocked ? `Unlocked! ${achievement.description}` : `To unlock: ${achievement.description}`;
+                      modal.classList.remove('hidden');
+                    }
+                  }
+                }
+              }
+            });
+            
+            // Keyboard support
+            badge.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                badge.click();
+              }
+            });
+          });
+          
+          // Update achievements array for carousel control
+          achievements.length = 0;
+          achievements.push(...stateAchievements);
+          updateAchievementStats();
+          updateCarousel();
+        };
+      }
+      
+      // Initial setup
+      if (window.state && window.state.achievements) {
+        achievements = window.state.achievements;
+        updateAchievementStats();
+        updateCarousel();
+      }
+      
+      // Watch for achievement unlock events to add unlock date
+      const originalUnlockAchievement = window.unlockAchievement;
+      if (originalUnlockAchievement) {
+        window.unlockAchievement = function(id) {
+          if (window.state && window.state.achievements) {
+            const achievement = window.state.achievements.find(a => a.id === id);
+            if (achievement && !achievement.unlocked) {
+              achievement.unlockedDate = new Date().toISOString();
+            }
+          }
+          originalUnlockAchievement(id);
+          // Re-render achievements with new data
+          if (typeof window.renderAchievements === 'function') {
+            window.renderAchievements();
+          }
+        };
+      }
+      
+      // Watch for state changes
+      const stateObserver = new MutationObserver(() => {
+        if (window.state && window.state.achievements) {
+          achievements = window.state.achievements;
+          updateAchievementStats();
+          updateCarousel();
+        }
+      });
+      
+      // Observe state changes (if possible)
+      if (window.state) {
+        // Re-check periodically
+        setInterval(() => {
+          if (window.state && window.state.achievements) {
+            const newAchievements = window.state.achievements;
+            if (JSON.stringify(newAchievements) !== JSON.stringify(achievements)) {
+              achievements = newAchievements;
+              updateAchievementStats();
+              updateCarousel();
+            }
+          }
+        }, 1000);
+      }
+    }
+  </script>
+</body>
+</html>
