@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Recommend Categories - Major Advisor</title>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-hover: #1c2128;
+      --primary: #a855f7;
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --primary-light: #c084fc;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --border: rgba(240, 246, 252, 0.1);
+      --border-glow: rgba(168, 85, 247, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .intro-text {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .category-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .category-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px var(--primary-glow);
+    }
+
+    .category-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .category-card.selected {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.15);
+      box-shadow: 0 8px 24px var(--primary-glow);
+    }
+
+    .category-card.selected::before {
+      transform: scaleY(1);
+    }
+
+    .category-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .category-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .category-description {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .category-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .category-tag {
+      padding: 4px 10px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .selected-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .category-card.selected .selected-badge {
+      opacity: 1;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .skip-link {
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .skip-link a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .skip-link a:hover {
+      color: var(--primary-light);
+      text-decoration: underline;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .categories-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .category-card {
+        padding: 20px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Major Category Recommendations</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Based on your interests and background, we recommend the following major categories</p>
+  </div>
+
+  <div class="container">
+    <div class="intro-text">
+      Based on your interests, GPA, and hobbies, we recommend the following major categories. Select one or more categories that interest you, and we will refine them into specific majors.
+    </div>
+
+    <div class="categories-grid" id="categoriesGrid">
+      <!-- Category cards will be dynamically generated by JavaScript -->
+    </div>
+
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>
+      Continue Next Step →
+    </button>
+
+    <div class="skip-link">
+      <a href="refine_majors.html?skip=true">Skip, enter target major directly</a>
+    </div>
+  </div>
+
+  <button class="back-button" onclick="window.location.href='check_profile.html'" title="Back">←</button>
+
+  <script>
+    // Major category data
+    const categories = [
+      {
+        id: 'engineering',
+        icon: '⚙️',
+        title: 'Engineering',
+        description: 'Computer science, mechanical, electrical, biomedical engineering, and more',
+        tags: ['Computer Science', 'Mechanical Engineering', 'Electrical Engineering', 'Biomedical Engineering']
+      },
+      {
+        id: 'science',
+        icon: '🔬',
+        title: 'Science',
+        description: 'Mathematics, physics, chemistry, biology, and other fundamental sciences',
+        tags: ['Mathematics', 'Physics', 'Chemistry', 'Biology']
+      },
+      {
+        id: 'business',
+        icon: '💼',
+        title: 'Business',
+        description: 'Business management, finance, economics, marketing',
+        tags: ['Finance', 'Economics', 'Business Administration', 'Marketing']
+      },
+      {
+        id: 'arts',
+        icon: '🎨',
+        title: 'Arts',
+        description: 'Visual arts, design, music, performing arts',
+        tags: ['Design', 'Visual Arts', 'Music', 'Performing Arts']
+      },
+      {
+        id: 'social',
+        icon: '👥',
+        title: 'Social Sciences',
+        description: 'Psychology, sociology, political science, international relations',
+        tags: ['Psychology', 'Sociology', 'Political Science', 'International Relations']
+      },
+      {
+        id: 'health',
+        icon: '🏥',
+        title: 'Health Sciences',
+        description: 'Clinical medicine, nursing, public health, pharmacy',
+        tags: ['Medicine', 'Nursing', 'Public Health', 'Pharmacy']
+      }
+    ];
+
+    let selectedCategories = [];
+
+    function renderCategories() {
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = categories.map(category => `
+        <div class="category-card" data-id="${category.id}" onclick="toggleCategory('${category.id}')">
+          <div class="selected-badge">✓</div>
+          <div class="category-icon">${category.icon}</div>
+          <div class="category-title">${category.title}</div>
+          <div class="category-description">${category.description}</div>
+          <div class="category-tags">
+            ${category.tags.map(tag => `<span class="category-tag">${tag}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleCategory(categoryId) {
+      const card = document.querySelector(`.category-card[data-id="${categoryId}"]`);
+      const index = selectedCategories.indexOf(categoryId);
+
+      if (index > -1) {
+        // Deselect
+        selectedCategories.splice(index, 1);
+        card.classList.remove('selected');
+      } else {
+        // Select
+        selectedCategories.push(categoryId);
+        card.classList.add('selected');
+      }
+
+      // Update button state
+      const continueButton = document.getElementById('continueButton');
+      if (selectedCategories.length > 0) {
+        continueButton.disabled = false;
+        continueButton.textContent = `Continue Next Step (${selectedCategories.length} selected) →`;
+      } else {
+        continueButton.disabled = true;
+        continueButton.textContent = 'Please select at least one category';
+      }
+    }
+
+    function continueToNextStep() {
+      if (selectedCategories.length === 0) {
+        alert('Please select at least one major category');
+        return;
+      }
+
+      // Save selected categories
+      localStorage.setItem('selectedCategories', JSON.stringify(selectedCategories));
+      
+      // Navigate to major refinement page
+      window.location.href = 'refine_majors.html';
+    }
+
+    // Check URL parameters
+    function checkSkip() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('skip') === 'true') {
+        window.location.href = 'refine_majors.html?skip=true';
+      }
+    }
+
+    // Page load
+    document.addEventListener('DOMContentLoaded', () => {
+      checkSkip();
+      renderCategories();
+      
+      // Try to restore selection from localStorage
+      const saved = localStorage.getItem('selectedCategories');
+      if (saved) {
+        selectedCategories = JSON.parse(saved);
+        selectedCategories.forEach(id => {
+          const card = document.querySelector(`.category-card[data-id="${id}"]`);
+          if (card) {
+            card.classList.add('selected');
+          }
+        });
+        if (selectedCategories.length > 0) {
+          const continueButton = document.getElementById('continueButton');
+          continueButton.disabled = false;
+          continueButton.textContent = `Continue Next Step (${selectedCategories.length} selected) →`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

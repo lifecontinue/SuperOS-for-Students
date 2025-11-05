@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>High School Roadmap - SuperOS</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --primary: #AA1E23;
+      --primary-dark: #4A0509;
+      --primary-light: #74070E;
+      --text-primary: #4A0509;
+      --text-secondary: #74070E;
+      --border-color: #AA1E23;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-card-3) 100%);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    /* Magical background particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0.3;
+      }
+      25% {
+        transform: translateY(-100px) translateX(50px) rotate(90deg);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateY(-200px) translateX(-30px) rotate(180deg);
+        opacity: 0.2;
+      }
+      75% {
+        transform: translateY(-150px) translateX(80px) rotate(270deg);
+        opacity: 0.4;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 30px 15px;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(170, 30, 35, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.3;
+      }
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    .header p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+    }
+
+    /* Tab Navigation with Magic */
+    .tabs-container {
+      background: var(--bg-card-2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tabs-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(170, 30, 35, 0.1), transparent);
+      animation: shimmer-bg 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer-bg {
+      0% {
+        left: -100%;
+      }
+      100% {
+        left: 100%;
+      }
+    }
+
+    .tabs-nav {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding-bottom: 5px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tabs-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-button {
+      flex: 0 0 auto;
+      background: transparent;
+      border: 2px solid var(--border-color);
+      color: var(--primary-dark);
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      min-width: fit-content;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tab-button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: var(--primary);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .tab-button:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .tab-button span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .tab-button:hover {
+      background: var(--bg-card-1);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(170, 30, 35, 0.25);
+    }
+
+    .tab-button.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.4);
+      transform: translateY(-3px) scale(1.05);
+    }
+
+    .tab-button.active::before {
+      width: 0;
+      height: 0;
+    }
+
+    /* Ripple effect */
+    .tab-button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s, opacity 0.6s;
+      opacity: 0;
+    }
+
+    .tab-button:active::after {
+      width: 200px;
+      height: 200px;
+      opacity: 0;
+    }
+
+    /* Tab Content with Magic Transitions */
+    .tab-content {
+      display: none;
+      animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Phase Card with 3D Effects */
+    .phase-card {
+      background: var(--bg-card-2);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(170, 30, 35, 0.15);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+
+    .phase-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(170, 30, 35, 0.1) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .phase-card:hover::before {
+      opacity: 1;
+    }
+
+    .phase-card:hover {
+      transform: translateY(-8px) rotateX(2deg);
+      box-shadow: 0 20px 40px rgba(170, 30, 35, 0.25);
+      border-color: var(--primary);
+    }
+
+    .phase-card.recent {
+      background: var(--bg-card-2);
+      opacity: 1;
+      filter: none;
+    }
+
+    .phase-card.future {
+      background: var(--bg-card-3);
+      opacity: 0.85;
+      filter: blur(2px);
+      border-color: rgba(170, 30, 35, 0.5);
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 15px;
+      position: relative;
+    }
+
+    .phase-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .phase-title::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--primary);
+      transition: width 0.4s ease;
+    }
+
+    .phase-card:hover .phase-title::after {
+      width: 100px;
+    }
+
+    .phase-grades {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 25px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(170, 30, 35, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .phase-card:hover .phase-grades {
+      transform: scale(1.1) rotate(5deg);
+    }
+
+    .phase-goal {
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 30px;
+      font-style: italic;
+      padding: 15px;
+      background: rgba(170, 30, 35, 0.05);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      transition: all 0.3s ease;
+    }
+
+    .phase-card:hover .phase-goal {
+      background: rgba(170, 30, 35, 0.08);
+      transform: translateX(5px);
+    }
+
+    /* ========== Mission Styles (Detailed Tasks) ========== */
+    .missions-section {
+      margin-top: 30px;
+    }
+
+    .missions-section h3 {
+      font-size: 20px;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .missions-section h3::before {
+      content: '';
+      width: 4px;
+      height: 24px;
+      background: var(--primary);
+      border-radius: 2px;
+      animation: grow 0.5s ease;
+    }
+
+    @keyframes grow {
+      from {
+        height: 0;
+      }
+      to {
+        height: 24px;
+      }
+    }
+
+    .mission-list {
+      display: grid;
+      gap: 20px;
+    }
+
+    /* Mission Card with Magic */
+    .mission-item {
+      background: var(--bg-card-1);
+      border-left: 5px solid var(--primary);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(170, 30, 35, 0.1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .mission-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .mission-item:hover::before {
+      left: 100%;
+    }
+
+    .mission-item:hover {
+      background: var(--bg-card-2);
+      transform: translateX(10px) translateY(-5px);
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.2);
+      border-left-width: 8px;
+    }
+
+    .mission-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .mission-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mission-type {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      color: white;
+      padding: 5px 14px;
+      border-radius: 15px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(170, 30, 35, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .mission-item:hover .mission-type {
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .mission-category {
+      display: inline-block;
+      background: rgba(170, 30, 35, 0.1);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      margin-left: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .mission-item:hover .mission-category {
+      background: var(--primary);
+      color: white;
+    }
+
+    .mission-timing {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 15px;
+      background: rgba(170, 30, 35, 0.05);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .mission-item:hover .mission-timing {
+      background: rgba(170, 30, 35, 0.1);
+      transform: translateX(5px);
+    }
+
+    .mission-trigger {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+      font-style: italic;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .mission-trigger::before {
+      content: '💡';
+      position: absolute;
+      left: 0;
+    }
+
+    .mission-tasks {
+      margin-top: 15px;
+      padding-left: 25px;
+    }
+
+    .mission-tasks li {
+      margin-bottom: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.7;
+      position: relative;
+      padding-left: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .mission-tasks li::marker {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .mission-item:hover .mission-tasks li {
+      transform: translateX(5px);
+    }
+
+    .mission-outcome {
+      margin-top: 18px;
+      padding: 15px;
+      background: rgba(170, 30, 35, 0.08);
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      border-left: 4px solid var(--primary);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mission-item:hover .mission-outcome {
+      background: rgba(170, 30, 35, 0.12);
+      border-left-width: 6px;
+      transform: translateX(5px);
+    }
+
+    .mission-outcome strong {
+      color: var(--primary-dark);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    /* ========== Mission Group Styles ========== */
+    .mission-groups {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+    }
+
+    /* Mission Group Card with Magic */
+    .mission-group-card {
+      background: linear-gradient(135deg, var(--bg-card-1) 0%, var(--bg-card-3) 100%);
+      border: 2px solid rgba(170, 30, 35, 0.3);
+      border-radius: 16px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transform-style: preserve-3d;
+    }
+
+    .mission-group-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .mission-group-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(170, 30, 35, 0.2) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .mission-group-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .mission-group-card:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
+    .mission-group-card:hover {
+      border-color: var(--border-color);
+      transform: translateY(-10px) rotateY(5deg) scale(1.05);
+      box-shadow: 0 15px 35px rgba(170, 30, 35, 0.3);
+    }
+
+    .mission-group-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+      display: block;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
+    }
+
+    .mission-group-card:hover .mission-group-icon {
+      transform: scale(1.2) rotate(10deg);
+    }
+
+    .mission-group-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-transform: capitalize;
+      line-height: 1.4;
+      word-break: break-word;
+      position: relative;
+      z-index: 1;
+      transition: color 0.3s ease;
+    }
+
+    .mission-group-card:hover .mission-group-name {
+      color: var(--primary);
+    }
+
+    .mission-group-count {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 10px;
+      opacity: 0.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Fog Animation for Future Phases */
+    @keyframes fogShift {
+      0%, 100% {
+        opacity: 0.85;
+        filter: blur(2px);
+      }
+      50% {
+        opacity: 0.9;
+        filter: blur(1.5px);
+      }
+    }
+
+    .phase-card.future {
+      animation: fogShift 4s ease-in-out infinite;
+    }
+
+    .phase-card.future .mission-group-card {
+      opacity: 0.8;
+    }
+
+    .phase-card.future:hover {
+      opacity: 0.95;
+      filter: blur(1px);
+    }
+
+    .phase-card.future:hover .mission-group-card {
+      opacity: 1;
+    }
+
+    /* ========== Responsive Design ========== */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px 10px;
+      }
+
+      .header {
+        padding: 20px 10px;
+        margin-bottom: 20px;
+      }
+
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .header p {
+        font-size: 13px;
+      }
+
+      .tabs-container {
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+
+      .tab-button {
+        padding: 12px 18px;
+        font-size: 13px;
+      }
+
+      .phase-card {
+        padding: 20px 15px;
+      }
+
+      .phase-title {
+        font-size: 20px;
+        min-width: auto;
+      }
+
+      .phase-grades {
+        font-size: 11px;
+        padding: 6px 14px;
+      }
+
+      .phase-goal {
+        font-size: 14px;
+        padding: 12px;
+      }
+
+      .mission-item {
+        padding: 18px;
+      }
+
+      .mission-name {
+        font-size: 16px;
+      }
+
+      .mission-tasks li {
+        font-size: 13px;
+      }
+
+      .mission-groups {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+      }
+
+      .mission-group-card {
+        padding: 20px;
+      }
+
+      .mission-group-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
+      }
+
+      .mission-group-name {
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .tab-button {
+        padding: 10px 14px;
+        font-size: 12px;
+      }
+
+      .phase-card {
+        padding: 15px 12px;
+      }
+
+      .phase-title {
+        font-size: 18px;
+      }
+
+      .mission-groups {
+        grid-template-columns: 1fr;
+      }
+
+      .mission-item {
+        padding: 15px;
+      }
+
+      .mission-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Loading Animation */
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(170, 30, 35, 0.3);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+  <div class="container">
+    <div class="header">
+      <h1>🌟 High School Roadmap</h1>
+      <p>Explore the Future, Plan the Present | Clear for Now, Mysterious for Later</p>
+    </div>
+
+    <div class="tabs-container">
+      <div class="tabs-nav" id="tabsNav">
+        <!-- Tabs will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <div id="tabsContent">
+      <!-- Tab contents will be dynamically inserted here -->
+    </div>
+  </div>
+
+  <script>
+    const roadmapData = {
+      "phases": [
+        {
+          "id": "phase_1",
+          "name": "Pre-High School — Discovery & Foundation",
+          "shortName": "Pre-High School",
+          "grades": "6–8",
+          "goal": "Build curiosity, basic skills, and early exposure.",
+          "mission_groups": ["interest_explorer", "skill_builder", "early_capstone", "learning_habits"]
+        },
+        {
+          "id": "phase_2",
+          "name": "Building Application — Exploration & Distinction",
+          "shortName": "Building Application",
+          "grades": "9–11",
+          "goal": "Deepen academic focus, build a niche, and start producing outputs.",
+          "mission_groups": ["academic_explorer", "major_explorer", "capstone_project", "competition_track", "research_experience", "leadership_impact", "creative_media", "summer_exploration"]
+        },
+        {
+          "id": "phase_3",
+          "name": "Application — Presentation & Excellence",
+          "shortName": "Application",
+          "grades": "12",
+          "goal": "Synthesize experiences into a coherent narrative.",
+          "mission_groups": ["application_narrative", "essay_craft", "portfolio_evidence", "interview_prep", "college_list"]
+        },
+        {
+          "id": "phase_4",
+          "name": "Post-Application — Transition & Growth",
+          "shortName": "Post-Application",
+          "grades": "12–College",
+          "goal": "Prepare for college life, expand networks, and reflect on identity.",
+          "mission_groups": ["scholarship_aid", "college_transition", "gap_experience", "career_passion"]
+        }
+      ],
+      "missions": [
+        {
+          "id": "mission_interest_explorer_01",
+          "name": "Interest Explorer",
+          "category": "exploration",
+          "phase": "phase_1",
+          "type": "core",
+          "timing": "G6–7",
+          "trigger": "Student shows curiosity in multiple subjects",
+          "tasks": [
+            "Try 3 short micro projects in arts, science, and social issues",
+            "Join 1 online course in a favorite area"
+          ],
+          "expected_outcome": "Early record of interests and potential directions"
+        },
+        {
+          "id": "mission_skill_builder_01",
+          "name": "Skill Builder",
+          "category": "skills",
+          "phase": "phase_1",
+          "type": "core",
+          "timing": "G7–8",
+          "trigger": "Completion of Interest Explorer",
+          "tasks": [
+            "Start 1 structured learning path (Python, Writing, Debate, etc.)",
+            "Join a competition or club activity"
+          ],
+          "expected_outcome": "Documented skill foundation"
+        },
+        {
+          "id": "mission_capstone_01",
+          "name": "Capstone Project",
+          "category": "capstone",
+          "phase": "phase_2",
+          "type": "core",
+          "timing": "G10–11",
+          "trigger": "Major confirmed or interest stabilized",
+          "tasks": [
+            "Develop independent project under mentor guidance",
+            "Publish or present results (paper, prototype, campaign, etc.)"
+          ],
+          "expected_outcome": "Tangible project evidence"
+        },
+        {
+          "id": "mission_online_research_01",
+          "name": "Online Research Program",
+          "category": "research",
+          "phase": "phase_2",
+          "type": "optional",
+          "timing": "G10–11",
+          "trigger": "Strong academic or Capstone progress",
+          "tasks": [
+            "Join university or online research program (Indigo, Pioneer, etc.)",
+            "Publish in a student journal"
+          ],
+          "expected_outcome": "Academic credibility and professor recommendation"
+        },
+        {
+          "id": "mission_major_explorer_01",
+          "name": "Major Explorer",
+          "category": "academic",
+          "phase": "phase_2",
+          "type": "core",
+          "timing": "G10",
+          "trigger": "After Academic Explorer completion",
+          "tasks": [
+            "Research 3 academic fields, narrow to 1–2 majors",
+            "Take 1 university-level course or summer school",
+            "Interview or shadow professionals"
+          ],
+          "expected_outcome": "Declared intended major"
+        },
+        {
+          "id": "mission_internship_01",
+          "name": "Internship Experience",
+          "category": "career",
+          "phase": "phase_2",
+          "type": "optional",
+          "timing": "Summer of G10–11",
+          "trigger": "Strong niche clarity or Capstone completion",
+          "tasks": [
+            "Apply for 2–3 internships (remote or on-site)",
+            "Document outcomes and supervisor feedback"
+          ],
+          "expected_outcome": "Practical experience and resume boost"
+        },
+        {
+          "id": "mission_volunteer_01",
+          "name": "Volunteer Project",
+          "category": "community",
+          "phase": "phase_2",
+          "type": "optional",
+          "timing": "Anytime during G9–11",
+          "trigger": "Student shows empathy or social interest",
+          "tasks": [
+            "Join local or global volunteer project",
+            "Measure social impact (e.g., hours, testimonials, outcomes)"
+          ],
+          "expected_outcome": "Demonstrated social responsibility"
+        },
+        {
+          "id": "mission_school_advisor_01",
+          "name": "School Advisor Check-In",
+          "category": "advising",
+          "phase": "phase_2",
+          "type": "core",
+          "timing": "Every semester",
+          "trigger": "Major exploration or activity planning period",
+          "tasks": [
+            "Meet with school counselor for course selection and activity review",
+            "Update progress in personal roadmap"
+          ],
+          "expected_outcome": "Aligned academic and extracurricular planning"
+        },
+        {
+          "id": "mission_major_advisor_01",
+          "name": "Major Advisor Session",
+          "category": "advising",
+          "phase": "phase_3",
+          "type": "core",
+          "timing": "G12 Summer–Fall",
+          "trigger": "Intended major declared",
+          "tasks": [
+            "Consult academic or industry mentor about college path",
+            "Adjust essays and applications accordingly"
+          ],
+          "expected_outcome": "Coherent academic story and fit narrative"
+        },
+        {
+          "id": "mission_essay_01",
+          "name": "Essay Craft",
+          "category": "application",
+          "phase": "phase_3",
+          "type": "core",
+          "timing": "Summer–Fall of G12",
+          "trigger": "Application Narrative ready",
+          "tasks": [
+            "Draft 3 personal statements",
+            "Refine structure, emotion, and logic with mentor feedback"
+          ],
+          "expected_outcome": "Polished and authentic essays"
+        },
+        {
+          "id": "mission_scholarships_01",
+          "name": "Scholarship Application",
+          "category": "financial",
+          "phase": "phase_4",
+          "type": "core",
+          "timing": "Winter of G12",
+          "trigger": "College applications submitted",
+          "tasks": [
+            "Identify 5 scholarships aligned with profile",
+            "Submit applications and essays"
+          ],
+          "expected_outcome": "Financial aid or merit award"
+        },
+        {
+          "id": "mission_simulate_path_01",
+          "name": "Simulate College Path",
+          "category": "career",
+          "phase": "phase_4",
+          "type": "optional",
+          "timing": "Pre-college summer",
+          "trigger": "College acceptance confirmed",
+          "tasks": [
+            "Participate in online course or simulation from target university",
+            "Reflect on study rhythm and academic expectations"
+          ],
+          "expected_outcome": "Smooth transition and confidence for college"
+        }
+      ]
+    };
+
+    // Define recent and future phases
+    const recentPhases = ['phase_1', 'phase_2'];
+    const futurePhases = ['phase_3', 'phase_4'];
+
+    // Mission Group icons
+    const groupIcons = {
+      'interest_explorer': '🔍',
+      'skill_builder': '🛠️',
+      'early_capstone': '🎯',
+      'learning_habits': '📚',
+      'academic_explorer': '📖',
+      'major_explorer': '🎓',
+      'capstone_project': '🏆',
+      'competition_track': '🥇',
+      'research_experience': '🔬',
+      'leadership_impact': '👥',
+      'creative_media': '🎨',
+      'summer_exploration': '☀️',
+      'application_narrative': '📝',
+      'essay_craft': '✍️',
+      'portfolio_evidence': '📋',
+      'interview_prep': '💼',
+      'college_list': '🏫',
+      'scholarship_aid': '💰',
+      'college_transition': '🚀',
+      'gap_experience': '🌍',
+      'career_passion': '💡'
+    };
+
+    function formatMissionGroupName(groupName) {
+      return groupName.split('_').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+    }
+
+    function getCategoryName(category) {
+      const categoryMap = {
+        'exploration': 'Exploration',
+        'skills': 'Skills',
+        'capstone': 'Project',
+        'research': 'Research',
+        'academic': 'Academic',
+        'career': 'Career',
+        'community': 'Community',
+        'advising': 'Advising',
+        'application': 'Application',
+        'financial': 'Financial'
+      };
+      return categoryMap[category] || category;
+    }
+
+    // Create magical particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Render Mission (detailed task card)
+    function renderMission(mission) {
+      return `
+        <div class="mission-item">
+          <div class="mission-header">
+            <div>
+              <div class="mission-name">
+                ${mission.name}
+                <span class="mission-category">${getCategoryName(mission.category)}</span>
+              </div>
+            </div>
+            <span class="mission-type">${mission.type}</span>
+          </div>
+          <div class="mission-timing">
+            ⏰ ${mission.timing}
+          </div>
+          <div class="mission-trigger">
+            ${mission.trigger}
+          </div>
+          <ul class="mission-tasks">
+            ${mission.tasks.map(task => `<li>${task}</li>`).join('')}
+          </ul>
+          <div class="mission-outcome">
+            <strong>Expected Outcome</strong>
+            ${mission.expected_outcome}
+          </div>
+        </div>
+      `;
+    }
+
+    // Render Mission Group (task group card)
+    function renderMissionGroup(groupName) {
+      const icon = groupIcons[groupName] || '📌';
+      return `
+        <div class="mission-group-card">
+          <span class="mission-group-icon">${icon}</span>
+          <div class="mission-group-name">${formatMissionGroupName(groupName)}</div>
+        </div>
+      `;
+    }
+
+    // Render Phase content
+    function renderPhaseContent(phase) {
+      const isRecent = recentPhases.includes(phase.id);
+      const phaseClass = isRecent ? 'recent' : 'future';
+      
+      const phaseMissions = roadmapData.missions.filter(m => m.phase === phase.id);
+      
+      let missionsHTML = '';
+      
+      if (isRecent) {
+        missionsHTML = `
+          <div class="missions-section">
+            <h3>📋 Detailed Missions</h3>
+            <div class="mission-list">
+              ${phaseMissions.length > 0 
+                ? phaseMissions.map(mission => renderMission(mission)).join('')
+                : '<p style="color: var(--text-secondary); padding: 20px; text-align: center;">No missions available yet</p>'
+              }
+            </div>
+          </div>
+        `;
+      } else {
+        missionsHTML = `
+          <div class="missions-section">
+            <h3>🌫️ Mission Groups</h3>
+            <div class="mission-groups">
+              ${phase.mission_groups.map(group => renderMissionGroup(group)).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="phase-card ${phaseClass}">
+          <div class="phase-header">
+            <div class="phase-title">${phase.name}</div>
+            <div class="phase-grades">${phase.grades}</div>
+          </div>
+          <div class="phase-goal">🎯 ${phase.goal}</div>
+          ${missionsHTML}
+        </div>
+      `;
+    }
+
+    // Render Tab button
+    function renderTabButton(phase, index) {
+      const isActive = index === 0 ? 'active' : '';
+      return `
+        <button class="tab-button ${isActive}" data-phase="${phase.id}">
+          <span>${phase.shortName || phase.name}</span>
+        </button>
+      `;
+    }
+
+    // Render Tab content
+    function renderTabContent(phase, index) {
+      const isActive = index === 0 ? 'active' : '';
+      return `
+        <div class="tab-content ${isActive}" data-phase="${phase.id}">
+          ${renderPhaseContent(phase)}
+        </div>
+      `;
+    }
+
+    // Initialize Tabs
+    function initTabs() {
+      const tabsNav = document.getElementById('tabsNav');
+      const tabsContent = document.getElementById('tabsContent');
+
+      tabsNav.innerHTML = roadmapData.phases.map((phase, index) => 
+        renderTabButton(phase, index)
+      ).join('');
+
+      tabsContent.innerHTML = roadmapData.phases.map((phase, index) => 
+        renderTabContent(phase, index)
+      ).join('');
+
+      // Add click ripple effect
+      const tabButtons = document.querySelectorAll('.tab-button');
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const phaseId = button.getAttribute('data-phase');
+          
+          // Remove all active classes
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(content => 
+            content.classList.remove('active')
+          );
+          
+          // Add active class to current tab
+          button.classList.add('active');
+          const targetContent = document.querySelector(`.tab-content[data-phase="${phaseId}"]`);
+          targetContent.classList.add('active');
+          
+          // Smooth scroll to top of content
+          targetContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        // Add hover sound effect (visual only)
+        button.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px) scale(1.02)';
+        });
+
+        button.addEventListener('mouseleave', function() {
+          if (!this.classList.contains('active')) {
+            this.style.transform = 'translateY(0) scale(1)';
+          }
+        });
+      });
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      initTabs();
+      
+      // Add entrance animation to cards
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.phase-card, .mission-item, .mission-group-card');
+        cards.forEach((card, index) => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, index * 50);
+        });
+      }, 100);
+    });
+  </script>
+</body>
+</html>

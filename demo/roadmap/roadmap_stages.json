@@ -1,0 +1,320 @@
+{
+  "pre_high_school": {
+    "stage_id": "pre_high_school",
+    "name": "Pre High School",
+    "icon": "🌱",
+    "description": "Prepare for high school and explore your interests",
+    "theme": "Foundation Building",
+    "milestones": [
+      {
+        "id": "ms_pre_001",
+        "title": "Academic Foundation Setup",
+        "description": "Establish strong study habits and academic foundation",
+        "category": "Academic",
+        "priority": "high",
+        "timeline": "6-12 months",
+        "tasks": [
+          "Develop effective study routines",
+          "Build strong reading and writing skills",
+          "Explore different subject areas",
+          "Identify learning preferences"
+        ]
+      },
+      {
+        "id": "ms_pre_002",
+        "title": "Interest Exploration",
+        "description": "Discover your passions through diverse activities",
+        "category": "Exploration",
+        "priority": "high",
+        "timeline": "Ongoing",
+        "tasks": [
+          "Try different extracurricular activities",
+          "Join clubs and organizations",
+          "Participate in community service",
+          "Explore hobbies and interests"
+        ]
+      },
+      {
+        "id": "ms_pre_003",
+        "title": "Skill Development",
+        "description": "Build foundational skills for future success",
+        "category": "Personal Growth",
+        "priority": "medium",
+        "timeline": "Ongoing",
+        "tasks": [
+          "Develop time management skills",
+          "Build leadership potential",
+          "Improve communication skills",
+          "Cultivate critical thinking"
+        ]
+      },
+      {
+        "id": "ms_pre_004",
+        "title": "High School Preparation",
+        "description": "Prepare for the transition to high school",
+        "category": "Planning",
+        "priority": "medium",
+        "timeline": "3-6 months before high school",
+        "tasks": [
+          "Research high school options",
+          "Understand course requirements",
+          "Plan for extracurricular involvement",
+          "Set initial academic goals"
+        ]
+      }
+    ]
+  },
+  "building_candidacy": {
+    "stage_id": "building_candidacy",
+    "name": "Building Candidacy",
+    "icon": "🏗️",
+    "description": "Build a strong profile through academics and activities",
+    "theme": "Strategic Development",
+    "milestones": [
+      {
+        "id": "ms_build_001",
+        "title": "Academic Excellence",
+        "description": "Maintain strong GPA and take challenging courses",
+        "category": "Academic",
+        "priority": "high",
+        "timeline": "Grades 9-11",
+        "tasks": [
+          "Maintain high GPA (3.5+)",
+          "Take AP/Honors courses",
+          "Excel in core subjects",
+          "Seek academic challenges"
+        ]
+      },
+      {
+        "id": "ms_build_002",
+        "title": "Deepen Extracurriculars",
+        "description": "Commit to 2-3 core activities and show leadership",
+        "category": "Activities",
+        "priority": "high",
+        "timeline": "Grades 9-11",
+        "tasks": [
+          "Focus on 2-3 main activities",
+          "Take on leadership roles",
+          "Show long-term commitment",
+          "Create meaningful impact"
+        ]
+      },
+      {
+        "id": "ms_build_003",
+        "title": "Standardized Test Preparation",
+        "description": "Prepare for and excel on standardized tests",
+        "category": "Testing",
+        "priority": "high",
+        "timeline": "Grade 10-11",
+        "tasks": [
+          "Take PSAT in Grade 10",
+          "Prepare for SAT/ACT",
+          "Take practice tests",
+          "Achieve target scores by Grade 11"
+        ]
+      },
+      {
+        "id": "ms_build_004",
+        "title": "Build Relationships",
+        "description": "Develop strong relationships with teachers and mentors",
+        "category": "Relationships",
+        "priority": "high",
+        "timeline": "Grades 9-11",
+        "tasks": [
+          "Build rapport with teachers",
+          "Engage in class discussions",
+          "Seek mentorship opportunities",
+          "Connect with counselors"
+        ]
+      },
+      {
+        "id": "ms_build_005",
+        "title": "Unique Projects & Achievements",
+        "description": "Create standout projects or achievements",
+        "category": "Excellence",
+        "priority": "medium",
+        "timeline": "Grades 10-11",
+        "tasks": [
+          "Start a meaningful project",
+          "Participate in competitions",
+          "Pursue research opportunities",
+          "Create a portfolio of work"
+        ]
+      }
+    ]
+  },
+  "application": {
+    "stage_id": "application",
+    "name": "Application",
+    "icon": "📝",
+    "description": "Complete and submit college applications",
+    "theme": "Execution & Submission",
+    "milestones": [
+      {
+        "id": "ms_app_001",
+        "title": "Finalize College List",
+        "description": "Create a balanced list of reach, target, and safety schools",
+        "category": "Planning",
+        "priority": "high",
+        "timeline": "Summer before Grade 12",
+        "tasks": [
+          "Research colleges thoroughly",
+          "Visit campuses (virtual or in-person)",
+          "Create balanced college list (8-12 schools)",
+          "Verify requirements for each school"
+        ]
+      },
+      {
+        "id": "ms_app_002",
+        "title": "Personal Statement",
+        "description": "Write compelling personal statement",
+        "category": "Essays",
+        "priority": "high",
+        "timeline": "Summer - Early Fall Grade 12",
+        "tasks": [
+          "Brainstorm essay topics",
+          "Write multiple drafts",
+          "Get feedback from teachers/counselors",
+          "Finalize personal statement"
+        ]
+      },
+      {
+        "id": "ms_app_003",
+        "title": "Supplemental Essays",
+        "description": "Write school-specific supplemental essays",
+        "category": "Essays",
+        "priority": "high",
+        "timeline": "Fall Grade 12",
+        "tasks": [
+          "Identify all essay prompts",
+          "Write first drafts",
+          "Revise and refine",
+          "Proofread carefully"
+        ]
+      },
+      {
+        "id": "ms_app_004",
+        "title": "Secure Recommendations",
+        "description": "Request and secure strong recommendation letters",
+        "category": "Recommendations",
+        "priority": "high",
+        "timeline": "Spring Grade 11 - Fall Grade 12",
+        "tasks": [
+          "Identify recommenders (2 teachers + counselor)",
+          "Request letters early (2+ months before deadline)",
+          "Provide recommenders with resume/brag sheet",
+          "Follow up politely"
+        ]
+      },
+      {
+        "id": "ms_app_005",
+        "title": "Submit Applications",
+        "description": "Complete and submit all application materials",
+        "category": "Submission",
+        "priority": "high",
+        "timeline": "October - January Grade 12",
+        "tasks": [
+          "Complete Common App/Coalition App",
+          "Submit test scores",
+          "Send transcripts",
+          "Submit before deadlines",
+          "Track application status"
+        ]
+      },
+      {
+        "id": "ms_app_006",
+        "title": "Financial Aid",
+        "description": "Complete financial aid applications",
+        "category": "Financial",
+        "priority": "high",
+        "timeline": "October - February Grade 12",
+        "tasks": [
+          "Complete FAFSA",
+          "Complete CSS Profile (if required)",
+          "Submit required documents",
+          "Apply for scholarships"
+        ]
+      }
+    ]
+  },
+  "post_application": {
+    "stage_id": "post_application",
+    "name": "Post Application",
+    "icon": "⏳",
+    "description": "Navigate decisions and prepare for college",
+    "theme": "Decision & Transition",
+    "milestones": [
+      {
+        "id": "ms_post_001",
+        "title": "Wait for Decisions",
+        "description": "Monitor application status and wait for decisions",
+        "category": "Waiting",
+        "priority": "medium",
+        "timeline": "January - April Grade 12",
+        "tasks": [
+          "Check application portals regularly",
+          "Respond to any requests promptly",
+          "Update achievements if significant",
+          "Stay patient and positive"
+        ]
+      },
+      {
+        "id": "ms_post_002",
+        "title": "Evaluate Offers",
+        "description": "Compare acceptances and financial aid packages",
+        "category": "Decision",
+        "priority": "high",
+        "timeline": "March - April Grade 12",
+        "tasks": [
+          "Compare all acceptances",
+          "Review financial aid packages",
+          "Visit accepted schools (if possible)",
+          "Consider fit, cost, and opportunities"
+        ]
+      },
+      {
+        "id": "ms_post_003",
+        "title": "Make Final Decision",
+        "description": "Choose your college and submit enrollment deposit",
+        "category": "Decision",
+        "priority": "high",
+        "timeline": "May 1 deadline",
+        "tasks": [
+          "Make final college choice",
+          "Submit enrollment deposit by May 1",
+          "Decline other offers",
+          "Notify counselor and teachers"
+        ]
+      },
+      {
+        "id": "ms_post_004",
+        "title": "Complete Enrollment",
+        "description": "Complete all enrollment requirements",
+        "category": "Enrollment",
+        "priority": "high",
+        "timeline": "May - August",
+        "tasks": [
+          "Submit final transcripts",
+          "Complete housing applications",
+          "Submit health forms",
+          "Attend orientation",
+          "Register for classes"
+        ]
+      },
+      {
+        "id": "ms_post_005",
+        "title": "Prepare for College",
+        "description": "Get ready for the college transition",
+        "category": "Preparation",
+        "priority": "medium",
+        "timeline": "Summer before college",
+        "tasks": [
+          "Connect with future classmates",
+          "Research course options",
+          "Prepare for independence",
+          "Set goals for college"
+        ]
+      }
+    ]
+  }
+}

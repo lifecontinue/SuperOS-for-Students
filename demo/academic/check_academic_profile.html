@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Check Academic Profile - Academic Advisor</title>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-hover: #1c2128;
+      --primary: #a855f7;
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --primary-light: #c084fc;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --border: rgba(240, 246, 252, 0.1);
+      --border-glow: rgba(168, 85, 247, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 0.5s ease;
+      border-radius: 4px;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .info-card.complete {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .info-card.incomplete {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .info-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.complete {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .status-badge.incomplete {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .info-card-content {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-label {
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .gpa-display {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-hover);
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    .gpa-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+
+    .gpa-number {
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .gpa-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.8);
+      text-transform: uppercase;
+    }
+
+    .gpa-details {
+      flex: 1;
+    }
+
+    .gpa-target {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .courses-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .course-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+    }
+
+    .course-name {
+      flex: 1;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .course-grade {
+      padding: 4px 12px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 12px;
+    }
+
+    .course-grade.A {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+    }
+
+    .course-grade.B {
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+    }
+
+    .course-grade.C {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .course-grade.D {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .info-card {
+        padding: 20px;
+      }
+
+      .gpa-display {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Check Academic Profile</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Review your current academic status and goals</p>
+  </div>
+
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">Checking information...</div>
+
+    <!-- Current GPA Card -->
+    <div class="info-card" id="gpaCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📊</span>
+          <span>Current GPA</span>
+        </div>
+        <span class="status-badge" id="gpaStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="gpa-display">
+          <div class="gpa-circle">
+            <div class="gpa-number" id="gpaNumber">—</div>
+            <div class="gpa-label">GPA</div>
+          </div>
+          <div class="gpa-details">
+            <div class="info-item">
+              <span class="info-label">Current GPA:</span>
+              <span class="info-value" id="gpaValue">—</span>
+            </div>
+            <div class="gpa-target">
+              <span class="info-label">Target GPA:</span>
+              <span class="info-value" id="targetGpaValue">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Courses Card -->
+    <div class="info-card" id="coursesCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📚</span>
+          <span>Current Courses</span>
+        </div>
+        <span class="status-badge" id="coursesStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="courses-list" id="coursesList">
+          <!-- Courses will be dynamically generated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Target Major Card -->
+    <div class="info-card" id="majorCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🎯</span>
+          <span>Target Major</span>
+        </div>
+        <span class="status-badge" id="majorStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Target Major:</span>
+          <span class="info-value" id="majorValue">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Required GPA:</span>
+          <span class="info-value" id="requiredGpaValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Academic Goals Card -->
+    <div class="info-card" id="goalsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🎓</span>
+          <span>Academic Goals</span>
+        </div>
+        <span class="status-badge" id="goalsStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Goal Type:</span>
+          <span class="info-value" id="goalTypeValue">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Target GPA:</span>
+          <span class="info-value" id="goalGpaValue">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Timeline:</span>
+          <span class="info-value" id="timelineValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>
+      Continue to Course Recommendation →
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.history.back()" title="Back">←</button>
+
+  <script>
+    // Get academic profile from localStorage or state
+    function getAcademicProfile() {
+      const stored = localStorage.getItem('academicProfile');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      
+      // Default example data
+      return {
+        currentGpa: 3.45,
+        targetGpa: 3.8,
+        targetMajor: 'Computer Science',
+        requiredGpa: 3.7,
+        currentCourses: [
+          { name: 'Calculus I', grade: 'B+', credits: 4 },
+          { name: 'Introduction to Computer Science', grade: 'A-', credits: 3 },
+          { name: 'English Composition', grade: 'B', credits: 3 },
+          { name: 'Physics I', grade: 'B+', credits: 4 },
+          { name: 'General Chemistry', grade: 'A', credits: 4 }
+        ],
+        goals: {
+          type: 'Graduate School Admission',
+          targetGpa: 3.8,
+          timeline: '2 semesters'
+        }
+      };
+    }
+
+    function gradeToGpa(grade) {
+      const gradeMap = {
+        'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+        'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+        'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+        'D+': 1.3, 'D': 1.0, 'F': 0.0
+      };
+      return gradeMap[grade] || 0;
+    }
+
+    function checkAcademicProfile() {
+      const profile = getAcademicProfile();
+      let completedCount = 0;
+      const totalCount = 4;
+
+      // Check GPA
+      const gpaCard = document.getElementById('gpaCard');
+      const gpaStatus = document.getElementById('gpaStatus');
+      const gpaNumber = document.getElementById('gpaNumber');
+      const gpaValue = document.getElementById('gpaValue');
+      const targetGpaValue = document.getElementById('targetGpaValue');
+      
+      if (profile.currentGpa && profile.currentGpa > 0) {
+        gpaCard.classList.add('complete');
+        gpaCard.classList.remove('incomplete');
+        gpaStatus.textContent = 'Complete';
+        gpaStatus.className = 'status-badge complete';
+        gpaNumber.textContent = profile.currentGpa.toFixed(2);
+        gpaValue.textContent = profile.currentGpa.toFixed(2);
+        targetGpaValue.textContent = profile.targetGpa ? profile.targetGpa.toFixed(2) : 'Not set';
+        completedCount++;
+      } else {
+        gpaCard.classList.add('incomplete');
+        gpaCard.classList.remove('complete');
+        gpaStatus.textContent = 'Incomplete';
+        gpaStatus.className = 'status-badge incomplete';
+        gpaNumber.textContent = '—';
+        gpaValue.textContent = 'Not filled';
+      }
+
+      // Check Courses
+      const coursesCard = document.getElementById('coursesCard');
+      const coursesStatus = document.getElementById('coursesStatus');
+      const coursesList = document.getElementById('coursesList');
+      
+      if (profile.currentCourses && profile.currentCourses.length > 0) {
+        coursesCard.classList.add('complete');
+        coursesCard.classList.remove('incomplete');
+        coursesStatus.textContent = 'Complete';
+        coursesStatus.className = 'status-badge complete';
+        
+        coursesList.innerHTML = profile.currentCourses.map(course => `
+          <div class="course-item">
+            <span class="course-name">${course.name} (${course.credits} credits)</span>
+            <span class="course-grade ${course.grade[0]}">${course.grade}</span>
+          </div>
+        `).join('');
+        completedCount++;
+      } else {
+        coursesCard.classList.add('incomplete');
+        coursesCard.classList.remove('complete');
+        coursesStatus.textContent = 'Incomplete';
+        coursesStatus.className = 'status-badge incomplete';
+        coursesList.innerHTML = '<div class="info-item"><span class="info-label">No courses registered</span></div>';
+      }
+
+      // Check Target Major
+      const majorCard = document.getElementById('majorCard');
+      const majorStatus = document.getElementById('majorStatus');
+      const majorValue = document.getElementById('majorValue');
+      const requiredGpaValue = document.getElementById('requiredGpaValue');
+      
+      if (profile.targetMajor) {
+        majorCard.classList.add('complete');
+        majorCard.classList.remove('incomplete');
+        majorStatus.textContent = 'Complete';
+        majorStatus.className = 'status-badge complete';
+        majorValue.textContent = profile.targetMajor;
+        requiredGpaValue.textContent = profile.requiredGpa ? profile.requiredGpa.toFixed(2) : 'Not specified';
+        completedCount++;
+      } else {
+        majorCard.classList.add('incomplete');
+        majorCard.classList.remove('complete');
+        majorStatus.textContent = 'Incomplete';
+        majorStatus.className = 'status-badge incomplete';
+        majorValue.textContent = 'Not set';
+        requiredGpaValue.textContent = '—';
+      }
+
+      // Check Goals
+      const goalsCard = document.getElementById('goalsCard');
+      const goalsStatus = document.getElementById('goalsStatus');
+      const goalTypeValue = document.getElementById('goalTypeValue');
+      const goalGpaValue = document.getElementById('goalGpaValue');
+      const timelineValue = document.getElementById('timelineValue');
+      
+      if (profile.goals && profile.goals.targetGpa) {
+        goalsCard.classList.add('complete');
+        goalsCard.classList.remove('incomplete');
+        goalsStatus.textContent = 'Complete';
+        goalsStatus.className = 'status-badge complete';
+        goalTypeValue.textContent = profile.goals.type || 'Not specified';
+        goalGpaValue.textContent = profile.goals.targetGpa.toFixed(2);
+        timelineValue.textContent = profile.goals.timeline || 'Not specified';
+        completedCount++;
+      } else {
+        goalsCard.classList.add('incomplete');
+        goalsCard.classList.remove('complete');
+        goalsStatus.textContent = 'Incomplete';
+        goalsStatus.className = 'status-badge incomplete';
+        goalTypeValue.textContent = 'Not set';
+        goalGpaValue.textContent = '—';
+        timelineValue.textContent = '—';
+      }
+
+      // Update progress bar
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const progress = (completedCount / totalCount) * 100;
+      progressFill.style.width = progress + '%';
+      progressText.textContent = `Completion: ${completedCount}/${totalCount} (${Math.round(progress)}%)`;
+
+      // Update continue button
+      const continueButton = document.getElementById('continueButton');
+      if (completedCount === totalCount) {
+        continueButton.disabled = false;
+        continueButton.textContent = 'Continue to Course Recommendation →';
+      } else {
+        continueButton.disabled = false; // Allow continue even if incomplete
+        continueButton.textContent = 'Continue (Incomplete Info) →';
+      }
+
+      // Save profile to localStorage
+      localStorage.setItem('academicProfile', JSON.stringify(profile));
+
+      return completedCount === totalCount;
+    }
+
+    function continueToNextStep() {
+      window.location.href = 'recommend_courses.html';
+    }
+
+    // Check on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        checkAcademicProfile();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
+

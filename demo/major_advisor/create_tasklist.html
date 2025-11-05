@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Create Task List - Major Advisor</title>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-hover: #1c2128;
+      --primary: #a855f7;
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --primary-light: #c084fc;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --border: rgba(240, 246, 252, 0.1);
+      --border-glow: rgba(168, 85, 247, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .intro-text {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .task-category {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .category-icon {
+      font-size: 32px;
+    }
+
+    .category-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .tasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-item {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .task-item:hover {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.1);
+      transform: translateX(4px);
+    }
+
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .task-checkbox.checked {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .task-checkbox.checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .task-content {
+      flex: 1;
+    }
+
+    .task-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .task-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .task-meta {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .task-tag {
+      padding: 4px 10px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .task-tag.priority-high {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .task-tag.priority-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border-color: var(--warning);
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .task-item {
+        padding: 12px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Create Task List</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Create a personalized task list for your selected major</p>
+  </div>
+
+  <div class="container">
+    <div class="intro-text">
+      Based on your selected major, we have created the following task list. Completing these tasks will help you better understand and prepare for your target major.
+    </div>
+
+    <div id="taskCategories">
+      <!-- 任务类别将通过JavaScript动态生成 -->
+    </div>
+
+    <button class="action-button" onclick="startTasks()">
+      Start Executing Tasks →
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.history.back()" title="Back">←</button>
+
+  <script>
+    // 任务数据模板
+    const taskTemplates = {
+      '计算机科学': {
+        research: [
+          {
+            id: 'research-1',
+            title: '深入了解计算机科学专业课程设置',
+            description: '研究目标大学CS专业的核心课程、选修课程和毕业要求',
+            priority: 'high'
+          },
+          {
+            id: 'research-2',
+            title: '了解计算机科学就业方向和薪资水平',
+            description: '调研软件工程师、算法工程师等职位的就业前景和薪资范围',
+            priority: 'high'
+          },
+          {
+            id: 'research-3',
+            title: '研究知名大学的CS项目特色',
+            description: '了解MIT、Stanford等顶级大学的CS项目特点和录取要求',
+            priority: 'medium'
+          }
+        ],
+        courses: [
+          {
+            id: 'course-1',
+            title: '参加Python编程基础课程',
+            description: '通过Coursera或edX学习Python编程基础，掌握基本语法和数据结构',
+            priority: 'high'
+          },
+          {
+            id: 'course-2',
+            title: '学习算法与数据结构',
+            description: '参加在线算法课程，学习常见算法和数据结构',
+            priority: 'high'
+          },
+          {
+            id: 'course-3',
+            title: '参与Web开发项目',
+            description: '通过实践项目学习前端和后端开发技术',
+            priority: 'medium'
+          }
+        ],
+        summer: [
+          {
+            id: 'summer-1',
+            title: '申请MIT CSAIL暑期研究项目',
+            description: '申请MIT计算机科学人工智能实验室的暑期研究机会',
+            priority: 'high'
+          },
+          {
+            id: 'summer-2',
+            title: '参加Google Code-in编程竞赛',
+            description: '参与开源项目，提升编程技能和项目经验',
+            priority: 'medium'
+          },
+          {
+            id: 'summer-3',
+            title: '申请科技公司实习',
+            description: '申请大厂或创业公司的软件开发实习生职位',
+            priority: 'high'
+          }
+        ]
+      },
+      '数据科学': {
+        research: [
+          {
+            id: 'research-1',
+            title: '研究数据科学专业课程体系',
+            description: '了解数据科学专业的核心课程：统计学、机器学习、数据挖掘等',
+            priority: 'high'
+          },
+          {
+            id: 'research-2',
+            title: '调研数据科学家职业发展路径',
+            description: '了解数据科学家的职业发展路径和技能要求',
+            priority: 'high'
+          }
+        ],
+        courses: [
+          {
+            id: 'course-1',
+            title: '学习Python数据分析',
+            description: '通过Coursera学习Python数据分析，掌握pandas、numpy等库',
+            priority: 'high'
+          },
+          {
+            id: 'course-2',
+            title: '学习统计学基础',
+            description: '学习概率论、统计推断等统计学基础知识',
+            priority: 'high'
+          },
+          {
+            id: 'course-3',
+            title: '学习机器学习入门',
+            description: '通过在线课程学习机器学习基础理论和实践',
+            priority: 'medium'
+          }
+        ],
+        summer: [
+          {
+            id: 'summer-1',
+            title: '参加数据科学暑期项目',
+            description: '申请数据科学相关的暑期研究或实习项目',
+            priority: 'high'
+          }
+        ]
+      }
+    };
+
+    function getDefaultTasks(majorName) {
+      return {
+        research: [
+          {
+            id: 'research-1',
+            title: `深入研究${majorName}专业`,
+            description: '了解该专业的核心课程、培养目标和就业方向',
+            priority: 'high'
+          },
+          {
+            id: 'research-2',
+            title: '调研相关职业发展前景',
+            description: '了解该专业的职业发展路径和行业趋势',
+            priority: 'high'
+          }
+        ],
+        courses: [
+          {
+            id: 'course-1',
+            title: '学习相关在线课程',
+            description: '通过Coursera、edX等平台学习相关基础知识',
+            priority: 'high'
+          }
+        ],
+        summer: [
+          {
+            id: 'summer-1',
+            title: '申请相关暑期项目',
+            description: '申请与专业相关的暑期研究或实习项目',
+            priority: 'medium'
+          }
+        ]
+      };
+    }
+
+    function createTaskList() {
+      // 获取选择的专业
+      const saved = localStorage.getItem('selectedMajor');
+      let majorName = '计算机科学';
+      if (saved) {
+        const major = JSON.parse(saved);
+        majorName = major.name;
+      }
+
+      // 获取任务数据
+      const tasks = taskTemplates[majorName] || getDefaultTasks(majorName);
+
+      // 创建任务类别
+      const categories = [
+        {
+          id: 'research',
+          icon: '📚',
+          title: '专业研究任务',
+          description: '通过深入研究了解专业详情',
+          tasks: tasks.research
+        },
+        {
+          id: 'courses',
+          icon: '💻',
+          title: '在线课程学习',
+          description: '通过网课学习专业基础知识',
+          tasks: tasks.courses
+        },
+        {
+          id: 'summer',
+          icon: '🌞',
+          title: '夏校和实习',
+          description: '申请相关夏校和实习机会',
+          tasks: tasks.summer
+        }
+      ];
+
+      // 渲染任务列表
+      const container = document.getElementById('taskCategories');
+      container.innerHTML = categories.map(category => `
+        <div class="task-category">
+          <div class="category-header">
+            <span class="category-icon">${category.icon}</span>
+            <div>
+              <div class="category-title">${category.title}</div>
+              <div style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">${category.description}</div>
+            </div>
+          </div>
+          <div class="tasks-list">
+            ${category.tasks.map(task => `
+              <div class="task-item" data-task-id="${task.id}">
+                <div class="task-checkbox" onclick="toggleTask('${task.id}', this)"></div>
+                <div class="task-content">
+                  <div class="task-title">${task.title}</div>
+                  <div class="task-description">${task.description}</div>
+                  <div class="task-meta">
+                    <span class="task-tag priority-${task.priority}">
+                      ${task.priority === 'high' ? '高优先级' : '中优先级'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleTask(taskId, checkbox) {
+      checkbox.classList.toggle('checked');
+      
+      // 保存任务状态
+      let completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+      if (checkbox.classList.contains('checked')) {
+        if (!completedTasks.includes(taskId)) {
+          completedTasks.push(taskId);
+        }
+      } else {
+        completedTasks = completedTasks.filter(id => id !== taskId);
+      }
+      localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+    }
+
+    function startTasks() {
+      // 保存任务列表
+      const saved = localStorage.getItem('selectedMajor');
+      if (saved) {
+        localStorage.setItem('taskListCreated', 'true');
+      }
+
+      // 跳转到执行任务页面
+      window.location.href = 'execute_tasks.html';
+    }
+
+    // 页面加载
+    document.addEventListener('DOMContentLoaded', () => {
+      createTaskList();
+      
+      // 恢复已完成的任务状态
+      const completedTasks = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+      completedTasks.forEach(taskId => {
+        const checkbox = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
+        if (checkbox) {
+          checkbox.classList.add('checked');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

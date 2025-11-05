@@ -12,13 +12,13 @@
   </header>
 
   <main id="componentArea" class="component-area">
-    <!-- Login / Auth -->
+    <!-- Login / Auth (initially visible) -->
     <section id="route-auth" class="route-shell">
       <div id="view-auth-container"></div>
     </section>
 
     <!-- Onboarding Flow -->
-    <section id="route-onboarding" class="route-shell">
+    <section id="route-onboarding" class="route-shell hidden">
       <section id="view-onboarding" class="view">
         <div class="card">
           <div class="row space">
@@ -28,7 +28,7 @@
                 <span class="btn-icon">←</span>
                 <span class="btn-text">Back</span>
               </button>
-              <button id="btnSkipOnboard" class="btn-onboarding-secondary btn-skip" type="button" aria-label="Skip onboarding">
+              <button id="btnSkipOnboard" class="btn-onboarding-secondary btn-skip" type="button" link="demo\sections\view-profile.html" aria-label="Skip onboarding">
                 <span class="btn-text">Skip</span>
                 <span class="btn-icon">→</span>
               </button>
@@ -271,8 +271,88 @@
       </section>
     </section>
 
-   
-  <!-- Main app.js loads remaining functionality -->
+    <!-- Authenticated Application Routes (Profile, Persona, GAP, Advisor, Roadmap) -->
+    <section id="route-app" class="route-shell hidden">
+      <!-- Profile Navigation (dynamically shown when needed) -->
+      <div id="profileNav" class="profile-nav hidden">
+        <div class="tabs top" id="topTabs">
+          <button type="button" class="tab small active" data-tab-route="profile" aria-selected="true">Profile</button>
+          <button type="button" class="tab small" data-tab-route="persona" aria-selected="false">Persona</button>
+          <button type="button" class="tab small" data-tab-route="gap" aria-selected="false">GAP</button>
+          <button type="button" class="tab small" data-tab-route="advisor" aria-selected="false">Major Advisor</button>
+          <button type="button" class="tab small" data-tab-route="roadmap" aria-selected="false">Roadmap</button>
+        </div>
+      </div>
+      
+      <!-- Views will be loaded dynamically via sections.js -->
+      <div id="view-profile-container"></div>
+      <div id="view-persona-container"></div>
+      <div id="view-gap-container"></div>
+      <div id="view-advisor-container"></div>
+      <div id="view-roadmap-container"></div>
+    </section>
+  </main>
+
+  <!-- Tutor Agent Footer (for app routes) -->
+  <footer id="tutorAgent" class="tutor-footer hidden" aria-live="polite" aria-atomic="true">
+    <div class="tutor-surface">
+      <!-- Status and Controls -->
+      <div class="tutor-meta">
+        <div class="tutor-status" role="status">
+          <span class="tutor-status-dot"></span>
+          <span class="tutor-status-text" id="tutorStatusText">AI Tutor · Listening</span>
+        </div>
+        <div class="tutor-controls">
+          <button id="toggleInputMode" type="button" class="tutor-control-btn" aria-label="Toggle input mode">
+            <span id="inputModeText">Voice Input</span>
+          </button>
+          <button id="toggleVoice" type="button" class="tutor-control-btn" aria-label="Toggle voice output">Voice: Off</button>
+          <button id="toggleTutor" type="button" class="tutor-control-btn ghost" aria-label="Hide tutor subtitle">Hide</button>
+        </div>
+      </div>
+
+      <!-- Waveform and Subtitle Display -->
+      <div class="tutor-core">
+        <div id="tutorWaveform" class="tutor-waveform">
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+        </div>
+        <div id="tutorStream" class="tutor-subtitle" role="button" tabindex="0" aria-expanded="false" aria-label="Tap to expand transcript">
+          <span class="subtitle-text" id="subtitleText">Welcome! I'm your AI Tutor. I can help you with your profile and answer questions.</span>
+          <span class="subtitle-highlight" id="subtitleHighlight"></span>
+        </div>
+      </div>
+
+      <!-- Input Area: Voice/Text Input -->
+      <div id="tutorInputArea" class="tutor-input-area voice-mode" data-mode="voice">
+        <button id="micBtn" type="button" class="tutor-input-btn voice-mode" aria-label="Start voice input">🎤</button>
+        <input id="userInput" class="tutor-input" placeholder="Tap microphone to speak..." autocomplete="off" />
+        <button id="sendBtn" type="button" class="tutor-input-btn text-mode" aria-label="Send message">Send</button>
+      </div>
+      <!-- Note: Both onboarding (inputArea) and tutorAgent use same micBtn/userInput/sendBtn IDs,
+           but they are in different containers and never displayed simultaneously -->
+    </div>
+  </footer>
+
+  <!-- Scripts - Load core modules first, then main app -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sections.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/subtitle.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/tutor.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/persona.js"></script>
+  <script src="js/gap.js"></script>
+  <script src="js/advisor.js"></script>
+  <script src="js/roadmap.js"></script>
+  <script src="js/router-agent.js"></script>
+  <script src="js/editor.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Execute Tasks - Major Advisor</title>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-hover: #1c2128;
+      --primary: #a855f7;
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --primary-light: #c084fc;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --border: rgba(240, 246, 252, 0.1);
+      --border-glow: rgba(168, 85, 247, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      border-color: var(--primary);
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .task-content {
+      display: none;
+    }
+
+    .task-content.active {
+      display: block;
+    }
+
+    .task-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .task-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .task-status {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .task-status.pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .task-status.completed {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .task-description {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .research-results {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .research-item {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .research-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .research-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .research-content {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .course-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .course-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .course-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .course-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .course-platform {
+      padding: 4px 10px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 12px;
+    }
+
+    .course-info {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .course-meta {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .course-description {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .course-action {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-primary {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .btn-secondary {
+      padding: 10px 20px;
+      background: var(--bg-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    .summer-program-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .summer-program-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .program-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .program-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .program-org {
+      padding: 4px 10px;
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 12px;
+    }
+
+    .program-info {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .program-description {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .tabs {
+        gap: 6px;
+      }
+
+      .tab {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Execute Tasks</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Complete various tasks to deeply understand your target major</p>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('research')">📚 Major Research</div>
+      <div class="tab" onclick="switchTab('courses')">💻 Online Courses</div>
+      <div class="tab" onclick="switchTab('summer')">🌞 Summer Programs</div>
+    </div>
+
+    <!-- 专业研究任务 -->
+    <div class="task-content active" id="researchContent">
+      <div class="task-section">
+        <div class="task-header">
+          <div class="task-title">专业课程设置研究</div>
+          <span class="task-status pending" id="researchStatus1">进行中</span>
+        </div>
+        <div class="task-description">
+          研究目标大学该专业的核心课程、选修课程和毕业要求。了解课程难度、学习内容和评估方式。
+        </div>
+        <button class="btn-primary" onclick="completeResearch('research-1')">完成研究</button>
+        <div class="research-results" id="researchResults1" style="display: none;">
+          <div class="research-item">
+            <div class="research-title">核心课程</div>
+            <div class="research-content">
+              数据结构与算法、计算机系统、操作系统、数据库系统、软件工程、计算机网络等
+            </div>
+          </div>
+          <div class="research-item">
+            <div class="research-title">选修方向</div>
+            <div class="research-content">
+              人工智能、机器学习、计算机视觉、网络安全、分布式系统等
+            </div>
+          </div>
+          <div class="research-item">
+            <div class="research-title">毕业要求</div>
+            <div class="research-content">
+              通常需要完成120-130学分，包括通识课程、专业核心课程和选修课程，并完成毕业设计或论文
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-section">
+        <div class="task-header">
+          <div class="task-title">就业方向调研</div>
+          <span class="task-status pending" id="researchStatus2">进行中</span>
+        </div>
+        <div class="task-description">
+          调研该专业的就业方向、薪资水平和职业发展路径。
+        </div>
+        <button class="btn-primary" onclick="completeResearch('research-2')">完成研究</button>
+        <div class="research-results" id="researchResults2" style="display: none;">
+          <div class="research-item">
+            <div class="research-title">主要就业方向</div>
+            <div class="research-content">
+              软件工程师、算法工程师、系统架构师、数据科学家、产品经理等
+            </div>
+          </div>
+          <div class="research-item">
+            <div class="research-title">薪资水平</div>
+            <div class="research-content">
+              平均起薪：$75,000-$120,000，5年经验后可达$120,000-$200,000
+            </div>
+          </div>
+          <div class="research-item">
+            <div class="research-title">职业发展路径</div>
+            <div class="research-content">
+              初级工程师 → 高级工程师 → 技术专家/架构师 → 技术总监/CTO
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 在线课程任务 -->
+    <div class="task-content" id="coursesContent">
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-title">Python for Everybody</div>
+          <span class="course-platform">Coursera</span>
+        </div>
+        <div class="course-info">
+          <span class="course-meta">⏱️ 5周</span>
+          <span class="course-meta">📚 5门课程</span>
+          <span class="course-meta">⭐ 4.8/5.0</span>
+        </div>
+        <div class="course-description">
+          由University of Michigan提供的Python编程入门课程，适合零基础学习者。涵盖Python基础语法、数据结构、网络编程等。
+        </div>
+        <div class="course-action">
+          <a href="https://www.coursera.org/specializations/python" target="_blank" class="btn-primary">了解详情</a>
+          <button class="btn-secondary" onclick="markCourseComplete('course-1')">标记完成</button>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-title">Introduction to Algorithms</div>
+          <span class="course-platform">MIT OCW</span>
+        </div>
+        <div class="course-info">
+          <span class="course-meta">⏱️ 15周</span>
+          <span class="course-meta">📚 MIT 6.006</span>
+          <span class="course-meta">⭐ 4.9/5.0</span>
+        </div>
+        <div class="course-description">
+          MIT经典算法课程，涵盖排序、搜索、图算法、动态规划等核心算法和数据结构。
+        </div>
+        <div class="course-action">
+          <a href="https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/" target="_blank" class="btn-primary">了解详情</a>
+          <button class="btn-secondary" onclick="markCourseComplete('course-2')">标记完成</button>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-title">Web Development Bootcamp</div>
+          <span class="course-platform">Udemy</span>
+        </div>
+        <div class="course-info">
+          <span class="course-meta">⏱️ 60小时</span>
+          <span class="course-meta">📚 全栈开发</span>
+          <span class="course-meta">⭐ 4.7/5.0</span>
+        </div>
+        <div class="course-description">
+          完整的Web开发课程，涵盖HTML、CSS、JavaScript、React、Node.js等前后端技术栈。
+        </div>
+        <div class="course-action">
+          <a href="https://www.udemy.com/topic/web-development/" target="_blank" class="btn-primary">了解详情</a>
+          <button class="btn-secondary" onclick="markCourseComplete('course-3')">标记完成</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 夏校实习任务 -->
+    <div class="task-content" id="summerContent">
+      <div class="summer-program-card">
+        <div class="program-header">
+          <div class="program-title">MIT CSAIL Undergraduate Research Program</div>
+          <span class="program-org">MIT</span>
+        </div>
+        <div class="program-info">
+          <span class="course-meta">📍 美国马萨诸塞州</span>
+          <span class="course-meta">📅 6-8周</span>
+          <span class="course-meta">💰 有奖学金</span>
+        </div>
+        <div class="program-description">
+          MIT计算机科学人工智能实验室的本科生研究项目，提供与顶尖教授和研究团队合作的机会。
+        </div>
+        <div class="course-action">
+          <a href="https://www.csail.mit.edu/" target="_blank" class="btn-primary">申请了解</a>
+          <button class="btn-secondary" onclick="markSummerComplete('summer-1')">标记完成</button>
+        </div>
+      </div>
+
+      <div class="summer-program-card">
+        <div class="program-header">
+          <div class="program-title">Google Summer of Code</div>
+          <span class="program-org">Google</span>
+        </div>
+        <div class="program-info">
+          <span class="course-meta">🌐 在线项目</span>
+          <span class="course-meta">📅 3个月</span>
+          <span class="course-meta">💰 有奖学金</span>
+        </div>
+        <div class="program-description">
+          Google组织的开源软件开发项目，学生可以与开源组织合作，贡献代码并获得奖学金。
+        </div>
+        <div class="course-action">
+          <a href="https://summerofcode.withgoogle.com/" target="_blank" class="btn-primary">申请了解</a>
+          <button class="btn-secondary" onclick="markSummerComplete('summer-2')">标记完成</button>
+        </div>
+      </div>
+
+      <div class="summer-program-card">
+        <div class="program-header">
+          <div class="program-title">科技公司实习项目</div>
+          <span class="program-org">多家公司</span>
+        </div>
+        <div class="program-info">
+          <span class="course-meta">🌐 全球</span>
+          <span class="course-meta">📅 3-6个月</span>
+          <span class="course-meta">💰 有薪资</span>
+        </div>
+        <div class="program-description">
+          申请Google、Microsoft、Amazon等科技公司的软件开发实习生职位，获得实际工作经验。
+        </div>
+        <div class="course-action">
+          <a href="https://careers.google.com/" target="_blank" class="btn-primary">申请了解</a>
+          <button class="btn-secondary" onclick="markSummerComplete('summer-3')">标记完成</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="action-button" onclick="confirmMajor()">
+      Confirm Major Selection →
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.location.href='create_tasklist.html'" title="Back">←</button>
+
+  <script>
+    function switchTab(tabName) {
+      // 切换标签
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // 切换内容
+      document.querySelectorAll('.task-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(tabName + 'Content').classList.add('active');
+    }
+
+    function completeResearch(researchId) {
+      const statusEl = document.getElementById(researchId.replace('research-', 'researchStatus'));
+      const resultsEl = document.getElementById(researchId.replace('research-', 'researchResults'));
+      
+      if (statusEl && resultsEl) {
+        statusEl.textContent = '已完成';
+        statusEl.className = 'task-status completed';
+        resultsEl.style.display = 'block';
+        
+        // 保存完成状态
+        let completed = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+        if (!completed.includes(researchId)) {
+          completed.push(researchId);
+          localStorage.setItem('completedTasks', JSON.stringify(completed));
+        }
+      }
+    }
+
+    function markCourseComplete(courseId) {
+      alert('已标记课程完成！');
+      let completed = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+      if (!completed.includes(courseId)) {
+        completed.push(courseId);
+        localStorage.setItem('completedTasks', JSON.stringify(completed));
+      }
+    }
+
+    function markSummerComplete(summerId) {
+      alert('已标记夏校/实习完成！');
+      let completed = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+      if (!completed.includes(summerId)) {
+        completed.push(summerId);
+        localStorage.setItem('completedTasks', JSON.stringify(completed));
+      }
+    }
+
+    function confirmMajor() {
+      // 跳转到确认专业页面
+      window.location.href = 'confirm_major.html';
+    }
+
+    // 页面加载时恢复状态
+    document.addEventListener('DOMContentLoaded', () => {
+      const completed = JSON.parse(localStorage.getItem('completedTasks') || '[]');
+      
+      // 恢复研究任务状态
+      if (completed.includes('research-1')) {
+        completeResearch('research-1');
+      }
+      if (completed.includes('research-2')) {
+        completeResearch('research-2');
+      }
+    });
+  </script>
+</body>
+</html>
+

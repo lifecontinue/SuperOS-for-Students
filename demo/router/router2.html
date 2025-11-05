@@ -1,0 +1,2620 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Daily Quest Board</title>
+  <style>
+    :root {
+      --bg: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --success: #3fb950;
+      --warning: #f85149;
+      --gold: #fbbf24;
+      --purple: #74070E;
+      --orange: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .quest-board {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 20px;
+      padding-bottom: 220px; /* Space for footer */
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Header with Stats */
+    .quest-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(170, 30, 35, 0.1);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .quest-title {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .daily-date {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Progress Bar */
+    .daily-progress {
+      margin-bottom: 16px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .progress-label strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .progress-bar-container {
+      height: 8px;
+      background: rgba(88, 166, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--purple));
+      border-radius: 10px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 10px var(--primary-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-bar::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* XP & Stats */
+    .stats-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      background: rgba(88, 166, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Quest List */
+    .quest-section {
+      margin-bottom: 24px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-icon {
+      font-size: 18px;
+    }
+
+    /* Carousel Container */
+    .quest-carousel {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .quest-carousel-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 360px;
+      height: 220px;
+      margin: 0 auto;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .quest-carousel-track {
+      display: flex;
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 100%;
+    }
+
+    /* Base Card Style - Responsive Size */
+    .quest-card {
+      width: 100%;
+      max-width: 360px;
+      min-width: 280px;
+      height: 220px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+      margin: 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Quest Card Type - Task */
+    .quest-card.type-task {
+      background: 
+        linear-gradient(135deg, rgba(88, 166, 255, 0.22) 0%, rgba(88, 166, 255, 0.12) 50%, rgba(88, 166, 255, 0.06) 100%),
+        linear-gradient(180deg, rgba(88, 166, 255, 0.08) 0%, transparent 100%),
+        radial-gradient(circle at top right, rgba(88, 166, 255, 0.1) 0%, transparent 60%);
+      border: 1.5px solid rgba(88, 166, 255, 0.35);
+      border-left: 5px solid var(--primary);
+      box-shadow: 
+        0 6px 20px rgba(88, 166, 255, 0.2),
+        0 2px 6px rgba(88, 166, 255, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(88, 166, 255, 0.1);
+    }
+
+    .quest-card.type-task::after {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(88, 166, 255, 0.12) 0%, rgba(88, 166, 255, 0.06) 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(20px);
+    }
+
+    .quest-card.type-task::before {
+      background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.2), transparent);
+    }
+
+    .quest-card.type-task:hover {
+      border-color: rgba(88, 166, 255, 0.6);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 
+        0 16px 40px rgba(88, 166, 255, 0.35),
+        0 6px 12px rgba(88, 166, 255, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 2px rgba(88, 166, 255, 0.15);
+      background: 
+        linear-gradient(135deg, rgba(88, 166, 255, 0.28) 0%, rgba(88, 166, 255, 0.16) 50%, rgba(88, 166, 255, 0.08) 100%),
+        linear-gradient(180deg, rgba(88, 166, 255, 0.12) 0%, transparent 100%),
+        radial-gradient(circle at top right, rgba(88, 166, 255, 0.15) 0%, transparent 60%);
+    }
+
+    /* Quest Card Type - News */
+    .quest-card.type-news {
+      background: 
+        linear-gradient(135deg, rgba(255, 157, 92, 0.24) 0%, rgba(255, 157, 92, 0.14) 50%, rgba(255, 157, 92, 0.08) 100%),
+        linear-gradient(180deg, rgba(255, 157, 92, 0.1) 0%, transparent 100%),
+        radial-gradient(circle at top right, rgba(255, 157, 92, 0.12) 0%, transparent 60%);
+      border: 1.5px solid rgba(255, 157, 92, 0.35);
+      border-left: 5px solid var(--orange);
+      box-shadow: 
+        0 6px 20px rgba(255, 157, 92, 0.2),
+        0 2px 6px rgba(255, 157, 92, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(255, 157, 92, 0.1);
+    }
+
+    .quest-card.type-news::after {
+      content: '';
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      width: 130px;
+      height: 130px;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(255, 157, 92, 0.08),
+        rgba(255, 157, 92, 0.08) 8px,
+        transparent 8px,
+        transparent 16px
+      );
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(15px);
+      opacity: 0.6;
+    }
+
+    .quest-card.type-news::before {
+      background: linear-gradient(90deg, transparent, rgba(255, 157, 92, 0.2), transparent);
+    }
+
+    .quest-card.type-news:hover {
+      border-color: rgba(255, 157, 92, 0.6);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 
+        0 16px 40px rgba(255, 157, 92, 0.35),
+        0 6px 12px rgba(255, 157, 92, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 2px rgba(255, 157, 92, 0.15);
+      background: 
+        linear-gradient(135deg, rgba(255, 157, 92, 0.32) 0%, rgba(255, 157, 92, 0.18) 50%, rgba(255, 157, 92, 0.1) 100%),
+        linear-gradient(180deg, rgba(255, 157, 92, 0.14) 0%, transparent 100%),
+        radial-gradient(circle at top right, rgba(255, 157, 92, 0.15) 0%, transparent 60%);
+    }
+
+    /* Quest Card Type - Health Tip */
+    .quest-card.type-health {
+      background: 
+        linear-gradient(135deg, rgba(63, 185, 80, 0.24) 0%, rgba(63, 185, 80, 0.14) 50%, rgba(63, 185, 80, 0.08) 100%),
+        linear-gradient(180deg, rgba(63, 185, 80, 0.1) 0%, transparent 100%),
+        radial-gradient(circle at bottom left, rgba(63, 185, 80, 0.12) 0%, transparent 60%);
+      border: 1.5px solid rgba(63, 185, 80, 0.35);
+      border-left: 5px solid var(--success);
+      box-shadow: 
+        0 6px 20px rgba(63, 185, 80, 0.2),
+        0 2px 6px rgba(63, 185, 80, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(63, 185, 80, 0.1);
+    }
+
+    .quest-card.type-health::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -40px;
+      width: 160px;
+      height: 160px;
+      background: 
+        radial-gradient(circle at 25% 25%, rgba(63, 185, 80, 0.15) 0%, transparent 45%),
+        radial-gradient(circle at 75% 75%, rgba(63, 185, 80, 0.1) 0%, transparent 45%);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(25px);
+      opacity: 0.8;
+    }
+
+    .quest-card.type-health::before {
+      background: linear-gradient(90deg, transparent, rgba(63, 185, 80, 0.2), transparent);
+    }
+
+    .quest-card.type-health:hover {
+      border-color: rgba(63, 185, 80, 0.6);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 
+        0 16px 40px rgba(63, 185, 80, 0.35),
+        0 6px 12px rgba(63, 185, 80, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 2px rgba(63, 185, 80, 0.15);
+      background: 
+        linear-gradient(135deg, rgba(63, 185, 80, 0.32) 0%, rgba(63, 185, 80, 0.18) 50%, rgba(63, 185, 80, 0.1) 100%),
+        linear-gradient(180deg, rgba(63, 185, 80, 0.14) 0%, transparent 100%),
+        radial-gradient(circle at bottom left, rgba(63, 185, 80, 0.15) 0%, transparent 60%);
+    }
+
+    /* Quest Card Type - Reminder */
+    .quest-card.type-reminder {
+      background: 
+        linear-gradient(135deg, rgba(165, 165, 255, 0.24) 0%, rgba(165, 165, 255, 0.14) 50%, rgba(165, 165, 255, 0.08) 100%),
+        linear-gradient(180deg, rgba(165, 165, 255, 0.1) 0%, transparent 100%),
+        radial-gradient(circle at top left, rgba(165, 165, 255, 0.12) 0%, transparent 60%);
+      border: 1.5px solid rgba(165, 165, 255, 0.35);
+      border-left: 5px solid var(--purple);
+      box-shadow: 
+        0 6px 20px rgba(165, 165, 255, 0.2),
+        0 2px 6px rgba(165, 165, 255, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(165, 165, 255, 0.1);
+    }
+
+    .quest-card.type-reminder::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -50px;
+      width: 140px;
+      height: 140px;
+      background: 
+        conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(165, 165, 255, 0.1) 90deg, transparent 180deg, rgba(165, 165, 255, 0.08) 270deg, transparent 360deg);
+      border-radius: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      filter: blur(20px);
+      opacity: 0.7;
+    }
+
+    .quest-card.type-reminder::before {
+      background: linear-gradient(90deg, transparent, rgba(165, 165, 255, 0.2), transparent);
+    }
+
+    .quest-card.type-reminder:hover {
+      border-color: rgba(165, 165, 255, 0.6);
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 
+        0 16px 40px rgba(165, 165, 255, 0.35),
+        0 6px 12px rgba(165, 165, 255, 0.2),
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.1),
+        0 0 0 2px rgba(165, 165, 255, 0.15);
+      background: 
+        linear-gradient(135deg, rgba(165, 165, 255, 0.32) 0%, rgba(165, 165, 255, 0.18) 50%, rgba(165, 165, 255, 0.1) 100%),
+        linear-gradient(180deg, rgba(165, 165, 255, 0.14) 0%, transparent 100%),
+        radial-gradient(circle at top left, rgba(165, 165, 255, 0.15) 0%, transparent 60%);
+    }
+
+    .quest-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      transition: left 0.5s;
+      z-index: 1;
+    }
+
+    .quest-card:hover::before {
+      left: 100%;
+    }
+
+    /* Content should be above background patterns */
+    .quest-header-row,
+    .quest-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Card Type Icons */
+    .card-type-icon {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 36px;
+      opacity: 0.5;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 3;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+      pointer-events: none;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .quest-card:hover .card-type-icon {
+      opacity: 0.9;
+      transform: scale(1.12) rotate(8deg);
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+    }
+
+    /* Background patterns should be behind content */
+    .quest-card::after {
+      z-index: 0;
+    }
+
+    .quest-card.urgent {
+      animation: urgentPulse 2s ease-in-out infinite;
+      border-left-width: 6px !important;
+    }
+
+    @keyframes urgentPulse {
+      0%, 100% { 
+        box-shadow: 
+          0 4px 16px rgba(248, 81, 73, 0.2),
+          0 2px 4px rgba(248, 81, 73, 0.1),
+          0 0 0 0 rgba(248, 81, 73, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      50% { 
+        box-shadow: 
+          0 4px 16px rgba(248, 81, 73, 0.3),
+          0 2px 4px rgba(248, 81, 73, 0.15),
+          0 0 0 6px rgba(248, 81, 73, 0.1),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .quest-card.completed {
+      opacity: 0.75;
+      background: 
+        linear-gradient(135deg, rgba(63, 185, 80, 0.12) 0%, rgba(63, 185, 80, 0.06) 50%, rgba(63, 185, 80, 0.03) 100%) !important;
+      border-color: rgba(63, 185, 80, 0.3) !important;
+    }
+
+    .quest-card.completed::after {
+      background: radial-gradient(circle, rgba(63, 185, 80, 0.08) 0%, transparent 70%) !important;
+    }
+
+    .quest-card.completed .quest-title-text {
+      text-decoration: line-through;
+      opacity: 0.65;
+    }
+
+    /* Carousel Navigation */
+    .carousel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      gap: 12px;
+    }
+
+    .carousel-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .carousel-btn:hover:not(:disabled) {
+      background: var(--bg-hover);
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .carousel-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .carousel-indicators {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+
+    .carousel-dot.active {
+      background: var(--primary);
+      width: 24px;
+      border-radius: 4px;
+      border-color: var(--primary);
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    .carousel-dot:hover {
+      background: var(--primary);
+      opacity: 0.7;
+    }
+
+    .carousel-counter {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .quest-header-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .quest-checkbox {
+      width: 26px;
+      height: 26px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        inset 0 2px 3px rgba(0, 0, 0, 0.15),
+        0 2px 4px rgba(255, 255, 255, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .quest-checkbox:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.05);
+    }
+
+    /* Cards without checkbox (news, health, etc.) */
+    .quest-card:not(.type-task) .quest-content {
+      margin-top: 0;
+    }
+
+    .quest-card.completed .quest-checkbox {
+      background: linear-gradient(135deg, var(--success), rgba(63, 185, 80, 0.9));
+      border-color: var(--success);
+      box-shadow: 
+        0 0 0 2px rgba(63, 185, 80, 0.2),
+        0 2px 8px rgba(63, 185, 80, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.2);
+    }
+
+    .quest-card.completed .quest-checkbox::after {
+      content: '✓';
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      animation: checkmark 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes checkmark {
+      0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .quest-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .quest-title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .quest-title-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      line-height: 1.4;
+      letter-spacing: -0.2px;
+    }
+
+    .quest-reward {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(251, 191, 36, 0.2);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .quest-reward-icon {
+      font-size: 16px;
+    }
+
+    .quest-description {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.6;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .quest-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+
+    .quest-badge {
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid transparent;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(4px);
+    }
+
+    .quest-badge.urgent {
+      background: linear-gradient(135deg, rgba(248, 81, 73, 0.25), rgba(248, 81, 73, 0.15));
+      color: var(--warning);
+      border-color: rgba(248, 81, 73, 0.3);
+      animation: blink 1.5s ease-in-out infinite;
+      box-shadow: 0 2px 6px rgba(248, 81, 73, 0.2);
+    }
+
+    @keyframes blink {
+      0%, 100% { 
+        opacity: 1; 
+        box-shadow: 0 2px 6px rgba(248, 81, 73, 0.2);
+      }
+      50% { 
+        opacity: 0.7; 
+        box-shadow: 0 2px 8px rgba(248, 81, 73, 0.3);
+      }
+    }
+
+    .quest-badge.high {
+      background: linear-gradient(135deg, rgba(255, 157, 92, 0.25), rgba(255, 157, 92, 0.15));
+      color: var(--orange);
+      border-color: rgba(255, 157, 92, 0.3);
+      box-shadow: 0 2px 4px rgba(255, 157, 92, 0.15);
+    }
+
+    .quest-badge.medium {
+      background: rgba(88, 166, 255, 0.2);
+      color: var(--primary);
+    }
+
+    .quest-time {
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Secondary Info - Compact */
+    .info-section {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      opacity: 0.7;
+      transition: opacity 0.2s ease;
+    }
+
+    .info-card:hover {
+      opacity: 1;
+      border-color: var(--border-glow);
+    }
+
+    .info-card-title {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .info-item {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .info-item strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Action Button - Game Style */
+    .action-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 16px rgba(88, 166, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .action-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(88, 166, 255, 0.4);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Completion Animation */
+    @keyframes celebrate {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.1) rotate(-5deg); }
+      75% { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .quest-card.completed .quest-reward {
+      animation: celebrate 0.6s ease;
+    }
+
+    /* Voice Agent Footer - Game Style */
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 20px;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .voice-agent {
+      max-width: 720px;
+      margin: 0 auto;
+      pointer-events: all;
+    }
+
+    .agent-surface {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(20px);
+      transition: all 0.3s ease;
+    }
+
+    .agent-surface:hover {
+      border-color: var(--primary);
+      box-shadow: 0 -4px 32px rgba(88, 166, 255, 0.3);
+    }
+
+    .agent-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .agent-status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px rgba(63, 185, 80, 0.6);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .agent-status-text {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .agent-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .agent-control-btn {
+      padding: 6px 12px;
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .agent-control-btn:hover {
+      background: rgba(88, 166, 255, 0.2);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .agent-core {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .agent-waveform {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 8px 12px;
+      background: rgba(88, 166, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      height: 40px;
+    }
+
+    .waveform-bar {
+      width: 3px;
+      min-height: 12px;
+      max-height: 24px;
+      background: linear-gradient(180deg, var(--primary), var(--purple));
+      border-radius: 2px;
+      transition: height 0.15s ease;
+      animation: waveform 1.5s ease-in-out infinite;
+    }
+
+    .waveform-bar:nth-child(1) { animation-delay: 0s; }
+    .waveform-bar:nth-child(2) { animation-delay: 0.1s; }
+    .waveform-bar:nth-child(3) { animation-delay: 0.2s; }
+    .waveform-bar:nth-child(4) { animation-delay: 0.3s; }
+    .waveform-bar:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes waveform {
+      0%, 100% { height: 12px; }
+      50% { height: 24px; }
+    }
+
+    .agent-subtitle {
+      flex: 1;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .subtitle-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .agent-input-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .agent-input-area:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.1);
+    }
+
+    .agent-input-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 10px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .agent-input-btn:hover {
+      background: var(--bg-hover);
+      border-color: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .agent-input-btn.recording {
+      background: var(--warning);
+      border-color: var(--warning);
+      animation: recordingPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes recordingPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.7); }
+      50% { box-shadow: 0 0 0 8px rgba(248, 81, 73, 0); }
+    }
+
+    .agent-input {
+      flex: 1;
+      padding: 10px 14px;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .agent-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .agent-input-area.text-mode .agent-input-btn.voice-btn {
+      display: none;
+    }
+
+    .agent-input-area.voice-mode .agent-input-btn.send-btn {
+      display: none;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .quest-board {
+        padding: 16px;
+        padding-bottom: 200px; /* Space for footer */
+      }
+
+      .quest-carousel-wrapper {
+        max-width: 100%;
+        height: 200px;
+        border-radius: 16px;
+      }
+
+      .quest-card {
+        max-width: 100%;
+        min-width: 100%;
+        height: 200px;
+        padding: 18px;
+        border-radius: 16px;
+      }
+
+      .card-type-icon {
+        font-size: 32px;
+        top: 16px;
+        right: 16px;
+      }
+
+      .quest-title-text {
+        font-size: 17px;
+      }
+
+      .quest-description {
+        font-size: 14px;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+      }
+
+      .quest-meta {
+        font-size: 12px;
+      }
+
+      .quest-badge {
+        padding: 5px 10px;
+        font-size: 11px;
+      }
+
+      .quest-checkbox {
+        width: 26px;
+        height: 26px;
+      }
+
+      footer {
+        padding: 12px 16px;
+      }
+
+      .agent-surface {
+        padding: 12px;
+      }
+
+      .agent-core {
+        gap: 8px;
+      }
+
+      .agent-waveform {
+        padding: 6px 10px;
+        height: 36px;
+      }
+
+      .agent-subtitle {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-height: 36px;
+      }
+
+      .agent-input-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+      }
+
+      .stats-row {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quest-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Small Mobile */
+    @media (max-width: 480px) {
+      .quest-carousel-wrapper {
+        height: 190px;
+      }
+
+      .quest-card {
+        height: 190px;
+        padding: 16px;
+      }
+
+      .quest-title-text {
+        font-size: 16px;
+      }
+
+      .quest-description {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    /* Quest Type Badges */
+    .quest-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .quest-type-badge.main-quest {
+      background: linear-gradient(135deg, rgba(88, 166, 255, 0.25), rgba(165, 165, 255, 0.15));
+      color: var(--primary);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+    }
+
+    .quest-type-badge.side-quest {
+      background: linear-gradient(135deg, rgba(165, 165, 255, 0.25), rgba(255, 157, 92, 0.15));
+      color: var(--purple);
+      border: 1px solid rgba(165, 165, 255, 0.3);
+    }
+
+    .quest-type-badge.daily-quest {
+      background: linear-gradient(135deg, rgba(63, 185, 80, 0.25), rgba(88, 166, 255, 0.15));
+      color: var(--success);
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+
+    /* Stage Badge */
+    .quest-stage-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-left: 8px;
+      opacity: 0.8;
+    }
+
+    .quest-stage-badge.candidacy {
+      background: rgba(88, 166, 255, 0.2);
+      color: var(--primary);
+    }
+
+    .quest-stage-badge.application {
+      background: rgba(255, 157, 92, 0.2);
+      color: var(--orange);
+    }
+
+    .quest-stage-badge.post-application {
+      background: rgba(63, 185, 80, 0.2);
+      color: var(--success);
+    }
+
+    /* Fog Overlay for Locked Quests */
+    .quest-fog-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        linear-gradient(135deg, rgba(13, 17, 23, 0.95) 0%, rgba(22, 27, 34, 0.98) 100%),
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 10px,
+          rgba(255, 255, 255, 0.03) 10px,
+          rgba(255, 255, 255, 0.03) 20px
+        );
+      border-radius: 18px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(8px);
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .quest-card.locked {
+      pointer-events: none;
+    }
+
+    .quest-card.locked .quest-fog-overlay {
+      pointer-events: all;
+    }
+
+    .fog-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      opacity: 0.6;
+      animation: fogPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes fogPulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+
+    .fog-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .fog-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.5;
+      max-width: 280px;
+    }
+
+    .fog-unlock-requirements {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      border-radius: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      max-width: 260px;
+    }
+
+    .fog-unlock-requirements-title {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .fog-unlock-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .fog-unlock-item.locked {
+      opacity: 0.6;
+    }
+
+    .fog-unlock-item.unlocked {
+      color: var(--success);
+    }
+
+    /* Loading Animation */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(13, 17, 23, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .loading-container {
+      text-align: center;
+      max-width: 400px;
+      padding: 40px;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(88, 166, 255, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .loading-progress-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(88, 166, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .loading-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--purple));
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .loading-detail {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    /* Section Headers with Quest Type Filters */
+    .section-header-with-filter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .quest-type-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .quest-type-filter-btn {
+      padding: 6px 12px;
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quest-type-filter-btn:hover {
+      background: rgba(88, 166, 255, 0.2);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .quest-type-filter-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--purple));
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(88, 166, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">数据加载中...</div>
+      <div class="loading-progress-container">
+        <div class="loading-progress-bar" id="loadingProgressBar"></div>
+      </div>
+      <div class="loading-detail" id="loadingDetail">正在解锁任务...</div>
+    </div>
+  </div>
+
+  <div class="quest-board">
+    <!-- Game Header with Progress -->
+    <div class="quest-header">
+      <div class="header-top">
+        <div class="quest-title">⚔️ Daily Quest Board</div>
+        <div class="daily-date" id="dailyDate">Today</div>
+      </div>
+    </div>
+
+    <!-- Main Quests -->
+    <div class="quest-section">
+      <div class="section-header section-header-with-filter">
+        <div class="section-header-left">
+          <span class="section-icon">🎯</span>
+          <span>Active Quests</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="quest-type-filters" id="questTypeFilters">
+            <button class="quest-type-filter-btn active" data-filter="all">全部</button>
+            <button class="quest-type-filter-btn" data-filter="main">主线</button>
+            <button class="quest-type-filter-btn" data-filter="side">支线</button>
+            <button class="quest-type-filter-btn" data-filter="daily">日常</button>
+          </div>
+          <span class="carousel-counter" id="questCounter">1/7</span>
+        </div>
+      </div>
+
+      <div class="quest-carousel">
+        <div class="quest-carousel-wrapper">
+          <div class="quest-carousel-track" id="questTrack">
+            <!-- Task Card 1 - Main Quest: Daily Quest -->
+            <div class="quest-card type-task daily-quest" data-quest="1" data-quest-type="daily" data-grade="9" data-major-track="" data-university-tier="">
+              <span class="quest-type-badge daily-quest">📅 Daily Quest</span>
+              <div class="quest-header-row">
+                <div class="quest-checkbox"></div>
+                <div class="quest-content">
+                  <div class="quest-title-row">
+                    <div class="quest-title-text">Complete Math Assignment - Chapter 5</div>
+                  </div>
+                  <div class="quest-description">
+                    Master 15 calculus integration problems to unlock the next level! 💪
+                  </div>
+                  <div class="quest-meta">
+                    <span class="quest-badge" style="background: rgba(248, 81, 73, 0.2); color: var(--warning);">⚡ URGENT</span>
+                    <span class="quest-time">⏰ Due: Tomorrow 11:59 PM</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task Card 2 - Main Quest: Application Stage -->
+            <div class="quest-card type-task main-quest urgent" data-quest="4" data-quest-type="main" data-quest-stage="application" data-grade="11" data-major-track="any" data-university-tier="any">
+              <span class="quest-type-badge main-quest">⚔️ Main Quest</span>
+              <span class="quest-stage-badge application">Application</span>
+              <div class="quest-header-row">
+                <div class="quest-checkbox"></div>
+                <div class="quest-content">
+                  <div class="quest-title-row">
+                    <div class="quest-title-text">Scholarship Application Quest</div>
+                  </div>
+                  <div class="quest-description">
+                    Gather recommendation letters from 2 mentors to unlock the scholarship chest! 📜
+                  </div>
+                  <div class="quest-meta">
+                    <span class="quest-badge" style="background: rgba(248, 81, 73, 0.2); color: var(--warning);">⚡ URGENT</span>
+                    <span class="quest-time">⏰ Due: Monday</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- News Card -->
+            <div class="quest-card type-news" data-card="news1">
+              <div class="quest-content">
+                <div class="quest-title-row">
+                  <div class="quest-title-text">Common App Deadline Approaching</div>
+                </div>
+                <div class="quest-description">
+                  Early Decision applications are due in 2 weeks! Make sure all your materials are ready. Don't miss this important deadline.
+                </div>
+                <div class="quest-meta">
+                  <span class="quest-badge" style="background: rgba(255, 157, 92, 0.2); color: var(--orange);">News</span>
+                  <span class="quest-time">📅 2 hours ago</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Health Tip Card -->
+            <div class="quest-card type-health" data-card="health1">
+              <div class="quest-content">
+                <div class="quest-title-row">
+                  <div class="quest-title-text">Take a Break! 🌿</div>
+                </div>
+                <div class="quest-description">
+                  You've been studying for a while. Remember to hydrate and take a 10-minute break every hour. Your brain needs rest to perform at its best!
+                </div>
+                <div class="quest-meta">
+                  <span class="quest-badge" style="background: rgba(63, 185, 80, 0.2); color: var(--success);">Health Tip</span>
+                  <span class="quest-time">💧 Drink water regularly</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task Card 3 - Main Quest: Application Stage -->
+            <div class="quest-card type-task main-quest" data-quest="2" data-quest-type="main" data-quest-stage="application" data-grade="11" data-major-track="any" data-university-tier="any">
+              <span class="quest-type-badge main-quest">⚔️ Main Quest</span>
+              <span class="quest-stage-badge application">Application</span>
+              <div class="quest-header-row">
+                <div class="quest-checkbox"></div>
+                <div class="quest-content">
+                  <div class="quest-title-row">
+                    <div class="quest-title-text">Essay Mastery Challenge</div>
+                  </div>
+                  <div class="quest-description">
+                    Refine your personal statement and level up your writing skills!
+                  </div>
+                  <div class="quest-meta">
+                    <span class="quest-badge high">High</span>
+                    <span class="quest-time">⏰ Due: Friday</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task Card 4 - Main Quest: Candidacy Building (Locked Example) -->
+            <div class="quest-card type-task main-quest locked" data-quest="5" data-quest-type="main" data-quest-stage="candidacy" data-grade="10" data-major-track="cs" data-university-tier="" data-unlock-requirements='{"grade":10,"majorTrack":"cs"}'>
+              <span class="quest-type-badge main-quest">⚔️ Main Quest</span>
+              <span class="quest-stage-badge candidacy">Candidacy</span>
+              <div class="quest-fog-overlay">
+                <div class="fog-icon">🌫️</div>
+                <div class="fog-title">任务未解锁</div>
+                <div class="fog-hint">此任务需要满足以下条件才能解锁</div>
+                <div class="fog-unlock-requirements">
+                  <div class="fog-unlock-requirements-title">解锁条件：</div>
+                  <div class="fog-unlock-item locked" data-requirement="grade">
+                    <span>✓</span>
+                    <span>完成当前阶段主线任务</span>
+                  </div>
+                  <div class="fog-unlock-item locked" data-requirement="majorTrack">
+                    <span>✓</span>
+                    <span>在Profile中明确Major Track</span>
+                  </div>
+                </div>
+              </div>
+              <div class="quest-header-row">
+                <div class="quest-checkbox"></div>
+                <div class="quest-content">
+                  <div class="quest-title-row">
+                    <div class="quest-title-text">确定专业方向 - 计算机科学</div>
+                  </div>
+                  <div class="quest-description">
+                    探索计算机科学领域，建立学术基础，为后续申请做准备
+                  </div>
+                  <div class="quest-meta">
+                    <span class="quest-badge medium">Medium</span>
+                    <span class="quest-time">⏰ G10-G11</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task Card 5 - Side Quest: Research Project (Locked Example) -->
+            <div class="quest-card type-task side-quest locked" data-quest="6" data-quest-type="side" data-grade="10" data-major-track="cs" data-university-tier="" data-unlock-requirements='{"mainQuestCompleted":"5","majorTrack":"cs","interests":["research"]}'>
+              <span class="quest-type-badge side-quest">🔬 Side Quest</span>
+              <div class="quest-fog-overlay">
+                <div class="fog-icon">🌫️</div>
+                <div class="fog-title">支线任务未解锁</div>
+                <div class="fog-hint">完成相关主线任务后自动解锁</div>
+                <div class="fog-unlock-requirements">
+                  <div class="fog-unlock-requirements-title">解锁条件：</div>
+                  <div class="fog-unlock-item locked" data-requirement="mainQuest">
+                    <span>✓</span>
+                    <span>完成主线任务：确定专业方向</span>
+                  </div>
+                  <div class="fog-unlock-item locked" data-requirement="profileMatch">
+                    <span>✓</span>
+                    <span>Profile匹配：兴趣与能力点</span>
+                  </div>
+                </div>
+              </div>
+              <div class="quest-header-row">
+                <div class="quest-checkbox"></div>
+                <div class="quest-content">
+                  <div class="quest-title-row">
+                    <div class="quest-title-text">CS科研项目 - AI研究</div>
+                  </div>
+                  <div class="quest-description">
+                    参与AI相关研究项目，积累科研经验，丰富学术背景
+                  </div>
+                  <div class="quest-meta">
+                    <span class="quest-badge medium">SCAR Activity</span>
+                    <span class="quest-time">⏰ 持续进行</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task Card 6 - Main Quest: Post Application (Locked Example) -->
+            <div class="quest-card type-task main-quest locked" data-quest="7" data-quest-type="main" data-quest-stage="post-application" data-grade="12" data-major-track="any" data-university-tier="any" data-unlock-requirements='{"grade":12,"mainQuestCompleted":"2,4"}'>
+              <span class="quest-type-badge main-quest">⚔️ Main Quest</span>
+              <span class="quest-stage-badge post-application">Post Application</span>
+              <div class="quest-fog-overlay">
+                <div class="fog-icon">🌫️</div>
+                <div class="fog-title">未来任务</div>
+                <div class="fog-hint">此任务将在G12阶段解锁</div>
+                <div class="fog-unlock-requirements">
+                  <div class="fog-unlock-requirements-title">解锁条件：</div>
+                  <div class="fog-unlock-item locked" data-requirement="grade">
+                    <span>✓</span>
+                    <span>到达G12年级</span>
+                  </div>
+                  <div class="fog-unlock-item locked" data-requirement="applicationComplete">
+                    <span>✓</span>
+                    <span>完成申请阶段主线任务</span>
+                  </div>
+                </div>
+              </div>
+              <div class="quest-header-row">
+                <div class="quest-checkbox"></div>
+                <div class="quest-content">
+                  <div class="quest-title-row">
+                    <div class="quest-title-text">面试准备与录取决定</div>
+                  </div>
+                  <div class="quest-description">
+                    准备大学面试，处理录取通知，做出最终决定
+                  </div>
+                  <div class="quest-meta">
+                    <span class="quest-badge high">High</span>
+                    <span class="quest-time">⏰ G12</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reminder Card -->
+            <div class="quest-card type-reminder" data-card="reminder1">
+              <div class="quest-content">
+                <div class="quest-title-row">
+                  <div class="quest-title-text">Virtual Campus Tour This Week</div>
+                </div>
+                <div class="quest-description">
+                  Sign up for virtual tours of your target schools! It's a great way to learn about campus culture and make informed decisions.
+                </div>
+                <div class="quest-meta">
+                  <span class="quest-badge" style="background: rgba(165, 165, 255, 0.2); color: var(--purple);">Reminder</span>
+                  <span class="quest-time">📅 This week</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Completed Task Card -->
+            <div class="quest-card type-task completed" data-quest="3" data-xp="25">
+              <div class="quest-header-row">
+                <div class="quest-checkbox"></div>
+                <div class="quest-content">
+                  <div class="quest-title-row">
+                    <div class="quest-title-text">Science Lab Report - COMPLETED!</div>
+                  </div>
+                  <div class="quest-description">
+                    Great work! You've successfully submitted your lab report.
+                  </div>
+                  <div class="quest-meta">
+                    <span class="quest-badge medium" style="background: rgba(63, 185, 80, 0.2); color: var(--success);">COMPLETED</span>
+                    <span class="quest-time">✅ Mission Accomplished!</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel Navigation -->
+        <div class="carousel-nav">
+          <button class="carousel-btn" id="prevBtn" aria-label="Previous">‹</button>
+          <div class="carousel-indicators" id="indicators"></div>
+          <button class="carousel-btn" id="nextBtn" aria-label="Next">›</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Info -->
+    <div class="info-section">
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-card-title">📝 Profile Status</div>
+          <div class="info-item"><strong>Personal Statement</strong> — Missing</div>
+          <div class="info-item"><strong>Activities</strong> — 3/8 listed</div>
+          <div class="info-item"><strong>Awards</strong> — Incomplete</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">📰 Updates</div>
+          <div class="info-item"><strong>Common App</strong> — 2 weeks left</div>
+          <div class="info-item"><strong>Scholarship</strong> — Dec 15 deadline</div>
+          <div class="info-item"><strong>Tour Event</strong> — This week</div>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <div class="voice-agent">
+        <div class="agent-surface">
+          <!-- Agent Header -->
+          <div class="agent-header">
+            <div class="agent-status">
+              <span class="agent-status-dot"></span>
+              <span class="agent-status-text" id="agentStatusText">🎮 AI Quest Assistant · Ready</span>
+            </div>
+            <div class="agent-controls">
+              <button class="agent-control-btn" id="toggleInputMode" type="button">🎤 Voice</button>
+              <button class="agent-control-btn" id="toggleVoice" type="button">🔊 Sound: Off</button>
+            </div>
+          </div>
+
+          <!-- Waveform and Subtitle -->
+          <div class="agent-core">
+            <div class="agent-waveform" id="agentWaveform">
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+              <span class="waveform-bar"></span>
+            </div>
+            <div class="agent-subtitle">
+              <span class="subtitle-text" id="subtitleText">Hey! I'm your Quest Assistant. I can help you tackle your daily quests, answer questions, and guide you on your academic journey. What would you like to work on today?</span>
+            </div>
+          </div>
+
+          <!-- Input Area -->
+          <div class="agent-input-area voice-mode" id="agentInputArea" data-mode="voice">
+            <button class="agent-input-btn voice-btn" id="micBtn" type="button" aria-label="Start voice input">🎤</button>
+            <input class="agent-input" id="userInput" type="text" placeholder="Tap microphone to speak or type here..." autocomplete="off" />
+            <button class="agent-input-btn send-btn" id="sendBtn" type="button" aria-label="Send message">➤</button>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Quest data and state
+    const quests = {
+      completed: 1,
+      total: 4,
+      xp: 25,
+      streak: 3,
+      level: 5
+    };
+
+    // User profile data (integrate with global state)
+    const userProfile = {
+      grade: 9, // Get from state.profileSections or state.routerAgent
+      majorTrack: null, // Get from state.profile.targetMajors or state.profileSections
+      universityTier: null, // 'reach', 'target', 'safety', or null
+      interests: [], // Get from state.profile.interests
+      completedMainQuests: [], // Track completed main quest IDs
+      unlockedQuests: new Set()
+    };
+
+    // Load profile data from global state if available
+    function loadProfileData() {
+      if (typeof state !== 'undefined') {
+        // Get grade from School section
+        const schoolSection = state.profileSections?.find(s => s.key === 'School');
+        const gradeParam = schoolSection?.params?.find(p => p[0] === 'Grade' || p[0] === 'Grade Level');
+        if (gradeParam && gradeParam[1]) {
+          const gradeMatch = gradeParam[1].match(/(\d+)/);
+          if (gradeMatch) userProfile.grade = parseInt(gradeMatch[1]);
+        }
+
+        // Get major track
+        const majorSection = state.profileSections?.find(s => s.key === 'Intended Major');
+        const majorParam = majorSection?.params?.find(p => p[0] === 'Majors');
+        if (majorParam && majorParam[1] && majorParam[1] !== 'Undecided' && majorParam[1] !== '—') {
+          const majors = majorParam[1].split(',').map(m => m.trim().toLowerCase());
+          if (majors.length > 0) {
+            // Map to major track codes
+            if (majors.some(m => m.includes('computer') || m.includes('cs') || m.includes('computer science'))) {
+              userProfile.majorTrack = 'cs';
+            } else if (majors.some(m => m.includes('bio') || m.includes('biology'))) {
+              userProfile.majorTrack = 'bio';
+            } else if (majors.some(m => m.includes('econ') || m.includes('economics'))) {
+              userProfile.majorTrack = 'econ';
+            } else {
+              userProfile.majorTrack = majors[0].substring(0, 4); // Use first 4 chars as track
+            }
+          }
+        }
+
+        // Get interests
+        if (state.profile && state.profile.interests) {
+          userProfile.interests = state.profile.interests;
+        }
+      }
+    }
+
+    // Quest type filter state
+    let currentQuestFilter = 'all';
+
+    // Update date
+    function updateDate() {
+      const now = new Date();
+      const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const weekday = weekdays[now.getDay()];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = monthNames[now.getMonth()];
+      const day = now.getDate();
+      
+      document.getElementById('dailyDate').textContent = `${weekday}, ${month} ${day}`;
+    }
+
+    // Carousel functionality
+    let currentIndex = 0;
+    let questCards, totalQuests, track, prevBtn, nextBtn, indicators, counter;
+
+    // Create indicators
+    function createIndicators() {
+      indicators.innerHTML = '';
+      for (let i = 0; i < totalQuests; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'carousel-dot';
+        if (i === 0) dot.classList.add('active');
+        dot.addEventListener('click', () => goToSlide(i));
+        indicators.appendChild(dot);
+      }
+    }
+
+    // Update carousel display
+    function updateCarousel() {
+      const translateX = -currentIndex * 100;
+      track.style.transform = `translateX(${translateX}%)`;
+      
+      // Update indicators
+      document.querySelectorAll('.carousel-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+      });
+      
+      // Update counter
+      counter.textContent = `${currentIndex + 1}/${totalQuests}`;
+      
+      // Update button states
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === totalQuests - 1;
+    }
+
+    // Go to specific slide
+    function goToSlide(index) {
+      if (index >= 0 && index < totalQuests) {
+        currentIndex = index;
+        updateCarousel();
+      }
+    }
+
+    // Next slide
+    function nextSlide() {
+      if (currentIndex < totalQuests - 1) {
+        currentIndex++;
+        updateCarousel();
+      }
+    }
+
+    // Previous slide
+    function prevSlide() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel();
+      }
+    }
+
+    // Quest completion handler - only for task cards
+    document.querySelectorAll('.quest-card.type-task').forEach(card => {
+      card.addEventListener('click', (e) => {
+        // Don't trigger completion when clicking navigation elements or locked cards
+        if (e.target.closest('.carousel-btn') || 
+            e.target.closest('.carousel-dot') || 
+            e.target.closest('.quest-fog-overlay') ||
+            card.classList.contains('locked')) {
+          return;
+        }
+        
+        const isCompleted = card.classList.contains('completed');
+        const checkbox = card.querySelector('.quest-checkbox');
+        const xpReward = parseInt(card.dataset.xp) || 0;
+        const questId = card.dataset.quest;
+        const questType = card.dataset.questType;
+        
+        if (isCompleted) {
+          // Undo completion
+          card.classList.remove('completed');
+          quests.completed--;
+          quests.xp -= xpReward;
+          if (questType === 'main') {
+            const index = userProfile.completedMainQuests.indexOf(questId);
+            if (index > -1) userProfile.completedMainQuests.splice(index, 1);
+          }
+          if (navigator.vibrate) navigator.vibrate(10);
+        } else {
+          // Complete quest
+          card.classList.add('completed');
+          quests.completed++;
+          quests.xp += xpReward;
+          
+          // Track main quest completion
+          if (questType === 'main' && questId) {
+            if (!userProfile.completedMainQuests.includes(questId)) {
+              userProfile.completedMainQuests.push(questId);
+            }
+          }
+          
+          // Haptic feedback
+          if (navigator.vibrate) {
+            navigator.vibrate([10, 50, 10]);
+          }
+          
+          // Completion animation
+          if (checkbox) {
+            checkbox.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+              checkbox.style.transform = 'scale(1)';
+            }, 300);
+          }
+          
+          // Show celebration
+          showCelebration(xpReward);
+          
+          // Check if this unlocks other quests
+          setTimeout(() => {
+            updateQuestUnlocks();
+          }, 500);
+        }
+      });
+    });
+
+    // Celebration animation
+    function showCelebration(xp) {
+      // In a real app, show a toast or modal
+      console.log(`🎉 Quest Completed! +${xp} XP`);
+    }
+
+    // Start quest action
+    function startQuest() {
+      const firstQuest = document.querySelector('.quest-card:not(.completed)');
+      if (firstQuest) {
+        const questTitle = firstQuest.querySelector('.quest-title-text').textContent;
+        // In a real app, navigate to quest details
+        console.log(`Starting quest: ${questTitle}`);
+        
+        // Visual feedback
+        firstQuest.style.transform = 'scale(1.02)';
+        setTimeout(() => {
+          firstQuest.style.transform = '';
+        }, 200);
+      } else {
+        console.log('🎊 All quests completed! You are a legend!');
+      }
+    }
+
+    // Check unlock requirements and return status
+    function checkQuestUnlockStatus(questCard) {
+      const requirements = questCard.dataset.unlockRequirements;
+      if (!requirements) {
+        return { unlocked: true, missingRequirements: [] };
+      }
+      
+      try {
+        const req = JSON.parse(requirements);
+        const missingRequirements = [];
+        
+        // Check grade requirement
+        if (req.grade && userProfile.grade < req.grade) {
+          missingRequirements.push({
+            type: 'grade',
+            message: `到达G${req.grade}年级`,
+            current: `当前: G${userProfile.grade}`,
+            required: `需要: G${req.grade}`
+          });
+        }
+        
+        // Check major track requirement
+        if (req.majorTrack && req.majorTrack !== 'any') {
+          if (!userProfile.majorTrack || userProfile.majorTrack !== req.majorTrack) {
+            missingRequirements.push({
+              type: 'majorTrack',
+              message: `在Profile中明确Major Track: ${req.majorTrack.toUpperCase()}`,
+              current: userProfile.majorTrack ? `当前: ${userProfile.majorTrack}` : '当前: 未设置',
+              required: `需要: ${req.majorTrack.toUpperCase()}`
+            });
+          }
+        }
+        
+        // Check university tier requirement
+        if (req.universityTier && req.universityTier !== 'any') {
+          if (!userProfile.universityTier || userProfile.universityTier !== req.universityTier) {
+            missingRequirements.push({
+              type: 'universityTier',
+              message: `在Profile中明确University Tier: ${req.universityTier}`,
+              current: userProfile.universityTier ? `当前: ${userProfile.universityTier}` : '当前: 未设置',
+              required: `需要: ${req.universityTier}`
+            });
+          }
+        }
+        
+        // Check main quest completion requirement
+        if (req.mainQuestCompleted) {
+          const requiredQuests = req.mainQuestCompleted.split(',').map(id => id.trim());
+          const missingQuests = requiredQuests.filter(questId => 
+            !userProfile.completedMainQuests.includes(questId) &&
+            !document.querySelector(`[data-quest="${questId}"].completed`)
+          );
+          if (missingQuests.length > 0) {
+            missingRequirements.push({
+              type: 'mainQuestCompleted',
+              message: `完成主线任务: ${missingQuests.join(', ')}`,
+              current: `已完成: ${requiredQuests.length - missingQuests.length}/${requiredQuests.length}`,
+              required: `需要完成: ${missingQuests.join(', ')}`
+            });
+          }
+        }
+        
+        // Check interests requirement
+        if (req.interests && Array.isArray(req.interests)) {
+          const hasMatchingInterest = req.interests.some(interest => 
+            userProfile.interests.some(userInterest => 
+              userInterest.toLowerCase().includes(interest.toLowerCase())
+            )
+          );
+          if (!hasMatchingInterest) {
+            missingRequirements.push({
+              type: 'interests',
+              message: `Profile兴趣匹配: ${req.interests.join(', ')}`,
+              current: userProfile.interests.length > 0 ? `当前兴趣: ${userProfile.interests.join(', ')}` : '当前: 未设置兴趣',
+              required: `需要兴趣: ${req.interests.join(', ')}`
+            });
+          }
+        }
+        
+        return {
+          unlocked: missingRequirements.length === 0,
+          missingRequirements: missingRequirements
+        };
+      } catch (e) {
+        console.error('Error parsing unlock requirements:', e);
+        return { unlocked: true, missingRequirements: [] };
+      }
+    }
+
+    // Check if quest should be unlocked (simplified for compatibility)
+    function checkQuestUnlock(questCard) {
+      return checkQuestUnlockStatus(questCard).unlocked;
+    }
+
+    // Update fog overlay hints with specific requirements
+    function updateFogHints(card) {
+      const fogOverlay = card.querySelector('.quest-fog-overlay');
+      if (!fogOverlay) return;
+      
+      const status = checkQuestUnlockStatus(card);
+      const requirementsContainer = fogOverlay.querySelector('.fog-unlock-requirements');
+      
+      if (requirementsContainer && status.missingRequirements.length > 0) {
+        // Update unlock items
+        const items = requirementsContainer.querySelectorAll('.fog-unlock-item');
+        items.forEach((item, index) => {
+          if (status.missingRequirements[index]) {
+            const req = status.missingRequirements[index];
+            const span = item.querySelector('span:last-child');
+            if (span) {
+              span.textContent = req.message;
+            }
+            item.classList.remove('unlocked');
+            item.classList.add('locked');
+          }
+        });
+        
+        // Update hint text
+        const hint = fogOverlay.querySelector('.fog-hint');
+        if (hint && status.missingRequirements.length > 0) {
+          const firstReq = status.missingRequirements[0];
+          hint.textContent = `此任务需要满足以下条件才能解锁: ${firstReq.message}`;
+        }
+      }
+    }
+
+    // Update unlock status for all quests
+    function updateQuestUnlocks(showAnimation = true) {
+      const allQuestCards = document.querySelectorAll('.quest-card[data-quest]');
+      const toUnlock = [];
+      let unlockedCount = 0;
+      
+      // First pass: identify quests to unlock
+      allQuestCards.forEach(card => {
+        const isUnlocked = checkQuestUnlock(card);
+        
+        // Update fog hints for locked quests
+        if (card.classList.contains('locked')) {
+          updateFogHints(card);
+        }
+        
+        if (isUnlocked && card.classList.contains('locked')) {
+          toUnlock.push(card);
+        } else if (!isUnlocked && !card.classList.contains('locked')) {
+          // Lock quest if conditions no longer met
+          card.classList.add('locked');
+          const fogOverlay = card.querySelector('.quest-fog-overlay');
+          if (fogOverlay) {
+            fogOverlay.style.display = 'flex';
+            fogOverlay.style.opacity = '1';
+          }
+          updateFogHints(card);
+          userProfile.unlockedQuests.delete(card.dataset.quest);
+        }
+      });
+      
+      // Second pass: unlock quests (with animation if needed)
+      if (toUnlock.length > 0) {
+        unlockedCount = toUnlock.length;
+        
+        if (showAnimation && unlockedCount > 0) {
+          showLoadingAnimation(() => {
+            toUnlock.forEach(card => {
+              card.classList.remove('locked');
+              const fogOverlay = card.querySelector('.quest-fog-overlay');
+              if (fogOverlay) {
+                fogOverlay.style.opacity = '0';
+                setTimeout(() => {
+                  fogOverlay.style.display = 'none';
+                }, 400);
+              }
+              userProfile.unlockedQuests.add(card.dataset.quest);
+            });
+            console.log(`🎉 Unlocked ${unlockedCount} new quest(s)!`);
+          });
+        } else {
+          // Unlock without animation (e.g., initial load)
+          toUnlock.forEach(card => {
+            card.classList.remove('locked');
+            const fogOverlay = card.querySelector('.quest-fog-overlay');
+            if (fogOverlay) {
+              fogOverlay.style.display = 'none';
+              fogOverlay.style.opacity = '0';
+            }
+            userProfile.unlockedQuests.add(card.dataset.quest);
+          });
+          if (unlockedCount > 0) {
+            console.log(`🎉 Unlocked ${unlockedCount} new quest(s)!`);
+          }
+        }
+      }
+    }
+
+    // Show loading animation
+    function showLoadingAnimation(callback) {
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      const progressBar = document.getElementById('loadingProgressBar');
+      const loadingDetail = document.getElementById('loadingDetail');
+      
+      if (!loadingOverlay) return;
+      
+      loadingOverlay.classList.add('active');
+      progressBar.style.width = '0%';
+      loadingDetail.textContent = '正在解锁任务...';
+      
+      // Animate progress bar
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 15 + 5;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          progressBar.style.width = '100%';
+          setTimeout(() => {
+            loadingOverlay.classList.remove('active');
+            if (callback) callback();
+          }, 500);
+        } else {
+          progressBar.style.width = `${progress}%`;
+          loadingDetail.textContent = `正在解锁任务... ${Math.round(progress)}%`;
+        }
+      }, 100);
+    }
+
+    // Filter quests by type
+    function filterQuestsByType(type) {
+      currentQuestFilter = type;
+      const allQuests = document.querySelectorAll('.quest-card');
+      
+      allQuests.forEach(quest => {
+        const questType = quest.dataset.questType || '';
+        const shouldShow = type === 'all' || questType === type;
+        
+        if (shouldShow) {
+          quest.style.display = '';
+        } else {
+          quest.style.display = 'none';
+        }
+      });
+      
+      // Update active filter button
+      document.querySelectorAll('.quest-type-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === type);
+      });
+      
+      // Recalculate carousel
+      const visibleQuests = Array.from(allQuests).filter(q => q.style.display !== 'none');
+      totalQuests = visibleQuests.length;
+      if (currentIndex >= totalQuests && totalQuests > 0) {
+        currentIndex = totalQuests - 1;
+      }
+      createIndicators();
+      updateCarousel();
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDate();
+      loadProfileData();
+      
+      // Initialize quest unlock status (without animation on initial load)
+      updateQuestUnlocks(false);
+      
+      // Initialize carousel elements
+      questCards = document.querySelectorAll('.quest-card');
+      totalQuests = questCards.length;
+      track = document.getElementById('questTrack');
+      prevBtn = document.getElementById('prevBtn');
+      nextBtn = document.getElementById('nextBtn');
+      indicators = document.getElementById('indicators');
+      counter = document.getElementById('questCounter');
+      
+      // Initialize carousel
+      if (questCards.length > 0 && track && prevBtn && nextBtn && indicators && counter) {
+        createIndicators();
+        updateCarousel();
+        
+        // Bind navigation buttons
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+        
+        // Bind quest type filter buttons
+        document.querySelectorAll('.quest-type-filter-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            filterQuestsByType(btn.dataset.filter);
+          });
+        });
+        
+        // Touch/swipe support
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        
+        track.addEventListener('touchstart', (e) => {
+          startX = e.touches[0].clientX;
+          isDragging = true;
+        });
+        
+        track.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          currentX = e.touches[0].clientX;
+        });
+        
+        track.addEventListener('touchend', () => {
+          if (!isDragging) return;
+          isDragging = false;
+          
+          const diff = startX - currentX;
+          if (Math.abs(diff) > 50) {
+            if (diff > 0 && currentIndex < totalQuests - 1) {
+              nextSlide();
+            } else if (diff < 0 && currentIndex > 0) {
+              prevSlide();
+            }
+          }
+        });
+      }
+      
+      // Listen for profile updates (if state changes)
+      if (typeof state !== 'undefined') {
+        // Periodically check for profile updates
+        setInterval(() => {
+          const oldGrade = userProfile.grade;
+          const oldMajor = userProfile.majorTrack;
+          loadProfileData();
+          if (oldGrade !== userProfile.grade || oldMajor !== userProfile.majorTrack) {
+            updateQuestUnlocks();
+          }
+        }, 5000);
+      }
+    });
+
+    // Update date every hour
+    setInterval(updateDate, 3600000);
+
+    // Voice Agent Functionality
+    const agentState = {
+      inputMode: 'voice', // 'voice' or 'text'
+      voiceOutput: false,
+      isRecording: false,
+      recognition: null
+    };
+
+    const micBtn = document.getElementById('micBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const userInput = document.getElementById('userInput');
+    const agentInputArea = document.getElementById('agentInputArea');
+    const toggleInputMode = document.getElementById('toggleInputMode');
+    const toggleVoice = document.getElementById('toggleVoice');
+    const subtitleText = document.getElementById('subtitleText');
+    const agentStatusText = document.getElementById('agentStatusText');
+    const agentWaveform = document.getElementById('agentWaveform');
+
+    // Initialize Web Speech API
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      agentState.recognition = new SpeechRecognition();
+      agentState.recognition.continuous = false;
+      agentState.recognition.interimResults = false;
+      agentState.recognition.lang = 'en-US';
+
+      agentState.recognition.onstart = () => {
+        agentState.isRecording = true;
+        micBtn.classList.add('recording');
+        agentStatusText.textContent = '🎤 Listening...';
+        updateWaveform(true);
+      };
+
+      agentState.recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        userInput.value = transcript;
+        handleUserInput(transcript);
+      };
+
+      agentState.recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        agentStatusText.textContent = '🎮 AI Quest Assistant · Ready';
+        micBtn.classList.remove('recording');
+        updateWaveform(false);
+      };
+
+      agentState.recognition.onend = () => {
+        agentState.isRecording = false;
+        micBtn.classList.remove('recording');
+        agentStatusText.textContent = '🎮 AI Quest Assistant · Processing...';
+        setTimeout(() => {
+          agentStatusText.textContent = '🎮 AI Quest Assistant · Ready';
+          updateWaveform(false);
+        }, 1000);
+      };
+    } else {
+      console.warn('Speech recognition not supported');
+      micBtn.disabled = true;
+      micBtn.style.opacity = '0.5';
+    }
+
+    // Toggle input mode
+    toggleInputMode.addEventListener('click', () => {
+      agentState.inputMode = agentState.inputMode === 'voice' ? 'text' : 'voice';
+      agentInputArea.dataset.mode = agentState.inputMode;
+      agentInputArea.classList.toggle('voice-mode');
+      agentInputArea.classList.toggle('text-mode');
+      toggleInputMode.textContent = agentState.inputMode === 'voice' ? '🎤 Voice' : '⌨️ Text';
+      
+      if (agentState.inputMode === 'text') {
+        userInput.focus();
+      }
+    });
+
+    // Toggle voice output
+    toggleVoice.addEventListener('click', () => {
+      agentState.voiceOutput = !agentState.voiceOutput;
+      toggleVoice.textContent = agentState.voiceOutput ? '🔊 Sound: On' : '🔊 Sound: Off';
+    });
+
+    // Microphone button
+    micBtn.addEventListener('click', () => {
+      if (agentState.recognition && !agentState.isRecording) {
+        try {
+          agentState.recognition.start();
+        } catch (error) {
+          console.error('Failed to start recognition:', error);
+        }
+      } else if (agentState.isRecording && agentState.recognition) {
+        agentState.recognition.stop();
+      }
+    });
+
+    // Send button
+    sendBtn.addEventListener('click', () => {
+      const text = userInput.value.trim();
+      if (text) {
+        handleUserInput(text);
+        userInput.value = '';
+      }
+    });
+
+    // Enter key to send
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && agentState.inputMode === 'text') {
+        const text = userInput.value.trim();
+        if (text) {
+          handleUserInput(text);
+          userInput.value = '';
+        }
+      }
+    });
+
+    // Handle user input
+    function handleUserInput(input) {
+      agentStatusText.textContent = '🤔 Thinking...';
+      updateWaveform(true);
+      
+      // Simulate AI response delay
+      setTimeout(() => {
+        const response = generateResponse(input);
+        displayResponse(response);
+        
+        if (agentState.voiceOutput && 'speechSynthesis' in window) {
+          speakText(response);
+        }
+      }, 800);
+    }
+
+    // Generate AI response (mock - replace with actual API call)
+    function generateResponse(input) {
+      const lowerInput = input.toLowerCase();
+      
+      // Quest-related responses
+      if (lowerInput.includes('math') || lowerInput.includes('assignment')) {
+        return "Great! Your Math Assignment quest is high priority. Would you like me to help break it down into smaller steps? I can guide you through the calculus problems!";
+      }
+      
+      if (lowerInput.includes('scholarship') || lowerInput.includes('application')) {
+        return "The Scholarship Application quest needs recommendation letters. I can help you draft emails to your teachers or mentors. Let's tackle this together!";
+      }
+      
+      if (lowerInput.includes('essay') || lowerInput.includes('personal statement')) {
+        return "Essay writing can be challenging! I can help you brainstorm ideas, review your draft, or provide feedback. What would you like to focus on first?";
+      }
+      
+      if (lowerInput.includes('help') || lowerInput.includes('what should i do')) {
+        return "Looking at your quest board, I'd recommend starting with the Math Assignment since it's due tomorrow. Would you like me to help you get started?";
+      }
+      
+      if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')) {
+        return "Hey there! 👋 I'm your Quest Assistant. I'm here to help you complete your daily quests and stay on track. What quest would you like to tackle today?";
+      }
+      
+      // Default response
+      return "I'm here to help you with your quests! You can ask me about your assignments, get study tips, or ask for help with any of your tasks. What would you like to know?";
+    }
+
+    // Display response
+    function displayResponse(text) {
+      subtitleText.textContent = text;
+      agentStatusText.textContent = '🎮 AI Quest Assistant · Ready';
+      updateWaveform(false);
+    }
+
+    // Update waveform animation
+    function updateWaveform(active) {
+      if (active) {
+        agentWaveform.style.opacity = '1';
+      } else {
+        agentWaveform.style.opacity = '0.5';
+      }
+    }
+
+    // Text-to-speech
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.8;
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Initialize agent
+    updateWaveform(false);
+  </script>
+</body>
+</html>

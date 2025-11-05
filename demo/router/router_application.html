@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Application Router - SuperOS</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .stage-header {
+      text-align: center;
+      flex: 1;
+    }
+
+    .stage-title {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .stage-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+
+    /* Progress Section */
+    .progress-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .progress-label strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .progress-bar-container {
+      height: 8px;
+      background: rgba(168, 85, 247, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 10px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 10px var(--primary-glow);
+      width: 75%;
+    }
+
+    /* Urgent Badge */
+    .urgent-alert {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .urgent-icon {
+      font-size: 24px;
+    }
+
+    /* Quest Cards */
+    .quest-section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quest-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quest-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quest-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .quest-card:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+    }
+
+    .quest-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .quest-card.urgent {
+      border-color: rgba(239, 68, 68, 0.5);
+      animation: urgentPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes urgentPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    }
+
+    .quest-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .quest-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .quest-content {
+      flex: 1;
+    }
+
+    .quest-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .quest-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .quest-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12px;
+    }
+
+    .quest-badge {
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quest-badge.high {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .quest-badge.medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .quest-timeline {
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .quest-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--bg-hover);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .quest-card.completed .quest-check {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .quest-card.completed .quest-check::after {
+      content: '✓';
+      color: white;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .quest-card.completed {
+      opacity: 0.7;
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 8px 0;
+      display: flex;
+      justify-content: space-around;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 12px;
+      flex: 1;
+      max-width: 120px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 24px;
+    }
+
+    .nav-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-item.active .nav-label {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .router-container {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div class="stage-header">
+      <div class="stage-title">📝 Application</div>
+      <div class="stage-subtitle">Execution & Submission</div>
+    </div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Progress Section -->
+    <div class="progress-section">
+      <div class="progress-label">
+        <span>Application Progress</span>
+        <strong>75%</strong>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar"></div>
+      </div>
+    </div>
+
+    <!-- Urgent Alert -->
+    <div class="urgent-alert">
+      <div class="urgent-icon">⚡</div>
+      <div>Early Decision deadline in 2 weeks! Complete applications now.</div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="quest-section">
+      <h2 class="section-title">Secure Recommendations</h2>
+      <div class="quest-list">
+        <div class="quest-card urgent">
+          <div class="quest-header">
+            <div class="quest-icon">📧</div>
+            <div class="quest-content">
+              <div class="quest-title">Request letters early (2+ months before deadline)</div>
+              <div class="quest-description">Identify recommenders (2 teachers + counselor) and provide resume/brag sheet</div>
+              <div class="quest-meta">
+                <span class="quest-badge high">High Priority</span>
+                <span class="quest-timeline">⏱️ Spring G11 - Fall G12</span>
+              </div>
+            </div>
+            <div class="quest-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Essays -->
+    <div class="quest-section">
+      <h2 class="section-title">Personal Statement</h2>
+      <div class="quest-list">
+        <div class="quest-card">
+          <div class="quest-header">
+            <div class="quest-icon">✍️</div>
+            <div class="quest-content">
+              <div class="quest-title">Finalize personal statement</div>
+              <div class="quest-description">Write multiple drafts and get feedback from teachers/counselors</div>
+              <div class="quest-meta">
+                <span class="quest-badge high">High Priority</span>
+                <span class="quest-timeline">⏱️ Summer - Early Fall G12</span>
+              </div>
+            </div>
+            <div class="quest-check"></div>
+          </div>
+        </div>
+
+        <div class="quest-card">
+          <div class="quest-header">
+            <div class="quest-icon">📄</div>
+            <div class="quest-content">
+              <div class="quest-title">Write supplemental essays</div>
+              <div class="quest-description">Identify all essay prompts, write drafts, revise and proofread</div>
+              <div class="quest-meta">
+                <span class="quest-badge high">High Priority</span>
+                <span class="quest-timeline">⏱️ Fall G12</span>
+              </div>
+            </div>
+            <div class="quest-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submission -->
+    <div class="quest-section">
+      <h2 class="section-title">Submit Applications</h2>
+      <div class="quest-list">
+        <div class="quest-card urgent">
+          <div class="quest-header">
+            <div class="quest-icon">📤</div>
+            <div class="quest-content">
+              <div class="quest-title">Complete Common App/Coalition App</div>
+              <div class="quest-description">Submit test scores, send transcripts, and track application status</div>
+              <div class="quest-meta">
+                <span class="quest-badge high">High Priority</span>
+                <span class="quest-timeline">⏱️ October - January G12</span>
+              </div>
+            </div>
+            <div class="quest-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Aid -->
+    <div class="quest-section">
+      <h2 class="section-title">Financial Aid</h2>
+      <div class="quest-list">
+        <div class="quest-card">
+          <div class="quest-header">
+            <div class="quest-icon">💰</div>
+            <div class="quest-content">
+              <div class="quest-title">Complete FAFSA and CSS Profile</div>
+              <div class="quest-description">Submit required documents and apply for scholarships</div>
+              <div class="quest-meta">
+                <span class="quest-badge high">High Priority</span>
+                <span class="quest-timeline">⏱️ October - February G12</span>
+              </div>
+            </div>
+            <div class="quest-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-item active" data-route="home">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" data-route="roadmap">
+      <div class="nav-icon">🗺️</div>
+      <div class="nav-label">Roadmap</div>
+    </div>
+    <div class="nav-item" data-route="profile">
+      <div class="nav-icon">👤</div>
+      <div class="nav-label">Profile</div>
+    </div>
+  </div>
+
+  <script>
+    // Quest completion handlers
+    document.querySelectorAll('.quest-card').forEach(card => {
+      const checkbox = card.querySelector('.quest-check');
+      checkbox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        card.classList.toggle('completed');
+        
+        // Update progress
+        const completed = document.querySelectorAll('.quest-card.completed').length;
+        const total = document.querySelectorAll('.quest-card').length;
+        const progress = Math.round((completed / total) * 100);
+        
+        document.querySelector('.progress-bar').style.width = progress + '%';
+        document.querySelector('.progress-label strong').textContent = progress + '%';
+      });
+    });
+
+    // Navigation handlers
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        this.classList.add('active');
+        const route = this.dataset.route;
+        if (route === 'roadmap') {
+          window.location.href = 'roadmap_application.html';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

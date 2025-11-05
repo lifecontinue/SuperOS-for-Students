@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Status Dashboard - SuperOS</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    /* Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: 20px;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
+    }
+
+    /* Core Metrics */
+    .metrics-section {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 10px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+    }
+
+    .metric-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .metric-circle {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 10px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .metric-circle svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .metric-circle-bg {
+      fill: none;
+      stroke: rgba(240, 246, 252, 0.08);
+      stroke-width: 6;
+    }
+
+    .metric-circle-progress {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .metric-circle-progress.stress {
+      stroke: var(--danger);
+      filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5));
+    }
+
+    .metric-circle-progress.mood {
+      stroke: var(--warning);
+      filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5));
+    }
+
+    .metric-circle-progress.risk {
+      stroke: var(--primary);
+      filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.5));
+    }
+
+    .metric-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      text-transform: capitalize;
+    }
+
+    .metric-status {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: capitalize;
+      margin-top: 4px;
+    }
+
+    .metric-card.stress-high .metric-status {
+      color: var(--danger);
+    }
+
+    .metric-card.mood-good .metric-status {
+      color: var(--warning);
+    }
+
+    .metric-card.risk-medium .metric-status {
+      color: var(--primary);
+    }
+
+    /* Priority Task Card */
+    .priority-task-card {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.04));
+      border: 1.5px solid rgba(239, 68, 68, 0.35);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .priority-task-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(239, 68, 68, 0.3);
+      border-color: rgba(239, 68, 68, 0.6);
+    }
+
+    .task-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .task-badge {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.2);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .task-time-left {
+      font-size: 11px;
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .task-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      line-height: 1.4;
+    }
+
+    .task-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .task-progress {
+      margin-bottom: 12px;
+    }
+
+    .task-progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .task-progress-bar {
+      height: 6px;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .task-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--danger), #f87171);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+    }
+
+    .task-action-btn {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, var(--danger), #f87171);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+    }
+
+    .task-action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(239, 68, 68, 0.4);
+    }
+
+    /* News & Tips List */
+    .news-section {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .news-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .news-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .news-card:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(168, 85, 68, 0.2);
+    }
+
+    .news-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .news-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .news-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 8px;
+    }
+
+    .news-content {
+      flex: 1;
+    }
+
+    .news-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+
+    .news-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .news-type {
+      padding: 2px 8px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border-radius: 6px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .news-time {
+      color: var(--text-dim);
+    }
+
+    .news-description {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Scrollbar */
+    .router-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .router-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .router-container::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .router-container {
+        padding: 12px;
+      }
+
+      .metrics-section {
+        gap: 8px;
+      }
+
+      .metric-card {
+        padding: 12px;
+      }
+
+      .metric-circle {
+        width: 70px;
+        height: 70px;
+      }
+
+      .metric-value {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div style="flex: 1; text-align: center;">
+      <div class="header-title">Status Dashboard</div>
+      <div class="header-date" id="currentDate">Today</div>
+    </div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Core Metrics -->
+    <div class="metrics-section">
+      <!-- Stress Metric -->
+      <div class="metric-card stress-high">
+        <div class="metric-label">Stress</div>
+        <div class="metric-circle">
+          <svg>
+            <circle class="metric-circle-bg" cx="35" cy="35" r="32"></circle>
+            <circle class="metric-circle-progress stress" cx="35" cy="35" r="32" id="stressProgress"></circle>
+          </svg>
+          <div class="metric-value" id="stressValue">Elevated</div>
+        </div>
+        <div class="metric-status">Needs attention</div>
+      </div>
+
+      <!-- Mood Metric -->
+      <div class="metric-card mood-good">
+        <div class="metric-label">Mood</div>
+        <div class="metric-circle">
+          <svg>
+            <circle class="metric-circle-bg" cx="35" cy="35" r="32"></circle>
+            <circle class="metric-circle-progress mood" cx="35" cy="35" r="32" id="moodProgress"></circle>
+          </svg>
+          <div class="metric-value" id="moodValue">Positive</div>
+        </div>
+        <div class="metric-status">Keep it up</div>
+      </div>
+
+      <!-- Risk Metric -->
+      <div class="metric-card risk-medium">
+        <div class="metric-label">Risk</div>
+        <div class="metric-circle">
+          <svg>
+            <circle class="metric-circle-bg" cx="35" cy="35" r="32"></circle>
+            <circle class="metric-circle-progress risk" cx="35" cy="35" r="32" id="riskProgress"></circle>
+          </svg>
+          <div class="metric-value" id="riskValue">Moderate</div>
+        </div>
+        <div class="metric-status">Stay aware</div>
+      </div>
+    </div>
+
+    <!-- Priority Task Card -->
+    <div class="priority-task-card" id="priorityTaskCard">
+      <div class="task-header">
+        <span class="task-badge">⚠️ HIGH PRIORITY</span>
+        <span class="task-time-left" id="taskTimeLeft">⏰ 2 days left</span>
+      </div>
+      <div class="task-title" id="taskTitle">Complete Math Assignment - Chapter 5</div>
+      <div class="task-description" id="taskDescription">
+        Master 15 calculus integration problems. This assignment is critical for your grade and understanding of the subject.
+      </div>
+      <div class="task-progress">
+        <div class="task-progress-label">
+          <span>Progress</span>
+          <span id="taskProgressText">40% Complete</span>
+        </div>
+        <div class="task-progress-bar">
+          <div class="task-progress-fill" id="taskProgressFill" style="width: 40%"></div>
+        </div>
+      </div>
+      <button class="task-action-btn" id="startTaskBtn">Start Task Now</button>
+    </div>
+
+    <!-- News & Tips List -->
+    <div class="news-section">
+      <h2 class="section-title">📰 Updates & Tips</h2>
+      <div class="news-list">
+        <div class="news-card">
+          <div class="news-header">
+            <div class="news-icon">📅</div>
+            <div class="news-content">
+              <div class="news-title">Common App Deadline Approaching</div>
+              <div class="news-meta">
+                <span class="news-type">News</span>
+                <span class="news-time">2 hours ago</span>
+              </div>
+              <div class="news-description">
+                Early Decision applications are due in 2 weeks! Make sure all your materials are ready.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="news-card">
+          <div class="news-header">
+            <div class="news-icon">💡</div>
+            <div class="news-content">
+              <div class="news-title">Study Tip: Break Down Large Tasks</div>
+              <div class="news-meta">
+                <span class="news-type">Tip</span>
+                <span class="news-time">5 hours ago</span>
+              </div>
+              <div class="news-description">
+                Break your math assignment into smaller chunks. Focus on 3-4 problems per session for better focus.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="news-card">
+          <div class="news-header">
+            <div class="news-icon">🎓</div>
+            <div class="news-content">
+              <div class="news-title">Scholarship Opportunity Available</div>
+              <div class="news-meta">
+                <span class="news-type">Opportunity</span>
+                <span class="news-time">1 day ago</span>
+              </div>
+              <div class="news-description">
+                New scholarship program for STEM students. Application deadline: December 15. Check eligibility now!
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="news-card">
+          <div class="news-header">
+            <div class="news-icon">🌿</div>
+            <div class="news-content">
+              <div class="news-title">Manage Your Stress Levels</div>
+              <div class="news-meta">
+                <span class="news-type">Wellness</span>
+                <span class="news-time">2 days ago</span>
+              </div>
+              <div class="news-description">
+                Your stress level is elevated. Try taking 10-minute breaks every hour and practice deep breathing exercises.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update date
+    function updateDate() {
+      const now = new Date();
+      const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const weekday = weekdays[now.getDay()];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = monthNames[now.getMonth()];
+      const day = now.getDate();
+      
+      document.getElementById('currentDate').textContent = `${weekday}, ${month} ${day}`;
+    }
+
+    // Calculate circular progress based on status level
+    function updateCircularProgress(progressId, level) {
+      const radius = 32;
+      const circumference = 2 * Math.PI * radius; // ~201
+      
+      // Map levels to approximate percentages for visual representation
+      const levelMap = {
+        'low': 0.25,
+        'moderate': 0.45,
+        'elevated': 0.65,
+        'high': 0.85,
+        'positive': 0.75,
+        'neutral': 0.5,
+        'negative': 0.3
+      };
+      
+      const percentage = levelMap[level.toLowerCase()] || 0.5;
+      const offset = circumference - (circumference * percentage);
+      const circle = document.getElementById(progressId);
+      
+      if (circle) {
+        circle.setAttribute('stroke-dasharray', circumference);
+        circle.style.strokeDashoffset = offset;
+      }
+    }
+
+    // Update metrics (mock data - in real app, get from state or API)
+    function updateMetrics() {
+      // Stress: Elevated level
+      updateCircularProgress('stressProgress', 'elevated');
+      
+      // Mood: Positive level
+      updateCircularProgress('moodProgress', 'positive');
+      
+      // Risk: Moderate level
+      updateCircularProgress('riskProgress', 'moderate');
+    }
+
+    // Task action handler
+    document.getElementById('startTaskBtn').addEventListener('click', function(e) {
+      e.stopPropagation();
+      const taskTitle = document.getElementById('taskTitle').textContent;
+      alert(`Starting: ${taskTitle}\n\nLet's tackle this together! 💪`);
+      
+      // In a real app, this would navigate to task details or start workflow
+    });
+
+    // Priority task card click
+    document.getElementById('priorityTaskCard').addEventListener('click', function(e) {
+      if (!e.target.closest('.task-action-btn')) {
+        const taskTitle = document.getElementById('taskTitle').textContent;
+        const taskDesc = document.getElementById('taskDescription').textContent;
+        alert(`Task Details:\n\n${taskTitle}\n\n${taskDesc}\n\nClick "Start Task Now" to begin.`);
+      }
+    });
+
+    // News card clicks
+    document.querySelectorAll('.news-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const title = this.querySelector('.news-title').textContent;
+        const description = this.querySelector('.news-description').textContent;
+        // In a real app, this would navigate to full article or show details
+        console.log('View:', title);
+      });
+    });
+
+    // Initialize
+    updateDate();
+    updateMetrics();
+
+    // Update date every hour
+    setInterval(updateDate, 3600000);
+  </script>
+</body>
+</html>
+

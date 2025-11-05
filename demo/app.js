@@ -173,7 +173,7 @@ document.addEventListener('click', (e)=>{
     return;
   }
   
-  // Handle Skip onboarding button
+  // Handle Skip onboarding button - navigate to profile
   if (t.id === 'btnSkipOnboard' || t.closest('#btnSkipOnboard')) {
     e.preventDefault();
     e.stopPropagation();
@@ -189,7 +189,7 @@ document.addEventListener('click', (e)=>{
       speak('Skipping onboarding. Welcome to your profile!');
     }
     
-    // Navigate to profile page - load section and navigate
+    // Navigate to profile page - ensure view-profile.html is loaded
     if (typeof navigateToRoute === 'function') {
       navigateToRoute('profile', {
         sectionId: 'view-profile',
@@ -197,69 +197,127 @@ document.addEventListener('click', (e)=>{
         scrollToTop: true,
         updateTab: true,
         skipIfSame: false
+      }).then(() => {
+        // Ensure DOM elements are properly shown/hidden
+        requestAnimationFrame(() => {
+          // Hide onboarding
+          const routeOnboarding = document.getElementById('route-onboarding');
+          if (routeOnboarding) {
+            routeOnboarding.classList.add('hidden');
+          }
+          
+          // Show route-app
+          const routeApp = document.getElementById('route-app');
+          if (routeApp) {
+            routeApp.classList.remove('hidden');
+          }
+          
+          // Show profile nav
+          const profileNav = document.getElementById('profileNav');
+          if (profileNav) {
+            profileNav.classList.remove('hidden');
+          }
+          
+          // Load and render profile content
+          setTimeout(async () => {
+            // Load profile section from sections/view-profile.html if not already loaded
+            const profileContainer = document.getElementById('view-profile-container');
+            const profileView = document.getElementById('view-profile');
+            if (profileContainer && (!profileView || !profileView.innerHTML.trim())) {
+              if (typeof loadSection === 'function') {
+                await loadSection('view-profile', 'view-profile-container');
+                // Update views after loading
+                if (typeof updateViews === 'function') {
+                  updateViews();
+                }
+              }
+            }
+            
+            // Render profile components
+            if (typeof renderProfileAndGap === 'function') {
+              renderProfileAndGap();
+            }
+            if (typeof renderProfileSections === 'function') {
+              renderProfileSections();
+            }
+            if (typeof renderGuideMeta === 'function') {
+              renderGuideMeta();
+            }
+            if (typeof renderProfileSummary === 'function') {
+              renderProfileSummary();
+            }
+            if (typeof observeSectionAutoExpand === 'function') {
+              observeSectionAutoExpand();
+            }
+            
+            // Scroll to top
+            try {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (_) {}
+          }, 100);
+        });
       });
     } else if (typeof setRoute === 'function') {
       setRoute('profile', true);
-    }
-    
-    // Ensure DOM elements are properly shown/hidden
-    requestAnimationFrame(() => {
-      // Hide onboarding
-      const routeOnboarding = document.getElementById('route-onboarding');
-      if (routeOnboarding) {
-        routeOnboarding.classList.add('hidden');
-      }
-      
-      // Show route-app
-      const routeApp = document.getElementById('route-app');
-      if (routeApp) {
-        routeApp.classList.remove('hidden');
-      }
-      
-      // Show profile nav
-      const profileNav = document.getElementById('profileNav');
-      if (profileNav) {
-        profileNav.classList.remove('hidden');
-      }
-      
-      // Render profile content after route change
-      setTimeout(async () => {
-        // Load profile section if not already loaded
-        const profileContainer = document.getElementById('view-profile-container');
-        const profileView = document.getElementById('view-profile');
-        if (profileContainer && (!profileView || !profileView.innerHTML.trim())) {
-          if (typeof loadSection === 'function') {
-            await loadSection('view-profile', 'view-profile-container');
-            // Update views after loading
-            if (typeof updateViews === 'function') {
-              updateViews();
+      // Ensure DOM elements are properly shown/hidden
+      requestAnimationFrame(() => {
+        // Hide onboarding
+        const routeOnboarding = document.getElementById('route-onboarding');
+        if (routeOnboarding) {
+          routeOnboarding.classList.add('hidden');
+        }
+        
+        // Show route-app
+        const routeApp = document.getElementById('route-app');
+        if (routeApp) {
+          routeApp.classList.remove('hidden');
+        }
+        
+        // Show profile nav
+        const profileNav = document.getElementById('profileNav');
+        if (profileNav) {
+          profileNav.classList.remove('hidden');
+        }
+        
+        // Load and render profile content
+        setTimeout(async () => {
+          // Load profile section from sections/view-profile.html if not already loaded
+          const profileContainer = document.getElementById('view-profile-container');
+          const profileView = document.getElementById('view-profile');
+          if (profileContainer && (!profileView || !profileView.innerHTML.trim())) {
+            if (typeof loadSection === 'function') {
+              await loadSection('view-profile', 'view-profile-container');
+              // Update views after loading
+              if (typeof updateViews === 'function') {
+                updateViews();
+              }
             }
           }
-        }
-        
-        // Render profile components
-        if (typeof renderProfileAndGap === 'function') {
-          renderProfileAndGap();
-        }
-        if (typeof renderProfileSections === 'function') {
-          renderProfileSections();
-        }
-        if (typeof renderGuideMeta === 'function') {
-          renderGuideMeta();
-        }
-        if (typeof renderProfileSummary === 'function') {
-          renderProfileSummary();
-        }
-        if (typeof observeSectionAutoExpand === 'function') {
-          observeSectionAutoExpand();
-        }
-        
-        // Scroll to top
-        try {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch (_) {}
-      }, 100);
-    });
+          
+          // Render profile components
+          if (typeof renderProfileAndGap === 'function') {
+            renderProfileAndGap();
+          }
+          if (typeof renderProfileSections === 'function') {
+            renderProfileSections();
+          }
+          if (typeof renderGuideMeta === 'function') {
+            renderGuideMeta();
+          }
+          if (typeof renderProfileSummary === 'function') {
+            renderProfileSummary();
+          }
+          if (typeof observeSectionAutoExpand === 'function') {
+            observeSectionAutoExpand();
+          }
+          
+          // Scroll to top
+          try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } catch (_) {}
+        }, 100);
+      });
+    }
     
     return;
   }
@@ -286,7 +344,7 @@ document.addEventListener('click', (e)=>{
       speak('Welcome! Let\'s continue to your profile.');
     }
     
-    // Navigate to profile page - load section and navigate
+    // Navigate to profile page - ensure view-profile.html is loaded
     if (typeof navigateToRoute === 'function') {
       navigateToRoute('profile', {
         sectionId: 'view-profile',
@@ -294,69 +352,127 @@ document.addEventListener('click', (e)=>{
         scrollToTop: true,
         updateTab: true,
         skipIfSame: false
+      }).then(() => {
+        // Ensure DOM elements are properly shown/hidden
+        requestAnimationFrame(() => {
+          // Hide onboarding
+          const routeOnboarding = document.getElementById('route-onboarding');
+          if (routeOnboarding) {
+            routeOnboarding.classList.add('hidden');
+          }
+          
+          // Show route-app
+          const routeApp = document.getElementById('route-app');
+          if (routeApp) {
+            routeApp.classList.remove('hidden');
+          }
+          
+          // Show profile nav
+          const profileNav = document.getElementById('profileNav');
+          if (profileNav) {
+            profileNav.classList.remove('hidden');
+          }
+          
+          // Load and render profile content
+          setTimeout(async () => {
+            // Load profile section from sections/view-profile.html if not already loaded
+            const profileContainer = document.getElementById('view-profile-container');
+            const profileView = document.getElementById('view-profile');
+            if (profileContainer && (!profileView || !profileView.innerHTML.trim())) {
+              if (typeof loadSection === 'function') {
+                await loadSection('view-profile', 'view-profile-container');
+                // Update views after loading
+                if (typeof updateViews === 'function') {
+                  updateViews();
+                }
+              }
+            }
+            
+            // Render profile components
+            if (typeof renderProfileAndGap === 'function') {
+              renderProfileAndGap();
+            }
+            if (typeof renderProfileSections === 'function') {
+              renderProfileSections();
+            }
+            if (typeof renderGuideMeta === 'function') {
+              renderGuideMeta();
+            }
+            if (typeof renderProfileSummary === 'function') {
+              renderProfileSummary();
+            }
+            if (typeof observeSectionAutoExpand === 'function') {
+              observeSectionAutoExpand();
+            }
+            
+            // Scroll to top
+            try {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (_) {}
+          }, 100);
+        });
       });
     } else if (typeof setRoute === 'function') {
       setRoute('profile', true);
-    }
-    
-    // Ensure DOM elements are properly shown/hidden
-    requestAnimationFrame(() => {
-      // Hide onboarding
-      const routeOnboarding = document.getElementById('route-onboarding');
-      if (routeOnboarding) {
-        routeOnboarding.classList.add('hidden');
-      }
-      
-      // Show route-app
-      const routeApp = document.getElementById('route-app');
-      if (routeApp) {
-        routeApp.classList.remove('hidden');
-      }
-      
-      // Show profile nav
-      const profileNav = document.getElementById('profileNav');
-      if (profileNav) {
-        profileNav.classList.remove('hidden');
-      }
-      
-      // Render profile content after route change
-      setTimeout(async () => {
-        // Load profile section if not already loaded
-        const profileContainer = document.getElementById('view-profile-container');
-        const profileView = document.getElementById('view-profile');
-        if (profileContainer && (!profileView || !profileView.innerHTML.trim())) {
-          if (typeof loadSection === 'function') {
-            await loadSection('view-profile', 'view-profile-container');
-            // Update views after loading
-            if (typeof updateViews === 'function') {
-              updateViews();
+      // Ensure DOM elements are properly shown/hidden
+      requestAnimationFrame(() => {
+        // Hide onboarding
+        const routeOnboarding = document.getElementById('route-onboarding');
+        if (routeOnboarding) {
+          routeOnboarding.classList.add('hidden');
+        }
+        
+        // Show route-app
+        const routeApp = document.getElementById('route-app');
+        if (routeApp) {
+          routeApp.classList.remove('hidden');
+        }
+        
+        // Show profile nav
+        const profileNav = document.getElementById('profileNav');
+        if (profileNav) {
+          profileNav.classList.remove('hidden');
+        }
+        
+        // Load and render profile content
+        setTimeout(async () => {
+          // Load profile section from sections/view-profile.html if not already loaded
+          const profileContainer = document.getElementById('view-profile-container');
+          const profileView = document.getElementById('view-profile');
+          if (profileContainer && (!profileView || !profileView.innerHTML.trim())) {
+            if (typeof loadSection === 'function') {
+              await loadSection('view-profile', 'view-profile-container');
+              // Update views after loading
+              if (typeof updateViews === 'function') {
+                updateViews();
+              }
             }
           }
-        }
-        
-        // Render profile components
-        if (typeof renderProfileAndGap === 'function') {
-          renderProfileAndGap();
-        }
-        if (typeof renderProfileSections === 'function') {
-          renderProfileSections();
-        }
-        if (typeof renderGuideMeta === 'function') {
-          renderGuideMeta();
-        }
-        if (typeof renderProfileSummary === 'function') {
-          renderProfileSummary();
-        }
-        if (typeof observeSectionAutoExpand === 'function') {
-          observeSectionAutoExpand();
-        }
-        
-        // Scroll to top
-        try {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch (_) {}
-      }, 100);
-    });
+          
+          // Render profile components
+          if (typeof renderProfileAndGap === 'function') {
+            renderProfileAndGap();
+          }
+          if (typeof renderProfileSections === 'function') {
+            renderProfileSections();
+          }
+          if (typeof renderGuideMeta === 'function') {
+            renderGuideMeta();
+          }
+          if (typeof renderProfileSummary === 'function') {
+            renderProfileSummary();
+          }
+          if (typeof observeSectionAutoExpand === 'function') {
+            observeSectionAutoExpand();
+          }
+          
+          // Scroll to top
+          try {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } catch (_) {}
+        }, 100);
+      });
+    }
     
     return;
   }

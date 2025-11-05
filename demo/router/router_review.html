@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Stage Review - Level Up! 🎮</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    .header-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    /* Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+      padding-bottom: 20px;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
+    }
+
+    /* Status Section */
+    .status-section {
+      background: linear-gradient(135deg, rgba(170, 30, 35, 0.1), rgba(116, 7, 14, 0.05));
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.2);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .status-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(170, 30, 35, 0.1) 0%, transparent 70%);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.8; }
+    }
+
+    .status-message {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+      line-height: 1.4;
+    }
+
+    .status-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+      line-height: 1.5;
+    }
+
+    .risk-indicator {
+      background: rgba(253, 241, 235, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin: 16px 0;
+      position: relative;
+      z-index: 1;
+      text-align: left;
+    }
+
+    .risk-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .risk-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .risk-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .risk-level {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .risk-level.low {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .risk-level.moderate {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .risk-level.elevated {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-card {
+      background: rgba(253, 241, 235, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 8px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-light);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Achievements Section */
+    .achievements-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .badge-card {
+      background: var(--bg-hover);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 8px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .badge-card.earned {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(170, 30, 35, 0.3);
+      background: linear-gradient(135deg, rgba(170, 30, 35, 0.1), rgba(170, 30, 35, 0.05));
+    }
+
+    .badge-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      filter: grayscale(1);
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+
+    .badge-card.earned .badge-icon {
+      filter: grayscale(0);
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .badge-name {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .badge-card.earned .badge-name {
+      color: var(--primary);
+    }
+
+    /* Next Quest */
+    .next-quest {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .quest-card {
+      background: linear-gradient(135deg, rgba(170, 30, 35, 0.1), rgba(116, 7, 14, 0.05));
+      border: 1px solid var(--primary);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .quest-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quest-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Success Stories Section */
+    .success-stories-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .stories-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .story-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--success);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .story-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--success), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .story-card:hover {
+      border-color: var(--success);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+
+    .story-card:hover::before {
+      opacity: 1;
+    }
+
+    .story-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .story-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--success), #4ade80);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .story-info {
+      flex: 1;
+    }
+
+    .story-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .story-achievement {
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 500;
+    }
+
+    .story-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+
+    .story-stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .story-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .story-stat-value {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Scrollbar */
+    .router-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .router-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .router-container::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .router-container {
+        padding: 12px;
+      }
+
+      .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div style="flex: 1; text-align: center;">
+      <div class="header-title">Stage Review</div>
+      <div class="header-date" id="currentDate">Period Summary</div>
+    </div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Status Section -->
+    <div class="status-section">
+      <div class="status-message" id="statusMessage">You're on the right track! 🎯</div>
+      <div class="status-subtitle" id="statusSubtitle">Keep up the momentum and stay focused on your goals.</div>
+      
+      <div class="risk-indicator">
+        <div class="risk-label">Risk Assessment</div>
+        <div class="risk-value" id="riskValue">Moderate</div>
+        <div class="risk-desc" id="riskDesc">Your progress is steady, but there are areas that need attention to stay on track.</div>
+        <span class="risk-level moderate" id="riskLevel">Moderate Risk</span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="completedTasks">24</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="streakDays">15</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="badgesEarned">8</div>
+          <div class="stat-label">Badges</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="achievements-section">
+      <h2 class="section-title">🏆 Badges</h2>
+      <div id="badgesGrid" class="badges-grid"></div>
+    </div>
+
+    <!-- Next Quest -->
+    <div class="next-quest">
+      <h2 class="section-title">🎯 Next Quest</h2>
+      <div class="quest-card">
+        <div class="quest-title">⭐ <span id="questTitle">Keep Building Momentum</span></div>
+        <div class="quest-desc" id="questDesc">Focus on leadership activities and community service to strengthen your profile! 💪</div>
+      </div>
+    </div>
+
+    <!-- Success Stories -->
+    <div class="success-stories-section">
+      <h2 class="section-title">✨ Success Stories</h2>
+      <p class="section-subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Students like you who achieved great things at this stage</p>
+      <div id="storiesGrid" class="stories-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    // Review Data
+    const reviewData = {
+      statusMessages: [
+        { message: "You're on the right track! 🎯", subtitle: "Keep up the momentum and stay focused on your goals." },
+        { message: "Great progress! Keep it up! ⭐", subtitle: "Your consistent effort is paying off. Continue building on your success." },
+        { message: "You're doing amazing! 🌟", subtitle: "Your dedication shows. Keep pushing forward with confidence." },
+        { message: "Stay strong! You've got this! 💪", subtitle: "Every step forward counts. Keep maintaining your positive momentum." },
+        { message: "Outstanding work! 🚀", subtitle: "You're making excellent progress. Continue to challenge yourself." }
+      ],
+      riskLevels: {
+        low: {
+          value: "Low",
+          desc: "You're doing great! Your progress is strong and you're on track to meet your goals.",
+          level: "low"
+        },
+        moderate: {
+          value: "Moderate",
+          desc: "Your progress is steady, but there are areas that need attention to stay on track.",
+          level: "moderate"
+        },
+        elevated: {
+          value: "Elevated",
+          desc: "Some key areas need immediate attention. Focus on catching up to maintain your goals.",
+          level: "elevated"
+        }
+      },
+      completedTasks: 24,
+      streakDays: 15,
+      badgesEarned: 6,
+      badges: [
+        { icon: '📚', name: 'Scholar', earned: true },
+        { icon: '🎯', name: 'Goal Setter', earned: true },
+        { icon: '🔥', name: 'Streak Master', earned: true },
+        { icon: '⭐', name: 'Star Student', earned: true },
+        { icon: '🏆', name: 'Champion', earned: true },
+        { icon: '💪', name: 'Strong', earned: true },
+        { icon: '🚀', name: 'Rocket', earned: false },
+        { icon: '👑', name: 'King', earned: false }
+      ],
+      nextQuest: {
+        title: 'Keep Building Momentum',
+        desc: 'Focus on leadership activities and community service to strengthen your profile! 💪'
+      },
+      successStories: [
+        {
+          name: 'Alex Chen',
+          avatar: 'AC',
+          achievement: 'Got into Stanford',
+          desc: 'Maintained 3.9 GPA while leading 3 clubs and volunteering 200+ hours. Started a coding club that now has 50+ members.',
+          stats: [
+            { label: 'GPA', value: '3.9' },
+            { label: 'Activities', value: '5' },
+            { label: 'Hours', value: '200+' }
+          ]
+        },
+        {
+          name: 'Sarah Kim',
+          avatar: 'SK',
+          achievement: 'Accepted to MIT',
+          desc: 'Built strong foundation in middle school with consistent study habits. Focused on STEM projects and won regional science fair.',
+          stats: [
+            { label: 'GPA', value: '3.8' },
+            { label: 'Awards', value: '12' },
+            { label: 'Projects', value: '8' }
+          ]
+        },
+        {
+          name: 'Jordan Lee',
+          avatar: 'JL',
+          achievement: 'Full scholarship',
+          desc: 'Started community service early, organized food drives for 2 years. Developed leadership skills that helped in high school.',
+          stats: [
+            { label: 'Service', value: '150h' },
+            { label: 'Leadership', value: '3 roles' },
+            { label: 'Impact', value: '500+' }
+          ]
+        }
+      ]
+    };
+
+    // Update date
+    function updateDate() {
+      const now = new Date();
+      const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const weekday = weekdays[now.getDay()];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const month = monthNames[now.getMonth()];
+      const day = now.getDate();
+      
+      document.getElementById('currentDate').textContent = `${weekday}, ${month} ${day}`;
+    }
+
+    // Update status display
+    function updateStatusDisplay() {
+      // Get random encouraging message
+      const statusIndex = Math.floor(Math.random() * reviewData.statusMessages.length);
+      const status = reviewData.statusMessages[statusIndex];
+      
+      document.getElementById('statusMessage').textContent = status.message;
+      document.getElementById('statusSubtitle').textContent = status.subtitle;
+      
+      // Update stats
+      document.getElementById('completedTasks').textContent = reviewData.completedTasks;
+      document.getElementById('streakDays').textContent = reviewData.streakDays;
+      document.getElementById('badgesEarned').textContent = reviewData.badgesEarned;
+      
+      // Update risk assessment (based on progress - could be dynamic)
+      const riskLevel = 'moderate'; // This could be calculated based on actual data
+      const risk = reviewData.riskLevels[riskLevel];
+      
+      const riskValueEl = document.getElementById('riskValue');
+      const riskDescEl = document.getElementById('riskDesc');
+      const riskLevelEl = document.getElementById('riskLevel');
+      
+      riskValueEl.textContent = risk.value;
+      riskDescEl.textContent = risk.desc;
+      riskLevelEl.className = `risk-level ${risk.level}`;
+      riskLevelEl.textContent = `${risk.value} Risk`;
+    }
+
+    // Render badges
+    function renderBadges() {
+      const gridEl = document.getElementById('badgesGrid');
+      if (!gridEl) return;
+
+      gridEl.innerHTML = reviewData.badges.map(badge => `
+        <div class="badge-card ${badge.earned ? 'earned' : ''}">
+          <div class="badge-icon">${badge.icon}</div>
+          <div class="badge-name">${badge.name}</div>
+        </div>
+      `).join('');
+    }
+
+    // Update quest
+    function updateQuest() {
+      document.getElementById('questTitle').textContent = reviewData.nextQuest.title;
+      document.getElementById('questDesc').textContent = reviewData.nextQuest.desc;
+    }
+
+    // Render success stories
+    function renderSuccessStories() {
+      const gridEl = document.getElementById('storiesGrid');
+      if (!gridEl) return;
+
+      gridEl.innerHTML = reviewData.successStories.map(story => `
+        <div class="story-card">
+          <div class="story-header">
+            <div class="story-avatar">${story.avatar}</div>
+            <div class="story-info">
+              <div class="story-name">${story.name}</div>
+              <div class="story-achievement">✓ ${story.achievement}</div>
+            </div>
+          </div>
+          <div class="story-desc">${story.desc}</div>
+          <div class="story-stats">
+            ${story.stats.map(stat => `
+              <div class="story-stat">
+                <span>${stat.label}:</span>
+                <span class="story-stat-value">${stat.value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Initialize
+    function init() {
+      updateDate();
+      updateStatusDisplay();
+      renderBadges();
+      updateQuest();
+      renderSuccessStories();
+    }
+
+    // Initialize on load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
+

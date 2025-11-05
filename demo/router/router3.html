@@ -1,0 +1,1414 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AI Navigator - Daily Router</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    .notification-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .notification-icon:hover {
+      background: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--danger);
+      border: 2px solid var(--bg-card);
+    }
+
+    /* Main Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Daily Check-in Modal */
+    .checkin-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .checkin-modal.hidden {
+      display: none;
+    }
+
+    .checkin-card {
+      background: var(--bg-card);
+      border: 2px solid var(--primary);
+      border-radius: 20px;
+      padding: 32px 24px;
+      margin: 20px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(168, 85, 247, 0.3);
+      animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .checkin-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .checkin-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .mood-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .mood-btn {
+      flex: 1;
+      padding: 16px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--bg-hover);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mood-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .mood-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-color: var(--primary);
+      box-shadow: 0 4px 20px var(--primary-glow);
+      color: white;
+    }
+
+    .mood-emoji {
+      font-size: 32px;
+    }
+
+    .checkin-submit {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+
+    .checkin-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    /* Your Path Today Section */
+    .path-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .quest-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quest-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quest-item:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+    }
+
+    .quest-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .quest-icon.main {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .quest-icon.daily {
+      background: linear-gradient(135deg, #14b8a6, #06b6d4);
+      box-shadow: 0 0 20px rgba(20, 184, 166, 0.4);
+    }
+
+    .quest-icon.side {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .quest-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .quest-type {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    .quest-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .quest-check {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Opportunity Report Section */
+    .opportunity-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .opportunity-message {
+      background: var(--bg-hover);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .radar-chart-container {
+      width: 100%;
+      height: 300px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .radar-chart {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .boost-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+
+    .boost-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    /* Notification Panel */
+    .notification-panel {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      width: 320px;
+      max-width: calc(100vw - 40px);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      z-index: 200;
+      display: none;
+      animation: slideDown 0.3s ease;
+    }
+
+    .notification-panel.show {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .notification-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .notification-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .close-notifications {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-hover);
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+
+    .close-notifications:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .notification-item {
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .notification-item:hover {
+      background: var(--primary);
+      transform: translateX(4px);
+    }
+
+    .notification-time {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+    }
+
+    .notification-text {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    /* Roadmap Section */
+    .roadmap-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.4s ease;
+    }
+
+    .roadmap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+
+    .roadmap-stage-indicator {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .stage-icon {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .close-roadmap {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-hover);
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .close-roadmap:hover {
+      background: var(--danger);
+      color: white;
+      transform: rotate(90deg);
+    }
+
+    .roadmap-milestones {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .milestone-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .milestone-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .milestone-card:hover {
+      border-color: var(--primary);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+    }
+
+    .milestone-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .milestone-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .milestone-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .milestone-category {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--primary);
+      color: white;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .milestone-priority {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .milestone-priority.high {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .milestone-priority.medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .milestone-description {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .milestone-timeline {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .milestone-tasks {
+      margin-top: 12px;
+    }
+
+    .milestone-tasks-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px;
+      background: rgba(168, 85, 247, 0.05);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .task-item::before {
+      content: '▸';
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .router-container {
+        padding: 16px;
+      }
+      
+      .checkin-card {
+        padding: 24px 20px;
+      }
+      
+      .mood-buttons {
+        flex-direction: column;
+      }
+
+      .roadmap-stage-indicator {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .stage-icon {
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+      <div class="logo-text">SUPEROS</div>
+    </div>
+    <div class="app-title">AI Navigator</div>
+    <div class="notification-icon" id="notificationBtn">
+      🔔
+      <span class="notification-badge" id="notificationBadge"></span>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Your Path Today -->
+    <div class="path-section">
+      <h2 class="section-title">Your Path Today</h2>
+      <p class="section-subtitle">Based on your goals, here is your personalized plan.</p>
+      <div class="quest-list" id="questList">
+        <!-- Quests will be dynamically loaded -->
+      </div>
+    </div>
+
+    <!-- Opportunity Report -->
+    <div class="opportunity-section">
+      <h2 class="section-title">Opportunity Report</h2>
+      <div class="opportunity-message" id="opportunityMessage">
+        You're excelling in Academics! Let's boost your Community Service profile.
+      </div>
+      <div class="radar-chart-container">
+        <canvas id="radarChart" class="radar-chart"></canvas>
+      </div>
+      <button class="boost-btn" id="boostBtn">
+        🚀 Boost My Profile
+      </button>
+    </div>
+
+    <!-- Roadmap Section -->
+    <div class="roadmap-section" id="roadmapSection" style="display: none;">
+      <div class="roadmap-header">
+        <div class="roadmap-stage-indicator">
+          <span class="stage-icon" id="stageIcon">🌱</span>
+          <div>
+            <h2 class="section-title" id="roadmapTitle">Your Roadmap</h2>
+            <p class="section-subtitle" id="roadmapSubtitle">Personalized journey based on your stage</p>
+          </div>
+        </div>
+        <button class="close-roadmap" id="closeRoadmap">×</button>
+      </div>
+      <div class="roadmap-milestones" id="roadmapMilestones">
+        <!-- Milestones will be dynamically loaded -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Check-in Modal -->
+  <div class="checkin-modal" id="checkinModal">
+    <div class="checkin-card">
+      <h2 class="checkin-title">Hey <span id="studentName">Alex</span>, how are you feeling today?</h2>
+      <p class="checkin-subtitle">Your mood helps us personalize your daily experience</p>
+      <div class="mood-buttons">
+        <button class="mood-btn" data-mood="great">
+          <span class="mood-emoji">😊</span>
+          <span>Great</span>
+        </button>
+        <button class="mood-btn" data-mood="okay">
+          <span class="mood-emoji">😐</span>
+          <span>Okay</span>
+        </button>
+        <button class="mood-btn" data-mood="stressed">
+          <span class="mood-emoji">😰</span>
+          <span>Stressed</span>
+        </button>
+      </div>
+      <button class="checkin-submit" id="checkinSubmit" disabled>Continue</button>
+    </div>
+  </div>
+
+  <!-- Notification Panel -->
+  <div class="notification-panel" id="notificationPanel">
+    <div class="notification-header">
+      <h3 class="notification-title">Notifications</h3>
+      <button class="close-notifications" id="closeNotifications">×</button>
+    </div>
+    <div id="notificationList">
+      <!-- Notifications will be dynamically loaded -->
+    </div>
+  </div>
+
+  <script>
+    // State management - integrate with global state if available
+    const routerState = {
+      studentName: (typeof state !== 'undefined' && state.profile && state.profile.name) ? state.profile.name : 'Student',
+      lastCheckinDate: localStorage.getItem('lastCheckinDate') || '',
+      currentDate: new Date().toDateString(),
+      selectedMood: null,
+      quests: [],
+      notifications: [],
+      currentStage: null,
+      roadmapData: null,
+      profileData: {
+        academics: 85,
+        communityService: 45,
+        business: 60,
+        finance: 40,
+        eSports: 30,
+        eCommerce: 35,
+        socialMedia: 50,
+        healthWellness: 55,
+        creativeArts: 65,
+        leadership: 70
+      }
+    };
+
+    // Try to get profile data from global state if available
+    if (typeof state !== 'undefined' && state.gap) {
+      // If GAP data exists, use it for radar chart
+      // This would need to be mapped from the actual GAP structure
+    }
+
+    // Determine student stage
+    function determineStudentStage() {
+      // Try to get grade from global state
+      let grade = null;
+      let graduationYear = null;
+      let hasApplications = false;
+      let hasSubmittedApplications = false;
+
+      if (typeof state !== 'undefined') {
+        // Check profile sections for application status
+        if (state.profileSections) {
+          const appsSection = state.profileSections.find(s => s.key === 'Applications');
+          if (appsSection && appsSection.params) {
+            const appliedParam = appsSection.params.find(p => p[0] === 'Applied');
+            if (appliedParam && appliedParam[1]) {
+              const match = appliedParam[1].match(/(\d+)\/(\d+)/);
+              if (match) {
+                hasApplications = parseInt(match[1]) > 0;
+                hasSubmittedApplications = parseInt(match[1]) > 0;
+              }
+            }
+          }
+        }
+
+        // Try to get grade level
+        if (state.profile && state.profile.grade) {
+          grade = state.profile.grade;
+        } else if (state.profileSections) {
+          const schoolSection = state.profileSections.find(s => s.key === 'School');
+          // Could parse grade from school info if available
+        }
+      }
+
+      // Determine stage based on available information
+      if (hasSubmittedApplications) {
+        return 'post_application';
+      } else if (hasApplications || (grade && grade >= 12)) {
+        return 'application';
+      } else if (grade && grade >= 9) {
+        return 'building_candidacy';
+      } else {
+        return 'pre_high_school';
+      }
+    }
+
+    // Load roadmap data
+    async function loadRoadmapData() {
+      try {
+        const response = await fetch('../roadmap_stages.json');
+        const data = await response.json();
+        routerState.roadmapData = data;
+        routerState.currentStage = determineStudentStage();
+      } catch (error) {
+        console.error('Failed to load roadmap data:', error);
+        // Fallback to inline data
+        routerState.roadmapData = {
+          pre_high_school: {
+            stage_id: "pre_high_school",
+            name: "Pre High School",
+            icon: "🌱",
+            description: "Prepare for high school and explore your interests",
+            theme: "Foundation Building",
+            milestones: []
+          },
+          building_candidacy: {
+            stage_id: "building_candidacy",
+            name: "Building Candidacy",
+            icon: "🏗️",
+            description: "Build a strong profile through academics and activities",
+            theme: "Strategic Development",
+            milestones: []
+          },
+          application: {
+            stage_id: "application",
+            name: "Application",
+            icon: "📝",
+            description: "Complete and submit college applications",
+            theme: "Execution & Submission",
+            milestones: []
+          },
+          post_application: {
+            stage_id: "post_application",
+            name: "Post Application",
+            icon: "⏳",
+            description: "Navigate decisions and prepare for college",
+            theme: "Decision & Transition",
+            milestones: []
+          }
+        };
+        routerState.currentStage = determineStudentStage();
+      }
+    }
+
+    // Show roadmap
+    function showRoadmap() {
+      const roadmapSection = document.getElementById('roadmapSection');
+      if (!roadmapSection || !routerState.roadmapData) return;
+
+      const stageData = routerState.roadmapData[routerState.currentStage];
+      if (!stageData) return;
+
+      // Update roadmap header
+      document.getElementById('stageIcon').textContent = stageData.icon;
+      document.getElementById('roadmapTitle').textContent = stageData.name + ' Roadmap';
+      document.getElementById('roadmapSubtitle').textContent = stageData.description;
+
+      // Render milestones
+      renderMilestones(stageData.milestones);
+
+      // Show roadmap section
+      roadmapSection.style.display = 'block';
+      
+      // Scroll to roadmap
+      setTimeout(() => {
+        roadmapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+
+    // Hide roadmap
+    function hideRoadmap() {
+      const roadmapSection = document.getElementById('roadmapSection');
+      if (roadmapSection) {
+        roadmapSection.style.display = 'none';
+      }
+    }
+
+    // Render milestones
+    function renderMilestones(milestones) {
+      const container = document.getElementById('roadmapMilestones');
+      if (!container) return;
+
+      if (!milestones || milestones.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div>No milestones available for this stage</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = milestones.map(milestone => `
+        <div class="milestone-card" data-milestone-id="${milestone.id}">
+          <div class="milestone-header">
+            <div>
+              <div class="milestone-title">${milestone.title}</div>
+              <span class="milestone-category">${milestone.category}</span>
+            </div>
+            <span class="milestone-priority ${milestone.priority}">${milestone.priority}</span>
+          </div>
+          <div class="milestone-description">${milestone.description}</div>
+          <div class="milestone-timeline">
+            ⏱️ ${milestone.timeline}
+          </div>
+          ${milestone.tasks && milestone.tasks.length > 0 ? `
+            <div class="milestone-tasks">
+              <div class="milestone-tasks-title">Key Tasks</div>
+              <div class="task-list">
+                ${milestone.tasks.map(task => `
+                  <div class="task-item">${task}</div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+
+      // Add click handlers for milestone cards
+      container.querySelectorAll('.milestone-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const milestoneId = this.dataset.milestoneId;
+          handleMilestoneClick(milestoneId);
+        });
+      });
+    }
+
+    // Handle milestone click
+    function handleMilestoneClick(milestoneId) {
+      const stageData = routerState.roadmapData[routerState.currentStage];
+      if (!stageData) return;
+
+      const milestone = stageData.milestones.find(m => m.id === milestoneId);
+      if (!milestone) return;
+
+      // In a real app, this would navigate to milestone details or create tasks
+      console.log('View milestone:', milestone.title);
+      // Could show a modal with more details or navigate to task creation
+    }
+
+    // Initialize
+    async function init() {
+      checkDailyCheckin();
+      await loadRoadmapData();
+      loadQuests();
+      loadNotifications();
+      setupEventListeners();
+      drawRadarChart();
+      updateOpportunityMessage();
+    }
+
+    // Check if daily check-in is needed
+    function checkDailyCheckin() {
+      const today = new Date().toDateString();
+      if (routerState.lastCheckinDate !== today) {
+        showCheckinModal();
+      }
+    }
+
+    // Show check-in modal
+    function showCheckinModal() {
+      const modal = document.getElementById('checkinModal');
+      modal.classList.remove('hidden');
+      
+      // Update student name
+      let studentName = routerState.studentName;
+      if (typeof state !== 'undefined' && state.profile && state.profile.name) {
+        studentName = state.profile.name;
+        routerState.studentName = studentName;
+      }
+      document.getElementById('studentName').textContent = studentName;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Mood buttons
+      document.querySelectorAll('.mood-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          routerState.selectedMood = this.dataset.mood;
+          document.getElementById('checkinSubmit').disabled = false;
+        });
+      });
+
+      // Check-in submit
+      document.getElementById('checkinSubmit').addEventListener('click', function() {
+        if (routerState.selectedMood) {
+          localStorage.setItem('lastCheckinDate', routerState.currentDate);
+          localStorage.setItem('lastMood', routerState.selectedMood);
+          document.getElementById('checkinModal').classList.add('hidden');
+          
+          // Show welcome message based on mood
+          showWelcomeMessage(routerState.selectedMood);
+        }
+      });
+
+      // Notification button
+      document.getElementById('notificationBtn').addEventListener('click', function() {
+        const panel = document.getElementById('notificationPanel');
+        panel.classList.toggle('show');
+      });
+
+      // Close notifications
+      document.getElementById('closeNotifications').addEventListener('click', function() {
+        document.getElementById('notificationPanel').classList.remove('show');
+      });
+
+      // Boost button
+      document.getElementById('boostBtn').addEventListener('click', function() {
+        showRoadmap();
+      });
+
+      // Close roadmap
+      document.getElementById('closeRoadmap').addEventListener('click', function() {
+        hideRoadmap();
+      });
+
+      // Quest items click handlers
+      document.addEventListener('click', function(e) {
+        const questItem = e.target.closest('.quest-item');
+        if (questItem) {
+          const questId = questItem.dataset.questId;
+          handleQuestClick(questId);
+        }
+      });
+    }
+
+    // Load quests
+    function loadQuests() {
+      // Mock quest data - in real app, this would come from state or API
+      routerState.quests = [
+        {
+          id: 'main-1',
+          type: 'main',
+          name: 'Draft Personal Statement',
+          icon: '⭐',
+          completed: true
+        },
+        {
+          id: 'daily-1',
+          type: 'daily',
+          name: 'Review 1 Scholarship Opportunity',
+          icon: '📅',
+          completed: true
+        },
+        {
+          id: 'side-1',
+          type: 'side',
+          name: '15-min coding tutorial',
+          icon: '🧭',
+          completed: true
+        }
+      ];
+
+      renderQuests();
+    }
+
+    // Render quests
+    function renderQuests() {
+      const questList = document.getElementById('questList');
+      questList.innerHTML = '';
+
+      routerState.quests.forEach(quest => {
+        const questItem = document.createElement('div');
+        questItem.className = 'quest-item';
+        questItem.dataset.questId = quest.id;
+        
+        const typeLabel = quest.type === 'main' ? 'MAIN QUEST' : 
+                         quest.type === 'daily' ? 'DAILY QUEST' : 'SIDE QUEST';
+        const iconClass = quest.type;
+        
+        questItem.innerHTML = `
+          <div class="quest-icon ${iconClass}">${quest.icon}</div>
+          <div class="quest-content">
+            <div class="quest-type">${typeLabel}</div>
+            <div class="quest-name">${quest.name}</div>
+          </div>
+          ${quest.completed ? '<div class="quest-check">✓</div>' : ''}
+        `;
+        
+        questList.appendChild(questItem);
+      });
+    }
+
+    // Load notifications
+    function loadNotifications() {
+      // Mock notifications - in real app, these would come from a notification service
+      routerState.notifications = [
+        {
+          id: 'notif-1',
+          time: '10:00 AM',
+          text: 'Time to review your main quest: Draft Personal Statement'
+        },
+        {
+          id: 'notif-2',
+          time: '2:00 PM',
+          text: 'Daily quest available: Review scholarship opportunities'
+        },
+        {
+          id: 'notif-3',
+          time: '6:00 PM',
+          text: 'Focus on Community Service to boost your profile!'
+        }
+      ];
+
+      renderNotifications();
+      updateNotificationBadge();
+    }
+
+    // Render notifications
+    function renderNotifications() {
+      const notificationList = document.getElementById('notificationList');
+      
+      if (routerState.notifications.length === 0) {
+        notificationList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔔</div>
+            <div>No notifications</div>
+          </div>
+        `;
+        return;
+      }
+
+      notificationList.innerHTML = routerState.notifications.map(notif => `
+        <div class="notification-item" data-notif-id="${notif.id}">
+          <div class="notification-time">${notif.time}</div>
+          <div class="notification-text">${notif.text}</div>
+        </div>
+      `).join('');
+    }
+
+    // Update notification badge
+    function updateNotificationBadge() {
+      const badge = document.getElementById('notificationBadge');
+      if (routerState.notifications.length > 0) {
+        badge.style.display = 'block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // Draw radar chart
+    function drawRadarChart() {
+      const canvas = document.getElementById('radarChart');
+      const ctx = canvas.getContext('2d');
+      
+      // Set canvas size
+      const size = Math.min(canvas.parentElement.clientWidth, 300);
+      canvas.width = size;
+      canvas.height = size;
+
+      const centerX = size / 2;
+      const centerY = size / 2;
+      const radius = size * 0.35;
+      const categories = Object.keys(routerState.profileData);
+      const maxValue = 100;
+
+      // Draw background circles
+      ctx.strokeStyle = 'rgba(240, 246, 252, 0.1)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 5; i++) {
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, (radius * i) / 5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // Draw category lines
+      const angleStep = (Math.PI * 2) / categories.length;
+      ctx.strokeStyle = 'rgba(240, 246, 252, 0.2)';
+      ctx.lineWidth = 1;
+      categories.forEach((_, index) => {
+        const angle = angleStep * index - Math.PI / 2;
+        const x = centerX + Math.cos(angle) * radius;
+        const y = centerY + Math.sin(angle) * radius;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      });
+
+      // Draw data polygon
+      ctx.beginPath();
+      categories.forEach((category, index) => {
+        const value = routerState.profileData[category];
+        const angle = angleStep * index - Math.PI / 2;
+        const distance = (value / maxValue) * radius;
+        const x = centerX + Math.cos(angle) * distance;
+        const y = centerY + Math.sin(angle) * distance;
+        
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.closePath();
+      
+      // Fill polygon with gradient
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, 'rgba(168, 85, 247, 0.3)');
+      gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.3)');
+      gradient.addColorStop(1, 'rgba(239, 68, 68, 0.3)');
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      ctx.strokeStyle = '#a855f7';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Draw category labels
+      ctx.fillStyle = '#e6edf3';
+      ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      categories.forEach((category, index) => {
+        const angle = angleStep * index - Math.PI / 2;
+        const labelRadius = radius + 20;
+        const x = centerX + Math.cos(angle) * labelRadius;
+        const y = centerY + Math.sin(angle) * labelRadius;
+        
+        const label = category.replace(/([A-Z])/g, ' $1').trim();
+        ctx.fillText(label, x, y);
+      });
+    }
+
+    // Update opportunity message
+    function updateOpportunityMessage() {
+      const data = routerState.profileData;
+      const sorted = Object.entries(data).sort((a, b) => b[1] - a[1]);
+      const highest = sorted[0];
+      const lowest = sorted[sorted.length - 1];
+      
+      const highestName = highest[0].replace(/([A-Z])/g, ' $1').trim();
+      const lowestName = lowest[0].replace(/([A-Z])/g, ' $1').trim();
+      
+      const message = `You're excelling in ${highestName}! Let's boost your ${lowestName} profile.`;
+      document.getElementById('opportunityMessage').textContent = message;
+    }
+
+    // Show welcome message
+    function showWelcomeMessage(mood) {
+      const messages = {
+        great: 'Awesome! Let\'s make today productive! 🚀',
+        okay: 'No worries! We\'ll help you stay on track. 💪',
+        stressed: 'Take it one step at a time. You\'ve got this! 🌟'
+      };
+      
+      // In a real app, this could show a toast notification
+      console.log(messages[mood]);
+    }
+
+    // Handle navigation
+    function handleNavigation(route) {
+      if (typeof setRoute === 'function') {
+        setRoute(route);
+      } else {
+        console.log('Navigate to:', route);
+      }
+    }
+
+    // Handle quest click
+    function handleQuestClick(questId) {
+      const quest = routerState.quests.find(q => q.id === questId);
+      if (quest) {
+        // Navigate to quest details or relevant section
+        if (typeof setRoute === 'function') {
+          setRoute('roadmap');
+        } else {
+          console.log('View quest:', quest.name);
+        }
+      }
+    }
+
+    // Schedule notifications (mock implementation)
+    function scheduleNotifications() {
+      // In a real app, this would use the browser's Notification API
+      // and schedule reminders based on task deadlines
+      const now = new Date();
+      const hours = now.getHours();
+      
+      // Mock scheduled notifications
+      if (hours >= 9 && hours < 10) {
+        // Morning reminder
+        addNotification('9:00 AM', 'Time to start your daily quests!');
+      } else if (hours >= 14 && hours < 15) {
+        // Afternoon reminder
+        addNotification('2:00 PM', 'Check your progress on main quests');
+      } else if (hours >= 18 && hours < 19) {
+        // Evening reminder
+        addNotification('6:00 PM', 'Focus on boosting your profile!');
+      }
+    }
+
+    function addNotification(time, text) {
+      routerState.notifications.unshift({
+        id: 'notif-' + Date.now(),
+        time: time,
+        text: text
+      });
+      renderNotifications();
+      updateNotificationBadge();
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+
+    // Handle window resize for radar chart
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(function() {
+        drawRadarChart();
+      }, 250);
+    });
+
+    // Check for scheduled notifications periodically
+    setInterval(scheduleNotifications, 60000); // Check every minute
+  </script>
+</body>
+</html>

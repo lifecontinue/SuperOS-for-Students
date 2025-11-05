@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>GPA Management - Academic Advisor</title>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-hover: #1c2128;
+      --primary: #a855f7;
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --primary-light: #c084fc;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --border: rgba(240, 246, 252, 0.1);
+      --border-glow: rgba(168, 85, 247, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .gpa-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .gpa-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .gpa-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px var(--primary-glow);
+    }
+
+    .gpa-card.current {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .gpa-card.target {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .gpa-card.projected {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .gpa-label {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .gpa-value {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .gpa-card.current .gpa-value {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gpa-card.target .gpa-value {
+      color: var(--success);
+    }
+
+    .gpa-card.projected .gpa-value {
+      color: var(--warning);
+    }
+
+    .gpa-delta {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .gpa-delta.positive {
+      color: var(--success);
+    }
+
+    .gpa-delta.negative {
+      color: var(--danger);
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      border-color: var(--primary);
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .course-plan-item {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .course-plan-item:hover {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .course-plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .course-plan-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .course-plan-credits {
+      padding: 4px 10px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .grade-selector {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .grade-selector-label {
+      color: var(--text-muted);
+      font-size: 13px;
+      min-width: 80px;
+    }
+
+    .grade-options {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .grade-option {
+      padding: 6px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .grade-option:hover {
+      border-color: var(--primary);
+      background: rgba(168, 85, 247, 0.1);
+    }
+
+    .grade-option.selected {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .grade-option.A {
+      border-color: var(--success);
+    }
+
+    .grade-option.A.selected {
+      background: var(--success);
+    }
+
+    .grade-option.B {
+      border-color: var(--primary);
+    }
+
+    .grade-option.C {
+      border-color: var(--warning);
+    }
+
+    .grade-option.C.selected {
+      background: var(--warning);
+      color: var(--text);
+    }
+
+    .grade-option.D {
+      border-color: var(--danger);
+    }
+
+    .grade-option.D.selected {
+      background: var(--danger);
+    }
+
+    .scenario-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .scenario-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .scenario-gpa {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-light);
+    }
+
+    .scenario-description {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .scenario-feasibility {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .scenario-feasibility.high {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .scenario-feasibility.medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .scenario-feasibility.low {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .progress-chart {
+      margin: 20px 0;
+    }
+
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .progress-label {
+      min-width: 120px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      height: 8px;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .progress-value {
+      min-width: 60px;
+      text-align: right;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .gpa-overview {
+        grid-template-columns: 1fr;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>GPA Management</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Plan your courses and predict your GPA</p>
+  </div>
+
+  <div class="container">
+    <!-- GPA Overview -->
+    <div class="gpa-overview">
+      <div class="gpa-card current">
+        <div class="gpa-label">Current GPA</div>
+        <div class="gpa-value" id="currentGpa">—</div>
+        <div class="gpa-delta">Based on completed courses</div>
+      </div>
+      <div class="gpa-card target">
+        <div class="gpa-label">Target GPA</div>
+        <div class="gpa-value" id="targetGpa">—</div>
+        <div class="gpa-delta" id="targetDelta">—</div>
+      </div>
+      <div class="gpa-card projected">
+        <div class="gpa-label">Projected GPA</div>
+        <div class="gpa-value" id="projectedGpa">—</div>
+        <div class="gpa-delta" id="projectedDelta">—</div>
+      </div>
+    </div>
+
+    <!-- Course Planning -->
+    <div class="section-card">
+      <div class="section-title">
+        <span>📚</span>
+        <span>Course Planning & Grade Prediction</span>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('planning')">Plan Courses</div>
+        <div class="tab" onclick="switchTab('scenarios')">GPA Scenarios</div>
+        <div class="tab" onclick="switchTab('progress')">Progress Tracking</div>
+      </div>
+
+      <!-- Planning Tab -->
+      <div class="tab-content active" id="planningTab">
+        <div id="coursePlanningList">
+          <!-- Course planning items will be dynamically generated -->
+        </div>
+      </div>
+
+      <!-- Scenarios Tab -->
+      <div class="tab-content" id="scenariosTab">
+        <div id="scenariosList">
+          <!-- Scenarios will be dynamically generated -->
+        </div>
+      </div>
+
+      <!-- Progress Tab -->
+      <div class="tab-content" id="progressTab">
+        <div class="progress-chart" id="progressChart">
+          <!-- Progress items will be dynamically generated -->
+        </div>
+      </div>
+    </div>
+
+    <button class="action-button" onclick="continueToNextStep()">
+      Continue to Goal Achievement →
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.location.href='recommend_courses.html'" title="Back">←</button>
+
+  <script>
+    let courseGrades = {};
+    let currentGpa = 0;
+    let targetGpa = 0;
+    let totalCompletedCredits = 0;
+
+    // Get academic data
+    function getAcademicData() {
+      const profile = JSON.parse(localStorage.getItem('academicProfile') || '{}');
+      const selectedCourses = JSON.parse(localStorage.getItem('selectedCourses') || '[]');
+      
+      return {
+        currentGpa: profile.currentGpa || 3.45,
+        targetGpa: profile.targetGpa || 3.8,
+        currentCourses: profile.currentCourses || [],
+        selectedCourses: selectedCourses
+      };
+    }
+
+    // Grade to GPA conversion
+    function gradeToGpa(grade) {
+      const gradeMap = {
+        'A+': 4.0, 'A': 4.0, 'A-': 3.7,
+        'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+        'C+': 2.3, 'C': 2.0, 'C-': 1.7,
+        'D+': 1.3, 'D': 1.0, 'F': 0.0
+      };
+      return gradeMap[grade] || 0;
+    }
+
+    // Calculate projected GPA
+    function calculateProjectedGpa() {
+      const data = getAcademicData();
+      currentGpa = data.currentGpa;
+      targetGpa = data.targetGpa;
+
+      // Calculate total credits and points from completed courses
+      let totalPoints = 0;
+      totalCompletedCredits = 0;
+      
+      data.currentCourses.forEach(course => {
+        const gpa = gradeToGpa(course.grade);
+        totalPoints += gpa * course.credits;
+        totalCompletedCredits += course.credits;
+      });
+
+      // Add planned courses
+      let plannedPoints = 0;
+      let plannedCredits = 0;
+      
+      data.selectedCourses.forEach(course => {
+        const grade = courseGrades[course.code] || 'B+';
+        const gpa = gradeToGpa(grade);
+        plannedPoints += gpa * course.credits;
+        plannedCredits += course.credits;
+      });
+
+      // Calculate projected GPA
+      const totalPointsAll = totalPoints + plannedPoints;
+      const totalCreditsAll = totalCompletedCredits + plannedCredits;
+      const projectedGpa = totalCreditsAll > 0 ? totalPointsAll / totalCreditsAll : currentGpa;
+
+      return {
+        currentGpa,
+        projectedGpa,
+        targetGpa,
+        gap: targetGpa - projectedGpa,
+        plannedCredits
+      };
+    }
+
+    // Update GPA display
+    function updateGpaDisplay() {
+      const gpa = calculateProjectedGpa();
+      
+      document.getElementById('currentGpa').textContent = gpa.currentGpa.toFixed(2);
+      document.getElementById('targetGpa').textContent = gpa.targetGpa.toFixed(2);
+      document.getElementById('projectedGpa').textContent = gpa.projectedGpa.toFixed(2);
+      
+      const targetDelta = gpa.targetGpa - gpa.currentGpa;
+      const targetDeltaEl = document.getElementById('targetDelta');
+      targetDeltaEl.textContent = targetDelta > 0 ? `+${targetDelta.toFixed(2)} needed` : `${targetDelta.toFixed(2)}`;
+      targetDeltaEl.className = `gpa-delta ${targetDelta >= 0 ? 'positive' : 'negative'}`;
+      
+      const projectedDelta = gpa.projectedGpa - gpa.currentGpa;
+      const projectedDeltaEl = document.getElementById('projectedDelta');
+      projectedDeltaEl.textContent = projectedDelta > 0 ? `+${projectedDelta.toFixed(2)} increase` : `${projectedDelta.toFixed(2)}`;
+      projectedDeltaEl.className = `gpa-delta ${projectedDelta >= 0 ? 'positive' : 'negative'}`;
+    }
+
+    // Render course planning
+    function renderCoursePlanning() {
+      const data = getAcademicData();
+      const container = document.getElementById('coursePlanningList');
+      
+      if (!data.selectedCourses || data.selectedCourses.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px;">No courses selected. Please go back and select courses.</div>';
+        return;
+      }
+
+      container.innerHTML = data.selectedCourses.map(course => {
+        const currentGrade = courseGrades[course.code] || 'B+';
+        return `
+          <div class="course-plan-item">
+            <div class="course-plan-header">
+              <div class="course-plan-name">${course.code} - ${course.title}</div>
+              <div class="course-plan-credits">${course.credits} credits</div>
+            </div>
+            <div class="grade-selector">
+              <div class="grade-selector-label">Expected Grade:</div>
+              <div class="grade-options">
+                ${['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C'].map(grade => {
+                  const gradeClass = grade[0];
+                  const isSelected = currentGrade === grade;
+                  return `
+                    <div class="grade-option ${gradeClass} ${isSelected ? 'selected' : ''}" 
+                         onclick="selectGrade('${course.code}', '${grade}')">
+                      ${grade}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Select grade for a course
+    function selectGrade(courseCode, grade) {
+      courseGrades[courseCode] = grade;
+      renderCoursePlanning();
+      updateGpaDisplay();
+      updateScenarios();
+      updateProgress();
+    }
+
+    // Render scenarios
+    function renderScenarios() {
+      const data = getAcademicData();
+      const container = document.getElementById('scenariosList');
+      
+      if (!data.selectedCourses || data.selectedCourses.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px;">No courses selected. Please go back and select courses.</div>';
+        return;
+      }
+
+      // Generate scenarios
+      const scenarios = [
+        {
+          name: 'Optimistic Scenario',
+          description: 'Achieving A or A- in all selected courses',
+          grades: data.selectedCourses.map(() => 'A'),
+          feasibility: 'high'
+        },
+        {
+          name: 'Realistic Scenario',
+          description: 'Achieving B+ or A- in most courses',
+          grades: data.selectedCourses.map(() => 'B+'),
+          feasibility: 'medium'
+        },
+        {
+          name: 'Conservative Scenario',
+          description: 'Achieving B or B+ in most courses',
+          grades: data.selectedCourses.map(() => 'B'),
+          feasibility: 'low'
+        }
+      ];
+
+      // Calculate GPA for each scenario
+      scenarios.forEach(scenario => {
+        let totalPoints = 0;
+        let totalCredits = totalCompletedCredits;
+        
+        data.currentCourses.forEach(course => {
+          totalPoints += gradeToGpa(course.grade) * course.credits;
+        });
+        
+        data.selectedCourses.forEach((course, index) => {
+          const gpa = gradeToGpa(scenario.grades[index]);
+          totalPoints += gpa * course.credits;
+          totalCredits += course.credits;
+        });
+        
+        scenario.gpa = totalCredits > 0 ? totalPoints / totalCredits : currentGpa;
+      });
+
+      container.innerHTML = scenarios.map(scenario => `
+        <div class="scenario-card">
+          <div class="scenario-header">
+            <div class="scenario-name">${scenario.name}</div>
+            <div class="scenario-gpa">${scenario.gpa.toFixed(2)}</div>
+          </div>
+          <div class="scenario-description">${scenario.description}</div>
+          <div>
+            <span class="scenario-feasibility ${scenario.feasibility}">
+              ${scenario.feasibility.charAt(0).toUpperCase() + scenario.feasibility.slice(1)} Feasibility
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateScenarios() {
+      if (document.getElementById('scenariosTab').classList.contains('active')) {
+        renderScenarios();
+      }
+    }
+
+    // Render progress tracking
+    function renderProgress() {
+      const container = document.getElementById('progressChart');
+      const gpa = calculateProjectedGpa();
+      
+      const progressItems = [
+        { label: 'Current GPA', value: gpa.currentGpa, max: 4.0, color: 'var(--primary)' },
+        { label: 'Projected GPA', value: gpa.projectedGpa, max: 4.0, color: 'var(--warning)' },
+        { label: 'Target GPA', value: gpa.targetGpa, max: 4.0, color: 'var(--success)' }
+      ];
+
+      container.innerHTML = progressItems.map(item => {
+        const percentage = (item.value / item.max) * 100;
+        return `
+          <div class="progress-item">
+            <div class="progress-label">${item.label}</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" style="width: ${percentage}%; background: ${item.color};"></div>
+            </div>
+            <div class="progress-value">${item.value.toFixed(2)}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Add gap analysis
+      const gap = gpa.targetGpa - gpa.projectedGpa;
+      const gapPercentage = Math.abs((gap / 4.0) * 100);
+      container.innerHTML += `
+        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+          <div class="progress-item">
+            <div class="progress-label">Gap to Target</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" style="width: ${gapPercentage}%; background: ${gap > 0 ? 'var(--warning)' : 'var(--success)'};"></div>
+            </div>
+            <div class="progress-value" style="color: ${gap > 0 ? 'var(--warning)' : 'var(--success)'};">
+              ${gap > 0 ? '+' : ''}${gap.toFixed(2)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateProgress() {
+      if (document.getElementById('progressTab').classList.contains('active')) {
+        renderProgress();
+      }
+    }
+
+    // Switch tabs
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tab + 'Tab').classList.add('active');
+      
+      if (tab === 'scenarios') {
+        renderScenarios();
+      } else if (tab === 'progress') {
+        renderProgress();
+      }
+    }
+
+    function continueToNextStep() {
+      // Save course grades and projected GPA
+      const gpa = calculateProjectedGpa();
+      const academicData = getAcademicData();
+      academicData.courseGrades = courseGrades;
+      academicData.projectedGpa = gpa.projectedGpa;
+      localStorage.setItem('academicProfile', JSON.stringify(academicData));
+      
+      window.location.href = 'achieve_goal.html';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved grades
+      const data = getAcademicData();
+      if (data.courseGrades) {
+        courseGrades = data.courseGrades;
+      }
+      
+      renderCoursePlanning();
+      updateGpaDisplay();
+      renderScenarios();
+      renderProgress();
+    });
+  </script>
+</body>
+</html>
+

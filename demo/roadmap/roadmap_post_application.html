@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Post Application Roadmap - SuperOS</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .header .stage-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .stage-icon-large {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .stage-description {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    /* Container */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    /* Theme Badge */
+    .theme-badge {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      display: inline-block;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+
+    /* Missions */
+    .missions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .mission-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .mission-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--primary);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .mission-card:hover {
+      border-color: var(--primary);
+      transform: translateX(8px);
+      box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
+    }
+
+    .mission-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .mission-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .mission-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .mission-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .mission-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .mission-category {
+      display: inline-block;
+      padding: 6px 12px;
+      background: var(--primary);
+      color: white;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .mission-priority {
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .mission-priority.high {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .mission-priority.medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .mission-description {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .mission-timeline {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      display: inline-flex;
+    }
+
+    /* Back Button */
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .mission-card {
+        padding: 20px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Post Application Roadmap</h1>
+    <div class="stage-info">
+      <span class="stage-icon-large">⏳</span>
+      <span class="stage-description">Decision & Transition - Navigate decisions and prepare for college</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="theme-badge">Theme: Decision & Transition</div>
+
+    <div class="missions-container">
+      <!-- January - April Grade 12: Wait for Decisions -->
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Check application portals regularly</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Wait for Decisions</span>
+            </div>
+            <span class="mission-category">Waiting</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Monitor application status and wait for decisions
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: January - April Grade 12
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Respond to any requests promptly</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Wait for Decisions</span>
+            </div>
+            <span class="mission-category">Waiting</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Monitor application status and wait for decisions
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: January - April Grade 12
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Update achievements if significant</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Wait for Decisions</span>
+            </div>
+            <span class="mission-category">Waiting</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Monitor application status and wait for decisions
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: January - April Grade 12
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Stay patient and positive</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Wait for Decisions</span>
+            </div>
+            <span class="mission-category">Waiting</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Monitor application status and wait for decisions
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: January - April Grade 12
+        </div>
+      </div>
+
+      <!-- March - April Grade 12: Evaluate Offers -->
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Compare all acceptances</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Evaluate Offers</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Compare acceptances and financial aid packages
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: March - April Grade 12
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Review financial aid packages</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Evaluate Offers</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Compare acceptances and financial aid packages
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: March - April Grade 12
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Visit accepted schools (if possible)</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Evaluate Offers</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Compare acceptances and financial aid packages
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: March - April Grade 12
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Consider fit, cost, and opportunities</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Evaluate Offers</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Compare acceptances and financial aid packages
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: March - April Grade 12
+        </div>
+      </div>
+
+      <!-- May 1 deadline: Make Final Decision -->
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Make final college choice</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Make Final Decision</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Choose your college and submit enrollment deposit
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May 1 deadline
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Submit enrollment deposit by May 1</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Make Final Decision</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Choose your college and submit enrollment deposit
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May 1 deadline
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Decline other offers</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Make Final Decision</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Choose your college and submit enrollment deposit
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May 1 deadline
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Notify counselor and teachers</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Make Final Decision</span>
+            </div>
+            <span class="mission-category">Decision</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Choose your college and submit enrollment deposit
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May 1 deadline
+        </div>
+      </div>
+
+      <!-- May - August: Complete Enrollment -->
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Submit final transcripts</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Complete Enrollment</span>
+            </div>
+            <span class="mission-category">Enrollment</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Complete all enrollment requirements
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May - August
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Complete housing applications</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Complete Enrollment</span>
+            </div>
+            <span class="mission-category">Enrollment</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Complete all enrollment requirements
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May - August
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Submit health forms</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Complete Enrollment</span>
+            </div>
+            <span class="mission-category">Enrollment</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Complete all enrollment requirements
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May - August
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Attend orientation</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Complete Enrollment</span>
+            </div>
+            <span class="mission-category">Enrollment</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Complete all enrollment requirements
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May - August
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Register for classes</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Complete Enrollment</span>
+            </div>
+            <span class="mission-category">Enrollment</span>
+          </div>
+          <span class="mission-priority high">High Priority</span>
+        </div>
+        <div class="mission-description">
+          Complete all enrollment requirements
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: May - August
+        </div>
+      </div>
+
+      <!-- Summer before college: Prepare for College -->
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Connect with future classmates</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Prepare for College</span>
+            </div>
+            <span class="mission-category">Preparation</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Get ready for the college transition
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: Summer before college
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Research course options</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Prepare for College</span>
+            </div>
+            <span class="mission-category">Preparation</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Get ready for the college transition
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: Summer before college
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Prepare for independence</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Prepare for College</span>
+            </div>
+            <span class="mission-category">Preparation</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Get ready for the college transition
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: Summer before college
+        </div>
+      </div>
+
+      <div class="mission-card">
+        <div class="mission-header">
+          <div style="flex: 1;">
+            <div class="mission-title">Set goals for college</div>
+            <div class="mission-tags">
+              <span class="mission-tag">Prepare for College</span>
+            </div>
+            <span class="mission-category">Preparation</span>
+          </div>
+          <span class="mission-priority medium">Medium Priority</span>
+        </div>
+        <div class="mission-description">
+          Get ready for the college transition
+        </div>
+        <div class="mission-timeline">
+          ⏱️ Timeline: Summer before college
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-button" onclick="window.history.back()" title="Go Back">←</button>
+</body>
+</html>

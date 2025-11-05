@@ -6,21 +6,21 @@
   <title>Router Agent Status Report</title>
   <style>
     :root {
-      --bg: #081020;
-      --bg2: #0b132b;
-      --neon: #6ea8fe;
-      --neon2: #7ee787;
-      --neon3: #ff9aa9;
-      --text: #e6e9ef;
-      --text-muted: #9aa4b2;
-      --border: rgba(255,255,255,0.12);
-      --border-light: rgba(255,255,255,0.08);
+      --bg: #FAF9F6;
+      --bg2: #FDF1EB;
+      --neon: #AA1E23;
+      --neon2: #74070E;
+      --neon3: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --border: rgba(170, 30, 35, 0.3);
+      --border-light: rgba(170, 30, 35, 0.2);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     html, body { 
-      background: radial-gradient(1200px 600px at 50% -10%, #0f1b3a, #080d1a 60%), linear-gradient(180deg, #07122a, #040812);
+      background: radial-gradient(1200px 600px at 50% -10%, #FAE2D8, #FDF1EB 60%), linear-gradient(180deg, #FDF1EB, #FAF9F6);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       font-size: 14px;
@@ -56,7 +56,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(250, 249, 246, 0.7);
       backdrop-filter: blur(4px);
     }
 
@@ -117,7 +117,7 @@
     }
 
     .status-report-close:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(170, 30, 35, 0.1);
       color: var(--text);
     }
 
@@ -154,7 +154,7 @@
       height: 70px;
       border-radius: 50%;
       border: 2px solid var(--border);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(250, 226, 216, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -167,13 +167,13 @@
     .mood-btn:hover {
       transform: scale(1.1);
       border-color: var(--neon);
-      background: rgba(110, 168, 254, 0.2);
+      background: rgba(170, 30, 35, 0.2);
     }
 
     .mood-btn.selected {
       border-color: var(--neon3);
-      background: rgba(255, 154, 169, 0.2);
-      box-shadow: 0 0 20px rgba(255, 154, 169, 0.4);
+      background: rgba(170, 30, 35, 0.2);
+      box-shadow: 0 0 20px rgba(170, 30, 35, 0.4);
     }
 
     .mood-btn.question {
@@ -193,7 +193,7 @@
 
     .tag-btn {
       padding: 8px 16px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(250, 226, 216, 0.5);
       border: 1px solid var(--border-light);
       border-radius: 20px;
       color: var(--text-muted);
@@ -203,14 +203,14 @@
     }
 
     .tag-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(170, 30, 35, 0.1);
       border-color: var(--neon);
       color: var(--text);
     }
 
     /* Alert Card */
     .alert-card {
-      background: rgba(255, 154, 169, 0.1);
+      background: rgba(170, 30, 35, 0.1);
       border: 1px solid var(--neon3);
       border-radius: 16px;
       padding: 16px;
@@ -245,7 +245,7 @@
     .alert-progress {
       width: 100%;
       height: 6px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(170, 30, 35, 0.1);
       border-radius: 3px;
       overflow: hidden;
       margin-bottom: 8px;
@@ -276,7 +276,7 @@
 
     /* Recommendation Card */
     .recommendation-card {
-      background: rgba(126, 231, 135, 0.1);
+      background: rgba(116, 7, 14, 0.1);
       border: 1px solid var(--neon2);
       border-radius: 16px;
       padding: 16px;
@@ -305,7 +305,7 @@
     .rec-progress {
       width: 100%;
       height: 6px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(170, 30, 35, 0.1);
       border-radius: 3px;
       overflow: hidden;
     }
@@ -329,17 +329,17 @@
 
     /* Priority Task Card Enhancements */
     .priority-task-card {
-      border-color: rgba(255, 154, 169, 0.4);
-      background: linear-gradient(135deg, rgba(255, 154, 169, 0.12), rgba(126, 231, 135, 0.08));
-      box-shadow: 0 4px 16px rgba(255, 154, 169, 0.15);
+      border-color: rgba(170, 30, 35, 0.4);
+      background: linear-gradient(135deg, rgba(170, 30, 35, 0.12), rgba(116, 7, 14, 0.08));
+      box-shadow: 0 4px 16px rgba(170, 30, 35, 0.15);
       cursor: pointer;
       transition: all 0.3s ease;
     }
 
     .priority-task-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 154, 169, 0.25);
-      border-color: rgba(255, 154, 169, 0.6);
+      box-shadow: 0 6px 20px rgba(170, 30, 35, 0.25);
+      border-color: rgba(170, 30, 35, 0.6);
     }
 
     .priority-task-card .rec-title {
@@ -354,7 +354,7 @@
       font-weight: 700;
       letter-spacing: 0.5px;
       color: var(--neon3);
-      background: rgba(255, 154, 169, 0.2);
+      background: rgba(170, 30, 35, 0.2);
       padding: 3px 8px;
       border-radius: 6px;
       display: inline-block;
@@ -419,7 +419,7 @@
       background: linear-gradient(135deg, var(--neon), var(--neon2));
       border: none;
       border-radius: 12px;
-      color: #000;
+      color: #FAF9F6;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -429,7 +429,7 @@
 
     .task-action-btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(110, 168, 254, 0.4);
+      box-shadow: 0 2px 8px rgba(170, 30, 35, 0.4);
     }
 
     .task-action-btn:active {
@@ -443,17 +443,17 @@
       background: linear-gradient(135deg, var(--neon), var(--neon2));
       border: none;
       border-radius: 16px;
-      color: #000;
+      color: #FAF9F6;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 16px rgba(110, 168, 254, 0.3);
+      box-shadow: 0 4px 16px rgba(170, 30, 35, 0.3);
     }
 
     .action-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(110, 168, 254, 0.4);
+      box-shadow: 0 6px 20px rgba(170, 30, 35, 0.4);
     }
 
     .action-button:active {
@@ -540,22 +540,22 @@
       overflow: hidden !important;
       display: flex !important;
       flex-direction: column !important;
-      background: linear-gradient(135deg, rgba(18, 30, 64, 0.96), rgba(34, 14, 62, 0.94), rgba(20, 25, 55, 0.95)) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+      background: linear-gradient(135deg, rgba(250, 249, 246, 0.96), rgba(253, 241, 235, 0.94), rgba(250, 226, 216, 0.95)) !important;
+      border: 1.5px solid rgba(170, 30, 35, 0.3) !important;
       backdrop-filter: blur(24px) saturate(180%) !important;
       box-shadow: 
         0 12px 48px rgba(4, 6, 28, 0.5),
-        0 0 0 1px rgba(110, 168, 254, 0.1) inset,
-        0 2px 8px rgba(110, 168, 254, 0.15) !important;
+        0 0 0 1px rgba(170, 30, 35, 0.1) inset,
+        0 2px 8px rgba(170, 30, 35, 0.15) !important;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .router-status-report .tutor-surface:hover {
-      border-color: rgba(255, 255, 255, 0.25) !important;
+      border-color: rgba(170, 30, 35, 0.35) !important;
       box-shadow: 
         0 16px 64px rgba(4, 6, 28, 0.6),
-        0 0 0 1px rgba(110, 168, 254, 0.15) inset,
-        0 4px 12px rgba(110, 168, 254, 0.2) !important;
+        0 0 0 1px rgba(170, 30, 35, 0.15) inset,
+        0 4px 12px rgba(170, 30, 35, 0.2) !important;
       transform: translateY(-1px) !important;
     }
 
@@ -619,8 +619,8 @@
     }
 
     .router-status-report .tutor-control-btn:hover {
-      background: rgba(255, 255, 255, 0.15) !important;
-      border-color: rgba(255, 255, 255, 0.2) !important;
+      background: rgba(170, 30, 35, 0.15) !important;
+      border-color: rgba(170, 30, 35, 0.4) !important;
       transform: translateY(-1px) !important;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
     }
@@ -681,8 +681,8 @@
     }
 
     .router-status-report .tutor-subtitle:hover {
-      background: rgba(255, 255, 255, 0.08) !important;
-      border-color: rgba(255, 255, 255, 0.15) !important;
+      background: rgba(250, 226, 216, 0.5) !important;
+      border-color: rgba(170, 30, 35, 0.35) !important;
     }
 
     .router-status-report .subtitle-text {
@@ -711,9 +711,9 @@
     }
 
     .router-status-report .tutor-input-area:focus-within {
-      background: rgba(255, 255, 255, 0.1) !important;
-      border-color: rgba(110, 168, 254, 0.4) !important;
-      box-shadow: 0 0 0 2px rgba(110, 168, 254, 0.1) !important;
+      background: rgba(250, 226, 216, 0.6) !important;
+      border-color: rgba(170, 30, 35, 0.4) !important;
+      box-shadow: 0 0 0 2px rgba(170, 30, 35, 0.1) !important;
     }
 
     .router-status-report .tutor-input-btn {
@@ -722,8 +722,8 @@
       font-size: 20px !important;
       padding: 0 !important;
       border-radius: 12px !important;
-      background: rgba(255, 255, 255, 0.1) !important;
-      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      background: rgba(250, 226, 216, 0.6) !important;
+      border: 1px solid rgba(170, 30, 35, 0.35) !important;
       transition: all 0.2s ease !important;
       display: flex !important;
       align-items: center !important;
@@ -759,8 +759,8 @@
     .router-status-report .tutor-input:focus {
       outline: none !important;
       background: rgba(255, 255, 255, 0.08) !important;
-      border-color: rgba(110, 168, 254, 0.5) !important;
-      box-shadow: 0 0 0 2px rgba(110, 168, 254, 0.1) !important;
+      border-color: rgba(170, 30, 35, 0.5) !important;
+      box-shadow: 0 0 0 2px rgba(170, 30, 35, 0.1) !important;
     }
 
     /* Mobile Optimizations */

@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AI Major Analysis - Major Advisor</title>
+  <style>
+    :root {
+      --bg-dark: #0d1117;
+      --bg-card: #161b22;
+      --bg-hover: #1c2128;
+      --primary: #a855f7;
+      --primary-glow: rgba(168, 85, 247, 0.4);
+      --primary-light: #c084fc;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --border: rgba(240, 246, 252, 0.1);
+      --border-glow: rgba(168, 85, 247, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .loading-section {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .analysis-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .analysis-section {
+      margin-bottom: 24px;
+    }
+
+    .analysis-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-content {
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    .section-content ul {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .section-content li {
+      margin: 8px 0;
+    }
+
+    .fit-score {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-radius: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 16px 0;
+    }
+
+    .recommendation-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .recommendation-tag {
+      padding: 6px 12px;
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--primary-light);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .pros, .cons {
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .pros {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid var(--success);
+    }
+
+    .cons {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid var(--warning);
+    }
+
+    .pros-title, .cons-title {
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pros-title {
+      color: var(--success);
+    }
+
+    .cons-title {
+      color: var(--warning);
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .pros-cons {
+        grid-template-columns: 1fr;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AI Major Analysis</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Analyzing your selected major...</p>
+  </div>
+
+  <div class="container">
+    <!-- Loading State -->
+    <div class="loading-section" id="loadingSection">
+      <div class="loading-spinner"></div>
+      <p style="color: var(--text-muted);">AI is analyzing major information...</p>
+    </div>
+
+    <!-- Analysis Results -->
+    <div id="analysisResults" style="display: none;">
+      <!-- Fit Analysis -->
+      <div class="analysis-card">
+        <div class="analysis-section">
+          <div class="section-title">
+            <span>🎯</span>
+            <span>Major Fit Analysis</span>
+          </div>
+          <div class="section-content">
+            <div style="text-align: center;">
+              <div class="fit-score" id="fitScore">92%</div>
+              <p style="margin-top: 12px;">Based on your interests, GPA, and hobbies, this major has a fit score of <strong id="fitPercent">92%</strong></p>
+            </div>
+            <div class="recommendation-tags" id="fitTags">
+              <!-- 标签将通过JavaScript生成 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Major Introduction -->
+      <div class="analysis-card">
+        <div class="analysis-section">
+          <div class="section-title">
+            <span>📖</span>
+            <span>Major Introduction</span>
+          </div>
+          <div class="section-content" id="majorIntro">
+            <!-- Content will be generated by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Pros and Cons -->
+      <div class="analysis-card">
+        <div class="analysis-section">
+          <div class="section-title">
+            <span>⚖️</span>
+            <span>Pros and Cons</span>
+          </div>
+          <div class="pros-cons">
+            <div class="pros">
+              <div class="pros-title">
+                <span>✅</span>
+                <span>Pros</span>
+              </div>
+              <ul id="prosList" style="color: var(--text-muted);">
+                <!-- Content will be generated by JavaScript -->
+              </ul>
+            </div>
+            <div class="cons">
+              <div class="cons-title">
+                <span>⚠️</span>
+                <span>Cons</span>
+              </div>
+              <ul id="consList" style="color: var(--text-muted);">
+                <!-- Content will be generated by JavaScript -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Career Prospects -->
+      <div class="analysis-card">
+        <div class="analysis-section">
+          <div class="section-title">
+            <span>💼</span>
+            <span>Career Prospects</span>
+          </div>
+          <div class="section-content" id="careerProspects">
+            <!-- Content will be generated by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Advice -->
+      <div class="analysis-card">
+        <div class="analysis-section">
+          <div class="section-title">
+            <span>🤖</span>
+            <span>AI Major Advice</span>
+          </div>
+          <div class="section-content" id="aiAdvice">
+            <!-- Content will be generated by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <button class="action-button" onclick="continueToNextStep()">
+        Continue Next Step, Create Task List →
+      </button>
+    </div>
+  </div>
+
+  <button class="back-button" onclick="window.location.href='refine_majors.html'" title="Back">←</button>
+
+  <script>
+    // 模拟AI分析数据
+    const analysisData = {
+      '计算机科学': {
+        fit: 95,
+        fitTags: ['高匹配', '兴趣契合', '技能匹配', '职业前景好'],
+        intro: '计算机科学是研究算法、数据结构、计算系统和软件开发的学科。它结合了数学、逻辑和工程实践，是当今数字时代最重要的学科之一。',
+        pros: [
+          '就业市场需求旺盛，薪资水平高',
+          '创新能力强，可以从事前沿技术研发',
+          '技能可迁移性强，适应多个行业',
+          '职业发展路径清晰，晋升空间大'
+        ],
+        cons: [
+          '学习曲线陡峭，需要持续学习',
+          '工作压力较大，需要处理复杂问题',
+          '需要较强的逻辑思维和数学基础',
+          '技术更新快，需要不断跟进新技术'
+        ],
+        career: '毕业后可以从事软件工程师、算法工程师、数据科学家、系统架构师等职位。平均起薪在$75,000-$120,000之间，就业率高达94%。主要就业方向包括互联网公司、金融机构、科技创业公司等。',
+        advice: '建议您：1) 加强编程基础，掌握至少一门主流编程语言（Python/Java/C++）；2) 参与实际项目，积累实战经验；3) 关注算法和数据结构的学习；4) 考虑参加相关竞赛或开源项目；5) 尽早开始实习，了解行业实际需求。'
+      },
+      '数据科学': {
+        fit: 92,
+        fitTags: ['高匹配', '数据分析', '职业热门', '技能互补'],
+        intro: '数据科学结合统计学、计算机科学和领域专业知识，从数据中提取有价值的信息和洞察。',
+        pros: [
+          '市场需求快速增长，人才缺口大',
+          '薪资水平高，职业前景广阔',
+          '可以解决实际问题，产生业务价值',
+          '跨学科能力强，适合多种背景'
+        ],
+        cons: [
+          '需要较强的数学和统计学基础',
+          '需要学习多种工具和技术栈',
+          '需要理解业务逻辑，沟通能力要求高',
+          '数据质量影响分析结果，需要耐心细致'
+        ],
+        career: '可以成为数据分析师、数据科学家、机器学习工程师等。平均起薪$70,000-$110,000，就业率96%。主要就业于科技公司、金融机构、咨询公司等。',
+        advice: '建议您：1) 掌握Python/R编程语言；2) 学习统计学和机器学习基础；3) 熟悉数据可视化工具；4) 参与实际数据分析项目；5) 关注行业趋势和最佳实践。'
+      },
+      '金融学': {
+        fit: 88,
+        fitTags: ['金融领域', '高薪资', '职业稳定', '实用性强'],
+        intro: '金融学研究资金管理、投资决策和金融市场运作规律。',
+        pros: [
+          '薪资水平高，职业发展空间大',
+          '工作环境相对稳定，职业安全感强',
+          '可以接触到大量资金和项目',
+          '国际化程度高，有机会全球发展'
+        ],
+        cons: [
+          '竞争激烈，进入门槛较高',
+          '工作压力大，需要处理复杂金融问题',
+          '需要持续关注市场动态',
+          '对数学和逻辑能力要求较高'
+        ],
+        career: '可从事投资银行、资产管理、风险管理、金融分析等职位。平均起薪$65,000-$100,000，就业率91%。主要就业于银行、证券公司、基金公司等。',
+        advice: '建议您：1) 加强数学和统计学基础；2) 学习金融建模和分析技能；3) 关注金融市场动态；4) 考虑考取相关证书（CFA等）；5) 积累实习经验，了解行业运作。'
+      }
+    };
+
+    function getDefaultAnalysis(majorName) {
+      // 返回默认分析数据
+      return {
+        fit: 85,
+        fitTags: ['专业匹配', '兴趣相关', '值得考虑'],
+        intro: `${majorName}是一个具有良好发展前景的专业。它结合了理论与实践，为学生提供了全面的知识和技能培养。`,
+        pros: [
+          '就业前景良好，市场需求稳定',
+          '专业知识和技能实用性强',
+          '职业发展路径清晰',
+          '可以结合个人兴趣和特长'
+        ],
+        cons: [
+          '需要投入较多时间和精力学习',
+          '可能需要持续更新知识',
+          '竞争可能较为激烈',
+          '需要不断提升专业技能'
+        ],
+        career: `毕业后可以从事与${majorName}相关的多种职业。建议您深入了解该专业的就业方向和职业要求，提前做好职业规划。`,
+        advice: `对于${majorName}专业，建议您：1) 深入了解该专业的核心课程和学习内容；2) 参加相关的实习或实践活动；3) 关注行业发展趋势；4) 建立专业网络，与行业人士交流；5) 持续学习和提升专业技能。`
+      };
+    }
+
+    function performAnalysis(majorName) {
+      // 模拟AI分析过程
+      const analysis = analysisData[majorName] || getDefaultAnalysis(majorName);
+
+      // 显示匹配度
+      document.getElementById('fitScore').textContent = `${analysis.fit}%`;
+      document.getElementById('fitPercent').textContent = `${analysis.fit}%`;
+
+      // 显示匹配标签
+      const fitTagsEl = document.getElementById('fitTags');
+      fitTagsEl.innerHTML = analysis.fitTags.map(tag => 
+        `<span class="recommendation-tag">${tag}</span>`
+      ).join('');
+
+      // 显示专业介绍
+      document.getElementById('majorIntro').innerHTML = `<p>${analysis.intro}</p>`;
+
+      // 显示优势
+      const prosListEl = document.getElementById('prosList');
+      prosListEl.innerHTML = analysis.pros.map(item => `<li>${item}</li>`).join('');
+
+      // 显示挑战
+      const consListEl = document.getElementById('consList');
+      consListEl.innerHTML = analysis.cons.map(item => `<li>${item}</li>`).join('');
+
+      // 显示职业前景
+      document.getElementById('careerProspects').innerHTML = `<p>${analysis.career}</p>`;
+
+      // 显示AI建议
+      document.getElementById('aiAdvice').innerHTML = `<p>${analysis.advice}</p>`;
+
+      // 保存分析结果
+      localStorage.setItem('majorAnalysis', JSON.stringify({
+        majorName: majorName,
+        fit: analysis.fit,
+        analysis: analysis
+      }));
+    }
+
+    function continueToNextStep() {
+      // 跳转到创建任务列表页面
+      window.location.href = 'create_tasklist.html';
+    }
+
+    // 页面加载
+    document.addEventListener('DOMContentLoaded', () => {
+      // 获取专业名称
+      const urlParams = new URLSearchParams(window.location.search);
+      let majorName = urlParams.get('major');
+
+      // 如果没有从URL获取，尝试从localStorage获取
+      if (!majorName) {
+        const saved = localStorage.getItem('selectedMajor');
+        if (saved) {
+          const major = JSON.parse(saved);
+          majorName = major.name;
+        }
+      }
+
+      if (!majorName) {
+        majorName = '计算机科学'; // 默认值
+      }
+
+      // 更新标题
+      document.querySelector('.header h1').textContent = `AI专业分析: ${majorName}`;
+
+      // 模拟分析过程（2秒后显示结果）
+      setTimeout(() => {
+        document.getElementById('loadingSection').style.display = 'none';
+        document.getElementById('analysisResults').style.display = 'block';
+        performAnalysis(majorName);
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
+
