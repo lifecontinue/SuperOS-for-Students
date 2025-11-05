@@ -3,356 +3,675 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>SuperOS for Students - Demo</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Page Directory - SuperOS</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --primary: #AA1E23;
+      --primary-dark: #4A0509;
+      --primary-light: #74070E;
+      --text-primary: #4A0509;
+      --text-secondary: #74070E;
+      --border-color: #AA1E23;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-card-3) 100%);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    /* Magical background particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0.3;
+      }
+      25% {
+        transform: translateY(-100px) translateX(50px) rotate(90deg);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateY(-200px) translateX(-30px) rotate(180deg);
+        opacity: 0.2;
+      }
+      75% {
+        transform: translateY(-150px) translateX(80px) rotate(270deg);
+        opacity: 0.4;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 15px;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(170, 30, 35, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.3;
+      }
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+    }
+
+    /* Category Section */
+    .category {
+      margin-bottom: 40px;
+    }
+
+    .category-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--primary);
+      position: relative;
+    }
+
+    .category-title::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--primary-light);
+      animation: expand 2s ease-in-out infinite;
+    }
+
+    @keyframes expand {
+      0%, 100% {
+        width: 60px;
+      }
+      50% {
+        width: 120px;
+      }
+    }
+
+    /* Page Grid */
+    .page-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    /* Page Card */
+    .page-card {
+      background: var(--bg-card-2);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(170, 30, 35, 0.1);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .page-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(170, 30, 35, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .page-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.2);
+      border-color: var(--primary);
+    }
+
+    .page-card:hover::before {
+      left: 100%;
+    }
+
+    .page-card-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .page-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .page-card-description {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .page-card-path {
+      font-size: 12px;
+      color: var(--primary);
+      margin-top: 12px;
+      opacity: 0.7;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .page-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .category-title {
+        font-size: 20px;
+      }
+    }
+
+    /* Back to Home */
+    .back-home {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    .back-home a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .back-home a:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-  <header class="app-header">
-    <h1>SuperOS for Students</h1>
-  </header>
+  <!-- Background Particles -->
+  <div class="particles" id="particles"></div>
 
-  <main id="componentArea" class="component-area">
-    <!-- Login / Auth (initially visible) -->
-    <section id="route-auth" class="route-shell">
-      <div id="view-auth-container"></div>
-    </section>
-
-    <!-- Onboarding Flow -->
-    <section id="route-onboarding" class="route-shell hidden">
-      <section id="view-onboarding" class="view">
-        <div class="card">
-          <div class="row space">
-            <h2>Welcome to SuperOS</h2>
-            <div class="onboarding-header-actions">
-              <button id="btnOnboardBack" class="btn-onboarding-secondary" type="button" aria-label="Go back to previous step">
-                <span class="btn-icon">←</span>
-                <span class="btn-text">Back</span>
-              </button>
-              <button id="btnSkipOnboard" class="btn-onboarding-secondary btn-skip" type="button" link="demo\sections\view-profile.html" aria-label="Skip onboarding">
-                <span class="btn-text">Skip</span>
-                <span class="btn-icon">→</span>
-              </button>
-            </div>
-          </div>
-          <div class="onboarding-progress-container">
-            <div class="onboarding-progress-bar">
-              <div id="onboardProgressFill" class="onboarding-progress-fill"></div>
-            </div>
-            <div class="onboarding-progress-info">
-              <span id="onboardProgress" class="onboarding-progress-text">Step <span id="currentStep">1</span> of <span id="totalSteps">5</span></span>
-              <span id="onboardProgressPercent" class="onboarding-progress-percent">0%</span>
-            </div>
-          </div>
-          <div id="onboardStep" class="onboarding-step-wrapper">
-            <!-- Initial Form Template -->
-            <div class="onboarding-step-content">
-              <div class="onboarding-step-header">
-                <div class="tutor-message">
-                  <span class="tutor-label">AI Tutor</span>
-                  <p class="tutor-text">Welcome to SuperOS! I'm your AI Tutor, and I'll guide you through setting up your profile. Let's start with the basics.</p>
-                </div>
-              </div>
-              <div class="onboarding-step-body">
-                <!-- Basic Information Section -->
-                <div class="input-group">
-                  <label for="onName" class="input-label">What's your name? <span class="required">*</span></label>
-                  <div class="input-with-voice">
-                    <input 
-                      type="text" 
-                      id="onName" 
-                      class="onboarding-input" 
-                      placeholder="Enter your full name or click mic to speak"
-                      autocomplete="name"
-                      required
-                    />
-                    <button type="button" class="voice-input-btn" id="voiceBtnName" aria-label="Voice input for name" title="Click to speak your name">
-                      🎤
-                    </button>
-                  </div>
-                  <span class="input-hint">This helps us personalize your experience</span>
-                </div>
-
-                <!-- Academic Background Section -->
-                <div class="input-group">
-                  <label for="onBg" class="input-label">Academic Background <span class="required">*</span></label>
-                  <div class="input-with-voice">
-                    <textarea 
-                      id="onBg" 
-                      class="onboarding-input onboarding-textarea" 
-                      placeholder="E.g., Grade 11 student, AP Calculus, National Math Competition winner, Science Olympiad participant... Or click mic to speak"
-                      rows="4"
-                      required
-                    ></textarea>
-                    <button type="button" class="voice-input-btn" id="voiceBtnBg" aria-label="Voice input for academic background" title="Click to speak your academic background">
-                      🎤
-                    </button>
-                  </div>
-                  <span class="input-hint">Include your grade level, courses, achievements, competitions, etc.</span>
-                </div>
-
-                <!-- Interests Section -->
-                <div class="input-group">
-                  <label for="onInterests" class="input-label">Your Interests <span class="required">*</span></label>
-                  <div class="input-with-voice">
-                    <input 
-                      type="text" 
-                      id="onInterests" 
-                      class="onboarding-input" 
-                      placeholder="AI, Economics, Biology, Psychology, Engineering... Or click mic to speak"
-                      autocomplete="off"
-                      required
-                    />
-                    <button type="button" class="voice-input-btn" id="voiceBtnInterests" aria-label="Voice input for interests" title="Click to speak your interests">
-                      🎤
-                    </button>
-                  </div>
-                  <span class="input-hint">Separate multiple interests with commas</span>
-                </div>
-
-                <!-- Target Majors Section -->
-                <div class="input-group">
-                  <label for="onMajors" class="input-label">Target Majors <span class="required">*</span></label>
-                  <div class="chip-selector" id="majorSelector">
-                    <button type="button" class="chip-option" data-value="Computer Science" data-type="major">Computer Science</button>
-                    <button type="button" class="chip-option" data-value="Engineering" data-type="major">Engineering</button>
-                    <button type="button" class="chip-option" data-value="Business" data-type="major">Business</button>
-                    <button type="button" class="chip-option" data-value="Economics" data-type="major">Economics</button>
-                    <button type="button" class="chip-option" data-value="Biology" data-type="major">Biology</button>
-                    <button type="button" class="chip-option" data-value="Psychology" data-type="major">Psychology</button>
-                    <button type="button" class="chip-option" data-value="Medicine" data-type="major">Medicine</button>
-                    <button type="button" class="chip-option" data-value="Law" data-type="major">Law</button>
-                    <button type="button" class="chip-option" data-value="Arts" data-type="major">Arts</button>
-                    <button type="button" class="chip-option" data-value="Education" data-type="major">Education</button>
-                  </div>
-                  <div class="input-with-voice" style="margin-top: 12px;">
-                    <input 
-                      type="text" 
-                      id="onMajorsCustom" 
-                      class="onboarding-input" 
-                      placeholder="Or type custom majors (comma-separated) or click mic to speak"
-                      autocomplete="off"
-                    />
-                    <button type="button" class="voice-input-btn" id="voiceBtnMajors" aria-label="Voice input for majors" title="Click to speak your target majors">
-                      🎤
-                    </button>
-                  </div>
-                  <span class="input-hint">Click to select or type custom majors</span>
-                </div>
-
-                <!-- Target Universities Section -->
-                <div class="input-group" data-optional="true">
-                  <label for="onSchools" class="input-label">Target Universities</label>
-                  <div class="chip-selector" id="schoolSelector">
-                    <button type="button" class="chip-option" data-value="MIT" data-type="school">MIT</button>
-                    <button type="button" class="chip-option" data-value="Stanford" data-type="school">Stanford</button>
-                    <button type="button" class="chip-option" data-value="Harvard" data-type="school">Harvard</button>
-                    <button type="button" class="chip-option" data-value="Yale" data-type="school">Yale</button>
-                    <button type="button" class="chip-option" data-value="Princeton" data-type="school">Princeton</button>
-                    <button type="button" class="chip-option" data-value="UC Berkeley" data-type="school">UC Berkeley</button>
-                    <button type="button" class="chip-option" data-value="UCLA" data-type="school">UCLA</button>
-                    <button type="button" class="chip-option" data-value="Columbia" data-type="school">Columbia</button>
-                    <button type="button" class="chip-option" data-value="Cornell" data-type="school">Cornell</button>
-                    <button type="button" class="chip-option" data-value="UChicago" data-type="school">UChicago</button>
-                  </div>
-                  <div class="input-with-voice" style="margin-top: 12px;">
-                    <input 
-                      type="text" 
-                      id="onSchoolsCustom" 
-                      class="onboarding-input" 
-                      placeholder="Or type custom universities (comma-separated) or click mic to speak"
-                      autocomplete="off"
-                    />
-                    <button type="button" class="voice-input-btn" id="voiceBtnSchools" aria-label="Voice input for schools" title="Click to speak your target universities">
-                      🎤
-                    </button>
-                  </div>
-                  <span class="input-hint">Click to select or type custom universities</span>
-                </div>
-
-                <!-- Learning Style Section -->
-                <div class="input-group">
-                  <label class="input-label">Learning Style <span class="required">*</span></label>
-                  <div class="learning-style-selector" id="learningStyleSelector">
-                    <button type="button" class="learning-style-option" data-value="visual" aria-pressed="false">
-                      <span class="style-icon">👁️</span>
-                      <div class="style-content">
-                        <div class="style-label">Visual Learner</div>
-                        <div class="style-description">Learn best through images, diagrams, and visual aids</div>
-                      </div>
-                    </button>
-                    <button type="button" class="learning-style-option" data-value="auditory" aria-pressed="false">
-                      <span class="style-icon">👂</span>
-                      <div class="style-content">
-                        <div class="style-label">Auditory Learner</div>
-                        <div class="style-description">Learn best through listening and verbal explanations</div>
-                      </div>
-                    </button>
-                    <button type="button" class="learning-style-option" data-value="kinesthetic" aria-pressed="false">
-                      <span class="style-icon">✋</span>
-                      <div class="style-content">
-                        <div class="style-label">Kinesthetic Learner</div>
-                        <div class="style-description">Learn best through hands-on activities and practice</div>
-                      </div>
-                    </button>
-                    <button type="button" class="learning-style-option" data-value="reading" aria-pressed="false">
-                      <span class="style-icon">📖</span>
-                      <div class="style-content">
-                        <div class="style-label">Reading/Writing Learner</div>
-                        <div class="style-description">Learn best through reading and writing</div>
-                      </div>
-                    </button>
-                    <button type="button" class="learning-style-option" data-value="mixed" aria-pressed="false">
-                      <span class="style-icon">🔄</span>
-                      <div class="style-content">
-                        <div class="style-label">Mixed Learning Style</div>
-                        <div class="style-description">Combination of multiple learning styles</div>
-                      </div>
-                    </button>
-                  </div>
-                  <span class="input-hint">Select the learning style that best matches how you learn</span>
-                </div>
-
-                <!-- Information Box -->
-                <div class="step-info-box">
-                  <div class="info-icon">📝</div>
-                  <div class="info-content">
-                    <div class="info-title">Information Required</div>
-                    <div class="info-text">Please fill in all required fields marked with <span class="required">*</span>. You can type your answers or use the microphone buttons to speak them. The AI Tutor will guide you through each step.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="onboarding-step-footer">
-                <button id="nextWelcome" class="btn-onboarding-primary">Continue</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Floating Subtitle Component (fixed footer for onboarding) -->
-        <footer class="floating-subtitle-container" id="inputArea">
-          <!-- Waveform Indicator -->
-          <div class="subtitle-waveform" id="subtitleWaveform">
-            <div class="waveform-bar"></div>
-            <div class="waveform-bar"></div>
-            <div class="waveform-bar"></div>
-            <div class="waveform-bar"></div>
-            <div class="waveform-bar"></div>
-          </div>
-          
-          <!-- Subtitle Box -->
-          <div class="subtitle-box" id="subtitleBox">
-            <span class="subtitle-text-display" id="subtitleTextDisplay"></span>
-            <span class="subtitle-word-highlight" id="subtitleWordHighlight"></span>
-          </div>
-          
-          <!-- Expanded Transcript View (hidden by default) -->
-          <div class="subtitle-transcript-expanded hidden" id="subtitleTranscriptExpanded">
-            <div class="transcript-header">
-              <h3>Full Transcript</h3>
-              <button class="close-transcript-btn" id="closeSubtitleTranscript">×</button>
-            </div>
-            <div class="transcript-content" id="subtitleTranscriptContent"></div>
-          </div>
-          
-          <!-- Action Sheet (hidden by default) -->
-          <div class="subtitle-action-sheet hidden" id="subtitleActionSheet">
-            <button class="action-btn" id="actionCopyText">Copy text</button>
-            <button class="action-btn" id="actionReplaySegment">Replay segment</button>
-            <button class="action-btn" id="actionTranslateText">Translate</button>
-          </div>
-          
-          <!-- Hidden Input Controls (for voice/text mode switching) -->
-          <div class="subtitle-input-controls hidden" id="subtitleInputControls">
-            <button id="micBtn" class="chip">🎤</button>
-            <input id="userInput" placeholder="Talk to your tutor…" />
-            <button id="sendBtn">Send</button>
-          </div>
-        </footer>
-      </section>
-    </section>
-
-    <!-- Authenticated Application Routes (Profile, Persona, GAP, Advisor, Roadmap) -->
-    <section id="route-app" class="route-shell hidden">
-      <!-- Profile Navigation (dynamically shown when needed) -->
-      <div id="profileNav" class="profile-nav hidden">
-        <div class="tabs top" id="topTabs">
-          <button type="button" class="tab small active" data-tab-route="profile" aria-selected="true">Profile</button>
-          <button type="button" class="tab small" data-tab-route="persona" aria-selected="false">Persona</button>
-          <button type="button" class="tab small" data-tab-route="gap" aria-selected="false">GAP</button>
-          <button type="button" class="tab small" data-tab-route="advisor" aria-selected="false">Major Advisor</button>
-          <button type="button" class="tab small" data-tab-route="roadmap" aria-selected="false">Roadmap</button>
-        </div>
-      </div>
-      
-      <!-- Views will be loaded dynamically via sections.js -->
-      <div id="view-profile-container"></div>
-      <div id="view-persona-container"></div>
-      <div id="view-gap-container"></div>
-      <div id="view-advisor-container"></div>
-      <div id="view-roadmap-container"></div>
-    </section>
-  </main>
-
-  <!-- Tutor Agent Footer (for app routes) -->
-  <footer id="tutorAgent" class="tutor-footer hidden" aria-live="polite" aria-atomic="true">
-    <div class="tutor-surface">
-      <!-- Status and Controls -->
-      <div class="tutor-meta">
-        <div class="tutor-status" role="status">
-          <span class="tutor-status-dot"></span>
-          <span class="tutor-status-text" id="tutorStatusText">AI Tutor · Listening</span>
-        </div>
-        <div class="tutor-controls">
-          <button id="toggleInputMode" type="button" class="tutor-control-btn" aria-label="Toggle input mode">
-            <span id="inputModeText">Voice Input</span>
-          </button>
-          <button id="toggleVoice" type="button" class="tutor-control-btn" aria-label="Toggle voice output">Voice: Off</button>
-          <button id="toggleTutor" type="button" class="tutor-control-btn ghost" aria-label="Hide tutor subtitle">Hide</button>
-        </div>
-      </div>
-
-      <!-- Waveform and Subtitle Display -->
-      <div class="tutor-core">
-        <div id="tutorWaveform" class="tutor-waveform">
-          <span class="waveform-bar"></span>
-          <span class="waveform-bar"></span>
-          <span class="waveform-bar"></span>
-          <span class="waveform-bar"></span>
-          <span class="waveform-bar"></span>
-        </div>
-        <div id="tutorStream" class="tutor-subtitle" role="button" tabindex="0" aria-expanded="false" aria-label="Tap to expand transcript">
-          <span class="subtitle-text" id="subtitleText">Welcome! I'm your AI Tutor. I can help you with your profile and answer questions.</span>
-          <span class="subtitle-highlight" id="subtitleHighlight"></span>
-        </div>
-      </div>
-
-      <!-- Input Area: Voice/Text Input -->
-      <div id="tutorInputArea" class="tutor-input-area voice-mode" data-mode="voice">
-        <button id="micBtn" type="button" class="tutor-input-btn voice-mode" aria-label="Start voice input">🎤</button>
-        <input id="userInput" class="tutor-input" placeholder="Tap microphone to speak..." autocomplete="off" />
-        <button id="sendBtn" type="button" class="tutor-input-btn text-mode" aria-label="Send message">Send</button>
-      </div>
-      <!-- Note: Both onboarding (inputArea) and tutorAgent use same micBtn/userInput/sendBtn IDs,
-           but they are in different containers and never displayed simultaneously -->
+  <div class="container">
+    <div class="header">
+      <h1>📚 Page Directory</h1>
+      <p>Navigate to all available SuperOS pages</p>
     </div>
-  </footer>
 
-  <!-- Scripts - Load core modules first, then main app -->
-  <script src="js/state.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/sections.js"></script>
-  <script src="js/router.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/subtitle.js"></script>
-  <script src="js/voice.js"></script>
-  <script src="js/tutor.js"></script>
-  <script src="js/profile.js"></script>
-  <script src="js/persona.js"></script>
-  <script src="js/gap.js"></script>
-  <script src="js/advisor.js"></script>
-  <script src="js/roadmap.js"></script>
-  <script src="js/router-agent.js"></script>
-  <script src="js/editor.js"></script>
-  <script src="app.js"></script>
+    <!-- Roadmap Pages -->
+    <div class="category">
+      <h2 class="category-title">Roadmap Pages</h2>
+      <div class="page-grid">
+        <a href="roadmap/roadmap.html" class="page-card">
+          <span class="page-card-icon">🗺️</span>
+          <div class="page-card-title">Main Roadmap</div>
+          <div class="page-card-description">Complete high school to college roadmap overview</div>
+          <div class="page-card-path">roadmap/roadmap.html</div>
+        </a>
+
+        <a href="roadmap/roadmap_pre_high_school.html" class="page-card">
+          <span class="page-card-icon">🎓</span>
+          <div class="page-card-title">Pre-High School</div>
+          <div class="page-card-description">Preparation roadmap before entering high school</div>
+          <div class="page-card-path">roadmap/roadmap_pre_high_school.html</div>
+        </a>
+
+        <a href="roadmap/roadmap_building_candidacy.html" class="page-card">
+          <span class="page-card-icon">🏗️</span>
+          <div class="page-card-title">Building Candidacy</div>
+          <div class="page-card-description">Roadmap for building application competitiveness</div>
+          <div class="page-card-path">roadmap/roadmap_building_candidacy.html</div>
+        </a>
+
+        <a href="roadmap/roadmap_application.html" class="page-card">
+          <span class="page-card-icon">📝</span>
+          <div class="page-card-title">Application Stage</div>
+          <div class="page-card-description">College application process roadmap</div>
+          <div class="page-card-path">roadmap/roadmap_application.html</div>
+        </a>
+
+        <a href="roadmap/roadmap_post_application.html" class="page-card">
+          <span class="page-card-icon">✅</span>
+          <div class="page-card-title">Post-Application</div>
+          <div class="page-card-description">Post-submission steps and follow-up</div>
+          <div class="page-card-path">roadmap/roadmap_post_application.html</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Router Pages -->
+    <div class="category">
+      <h2 class="category-title">Router Pages</h2>
+      <div class="page-grid">
+        <a href="router/router.html" class="page-card">
+          <span class="page-card-icon">🧭</span>
+          <div class="page-card-title">Main Router</div>
+          <div class="page-card-description">Intelligent routing navigation homepage</div>
+          <div class="page-card-path">router/router.html</div>
+        </a>
+
+        <a href="router/router_pre_high_school.html" class="page-card">
+          <span class="page-card-icon">🎯</span>
+          <div class="page-card-title">Pre-High School Router</div>
+          <div class="page-card-description">Pre-high school stage routing navigation</div>
+          <div class="page-card-path">router/router_pre_high_school.html</div>
+        </a>
+
+        <a href="router/router_building_candidacy.html" class="page-card">
+          <span class="page-card-icon">🔀</span>
+          <div class="page-card-title">Building Candidacy Router</div>
+          <div class="page-card-description">Building application profile stage routing</div>
+          <div class="page-card-path">router/router_building_candidacy.html</div>
+        </a>
+
+        <a href="router/router_application.html" class="page-card">
+          <span class="page-card-icon">📋</span>
+          <div class="page-card-title">Application Router</div>
+          <div class="page-card-description">Application stage routing navigation</div>
+          <div class="page-card-path">router/router_application.html</div>
+        </a>
+
+        <a href="router/router_post_application.html" class="page-card">
+          <span class="page-card-icon">📊</span>
+          <div class="page-card-title">Post-Application Router</div>
+          <div class="page-card-description">Post-application stage routing navigation</div>
+          <div class="page-card-path">router/router_post_application.html</div>
+        </a>
+
+        <a href="router/router_status_dashboard.html" class="page-card">
+          <span class="page-card-icon">📈</span>
+          <div class="page-card-title">Status Dashboard</div>
+          <div class="page-card-description">Application status overview dashboard</div>
+          <div class="page-card-path">router/router_status_dashboard.html</div>
+        </a>
+
+        <a href="router/router_review.html" class="page-card">
+          <span class="page-card-icon">🔍</span>
+          <div class="page-card-title">Review Router</div>
+          <div class="page-card-description">Application review and evaluation routing</div>
+          <div class="page-card-path">router/router_review.html</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Major Advisor Pages -->
+    <div class="category">
+      <h2 class="category-title">Major Advisor</h2>
+      <div class="page-grid">
+        <a href="major_advisor/view-advisor.html" class="page-card">
+          <span class="page-card-icon">👨‍🏫</span>
+          <div class="page-card-title">View Advisor</div>
+          <div class="page-card-description">Major advisor main page</div>
+          <div class="page-card-path">major_advisor/view-advisor.html</div>
+        </a>
+
+        <a href="major_advisor/check_profile.html" class="page-card">
+          <span class="page-card-icon">📋</span>
+          <div class="page-card-title">Check Profile</div>
+          <div class="page-card-description">Review personal application profile</div>
+          <div class="page-card-path">major_advisor/check_profile.html</div>
+        </a>
+
+        <a href="major_advisor/refine_majors.html" class="page-card">
+          <span class="page-card-icon">🎯</span>
+          <div class="page-card-title">Refine Majors</div>
+          <div class="page-card-description">Optimize and refine target majors</div>
+          <div class="page-card-path">major_advisor/refine_majors.html</div>
+        </a>
+
+        <a href="major_advisor/recommend_categories.html" class="page-card">
+          <span class="page-card-icon">💡</span>
+          <div class="page-card-title">Recommend Categories</div>
+          <div class="page-card-description">Major category recommendations</div>
+          <div class="page-card-path">major_advisor/recommend_categories.html</div>
+        </a>
+
+        <a href="major_advisor/create_tasklist.html" class="page-card">
+          <span class="page-card-icon">📝</span>
+          <div class="page-card-title">Create Task List</div>
+          <div class="page-card-description">Create application task checklist</div>
+          <div class="page-card-path">major_advisor/create_tasklist.html</div>
+        </a>
+
+        <a href="major_advisor/execute_tasks.html" class="page-card">
+          <span class="page-card-icon">⚙️</span>
+          <div class="page-card-title">Execute Tasks</div>
+          <div class="page-card-description">Execute and manage application tasks</div>
+          <div class="page-card-path">major_advisor/execute_tasks.html</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Academic Pages -->
+    <div class="category">
+      <h2 class="category-title">Academic Management</h2>
+      <div class="page-grid">
+        <a href="academic/check_academic_profile.html" class="page-card">
+          <span class="page-card-icon">📊</span>
+          <div class="page-card-title">Check Academic Profile</div>
+          <div class="page-card-description">View academic performance and profile</div>
+          <div class="page-card-path">academic/check_academic_profile.html</div>
+        </a>
+
+        <a href="academic/manage_gpa.html" class="page-card">
+          <span class="page-card-icon">📈</span>
+          <div class="page-card-title">Manage GPA</div>
+          <div class="page-card-description">GPA management and planning</div>
+          <div class="page-card-path">academic/manage_gpa.html</div>
+        </a>
+
+        <a href="academic/recommend_courses.html" class="page-card">
+          <span class="page-card-icon">📚</span>
+          <div class="page-card-title">Recommend Courses</div>
+          <div class="page-card-description">Personalized course recommendations</div>
+          <div class="page-card-path">academic/recommend_courses.html</div>
+        </a>
+
+        <a href="academic/achieve_goal.html" class="page-card">
+          <span class="page-card-icon">🎯</span>
+          <div class="page-card-title">Achieve Goals</div>
+          <div class="page-card-description">Academic goal setting and tracking</div>
+          <div class="page-card-path">academic/achieve_goal.html</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Sections Pages -->
+    <div class="category">
+      <h2 class="category-title">View Sections</h2>
+      <div class="page-grid">
+        <a href="sections/view-profile.html" class="page-card">
+          <span class="page-card-icon">👤</span>
+          <div class="page-card-title">Profile View</div>
+          <div class="page-card-description">View and manage personal profile</div>
+          <div class="page-card-path">sections/view-profile.html</div>
+        </a>
+
+        <a href="sections/view-persona.html" class="page-card">
+          <span class="page-card-icon">🎭</span>
+          <div class="page-card-title">Persona View</div>
+          <div class="page-card-description">Personal branding and positioning</div>
+          <div class="page-card-path">sections/view-persona.html</div>
+        </a>
+
+        <a href="sections/view-gap.html" class="page-card">
+          <span class="page-card-icon">📏</span>
+          <div class="page-card-title">Gap Analysis View</div>
+          <div class="page-card-description">Target gap analysis</div>
+          <div class="page-card-path">sections/view-gap.html</div>
+        </a>
+
+        <a href="sections/view-roadmap.html" class="page-card">
+          <span class="page-card-icon">🗺️</span>
+          <div class="page-card-title">Roadmap View</div>
+          <div class="page-card-description">Roadmap viewing interface</div>
+          <div class="page-card-path">sections/view-roadmap.html</div>
+        </a>
+
+        <a href="sections/view-auth.html" class="page-card">
+          <span class="page-card-icon">🔐</span>
+          <div class="page-card-title">Auth View</div>
+          <div class="page-card-description">Login and authentication page</div>
+          <div class="page-card-path">sections/view-auth.html</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Capstone Pages -->
+    <div class="category">
+      <h2 class="category-title">Capstone Project</h2>
+      <div class="page-grid">
+        <a href="capstone/capstone.html" class="page-card">
+          <span class="page-card-icon">🎓</span>
+          <div class="page-card-title">Capstone Project</div>
+          <div class="page-card-description">Capstone project main page</div>
+          <div class="page-card-path">capstone/capstone.html</div>
+        </a>
+
+        <a href="capstone/component.html" class="page-card">
+          <span class="page-card-icon">🧩</span>
+          <div class="page-card-title">Component Page</div>
+          <div class="page-card-description">Capstone project components</div>
+          <div class="page-card-path">capstone/component.html</div>
+        </a>
+
+        <a href="capstone/conversation_component.html" class="page-card">
+          <span class="page-card-icon">💬</span>
+          <div class="page-card-title">Conversation Component</div>
+          <div class="page-card-description">Conversation interaction component</div>
+          <div class="page-card-path">capstone/conversation_component.html</div>
+        </a>
+
+        <a href="capstone/taskslist.html" class="page-card">
+          <span class="page-card-icon">✅</span>
+          <div class="page-card-title">Task List</div>
+          <div class="page-card-description">Capstone project task list</div>
+          <div class="page-card-path">capstone/taskslist.html</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Grade Missions Pages -->
+    <div class="category">
+      <h2 class="category-title">Grade Missions</h2>
+      <div class="page-grid">
+        <!-- Grade 7 -->
+        <a href="grade_7/grade_7.html" class="page-card">
+          <span class="page-card-icon">📚</span>
+          <div class="page-card-title">Grade 7 Mission</div>
+          <div class="page-card-description">Age ~12–13 | Building Strong Foundations</div>
+          <div class="page-card-path">grade_7/grade_7.html</div>
+        </a>
+
+        <a href="grade_7/check_profile.html" class="page-card">
+          <span class="page-card-icon">📋</span>
+          <div class="page-card-title">Grade 7 - Check Profile</div>
+          <div class="page-card-description">Verify Grade 7 mission profile information</div>
+          <div class="page-card-path">grade_7/check_profile.html</div>
+        </a>
+
+        <a href="grade_7/recommendation.html" class="page-card">
+          <span class="page-card-icon">💡</span>
+          <div class="page-card-title">Grade 7 - Recommendations</div>
+          <div class="page-card-description">Personalized recommendations for Grade 7</div>
+          <div class="page-card-path">grade_7/recommendation.html</div>
+        </a>
+
+        <a href="grade_7/taskslist.html" class="page-card">
+          <span class="page-card-icon">📝</span>
+          <div class="page-card-title">Grade 7 - Task List</div>
+          <div class="page-card-description">Create task list for Grade 7 mission</div>
+          <div class="page-card-path">grade_7/taskslist.html</div>
+        </a>
+
+        <a href="grade_7/execution.html" class="page-card">
+          <span class="page-card-icon">⚙️</span>
+          <div class="page-card-title">Grade 7 - Execute Tasks</div>
+          <div class="page-card-description">Execute and track Grade 7 mission tasks</div>
+          <div class="page-card-path">grade_7/execution.html</div>
+        </a>
+
+        <!-- Grade 8 -->
+        <a href="grade_8/grade_8.html" class="page-card">
+          <span class="page-card-icon">📚</span>
+          <div class="page-card-title">Grade 8 Mission</div>
+          <div class="page-card-description">Age ~13–14 | Planning Your High School Path</div>
+          <div class="page-card-path">grade_8/grade_8.html</div>
+        </a>
+
+        <!-- Grade 9 -->
+        <a href="grade_9/grade_9.html" class="page-card">
+          <span class="page-card-icon">📚</span>
+          <div class="page-card-title">Grade 9 Mission</div>
+          <div class="page-card-description">Freshman | Age ~14–15 | Starting High School Strong</div>
+          <div class="page-card-path">grade_9/grade_9.html</div>
+        </a>
+
+        <!-- Grade 10 -->
+        <a href="grade_10/grade_10.html" class="page-card">
+          <span class="page-card-icon">📚</span>
+          <div class="page-card-title">Grade 10 Mission</div>
+          <div class="page-card-description">Sophomore | Age ~15–16 | Building Your Profile</div>
+          <div class="page-card-path">grade_10/grade_10.html</div>
+        </a>
+
+        <!-- Grade 11 -->
+        <a href="grade_11/grade_11.html" class="page-card">
+          <span class="page-card-icon">📚</span>
+          <div class="page-card-title">Grade 11 Mission</div>
+          <div class="page-card-description">Junior | Age ~16–17 | Application Preparation</div>
+          <div class="page-card-path">grade_11/grade_11.html</div>
+        </a>
+
+        <!-- Grade 12 -->
+        <a href="grade_12/grade_12.html" class="page-card">
+          <span class="page-card-icon">📚</span>
+          <div class="page-card-title">Grade 12 Mission</div>
+          <div class="page-card-description">Senior | Age ~17–18 | Final Steps to College</div>
+          <div class="page-card-path">grade_12/grade_12.html</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Other Pages -->
+    <div class="category">
+      <h2 class="category-title">Other Pages</h2>
+      <div class="page-grid">
+        <a href="index.html" class="page-card">
+          <span class="page-card-icon">🏠</span>
+          <div class="page-card-title">Home Page</div>
+          <div class="page-card-description">SuperOS main application page</div>
+          <div class="page-card-path">index.html</div>
+        </a>
+
+        <a href="analyze_target_major.html" class="page-card">
+          <span class="page-card-icon">🔬</span>
+          <div class="page-card-title">Analyze Target Major</div>
+          <div class="page-card-description">Target major analysis tool</div>
+          <div class="page-card-path">analyze_target_major.html</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="back-home">
+      <a href="index.html">Back to Home</a>
+    </div>
+  </div>
+
+  <script>
+    // Create background particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Initialize particles on load
+    createParticles();
+  </script>
 </body>
 </html>

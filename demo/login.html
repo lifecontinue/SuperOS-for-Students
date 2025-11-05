@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>SuperOS for Students - Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>SuperOS for Students</h1>
+  </header>
+
+  <main id="componentArea" class="component-area">
+    <!-- Login / Auth (initially visible) -->
+    <section id="route-auth" class="route-shell">
+      <div id="view-auth-container"></div>
+    </section>
+
+    <!-- Onboarding Flow -->
+    <section id="route-onboarding" class="route-shell hidden">
+      <section id="view-onboarding" class="view">
+        <div class="card">
+          <div class="row space">
+            <h2>Welcome to SuperOS</h2>
+            <div class="onboarding-header-actions">
+              <button id="btnOnboardBack" class="btn-onboarding-secondary" type="button" aria-label="Go back to previous step">
+                <span class="btn-icon">←</span>
+                <span class="btn-text">Back</span>
+              </button>
+              <button id="btnSkipOnboard" class="btn-onboarding-secondary btn-skip" type="button" link="demo\sections\view-profile.html" aria-label="Skip onboarding">
+                <span class="btn-text">Skip</span>
+                <span class="btn-icon">→</span>
+              </button>
+            </div>
+          </div>
+          <div class="onboarding-progress-container">
+            <div class="onboarding-progress-bar">
+              <div id="onboardProgressFill" class="onboarding-progress-fill"></div>
+            </div>
+            <div class="onboarding-progress-info">
+              <span id="onboardProgress" class="onboarding-progress-text">Step <span id="currentStep">1</span> of <span id="totalSteps">5</span></span>
+              <span id="onboardProgressPercent" class="onboarding-progress-percent">0%</span>
+            </div>
+          </div>
+          <div id="onboardStep" class="onboarding-step-wrapper">
+            <!-- Initial Form Template -->
+            <div class="onboarding-step-content">
+              <div class="onboarding-step-header">
+                <div class="tutor-message">
+                  <span class="tutor-label">AI Tutor</span>
+                  <p class="tutor-text">Welcome to SuperOS! I'm your AI Tutor, and I'll guide you through setting up your profile. Let's start with the basics.</p>
+                </div>
+              </div>
+              <div class="onboarding-step-body">
+                <!-- Basic Information Section -->
+                <div class="input-group">
+                  <label for="onName" class="input-label">What's your name? <span class="required">*</span></label>
+                  <div class="input-with-voice">
+                    <input 
+                      type="text" 
+                      id="onName" 
+                      class="onboarding-input" 
+                      placeholder="Enter your full name or click mic to speak"
+                      autocomplete="name"
+                      required
+                    />
+                    <button type="button" class="voice-input-btn" id="voiceBtnName" aria-label="Voice input for name" title="Click to speak your name">
+                      🎤
+                    </button>
+                  </div>
+                  <span class="input-hint">This helps us personalize your experience</span>
+                </div>
+
+                <!-- Academic Background Section -->
+                <div class="input-group">
+                  <label for="onBg" class="input-label">Academic Background <span class="required">*</span></label>
+                  <div class="input-with-voice">
+                    <textarea 
+                      id="onBg" 
+                      class="onboarding-input onboarding-textarea" 
+                      placeholder="E.g., Grade 11 student, AP Calculus, National Math Competition winner, Science Olympiad participant... Or click mic to speak"
+                      rows="4"
+                      required
+                    ></textarea>
+                    <button type="button" class="voice-input-btn" id="voiceBtnBg" aria-label="Voice input for academic background" title="Click to speak your academic background">
+                      🎤
+                    </button>
+                  </div>
+                  <span class="input-hint">Include your grade level, courses, achievements, competitions, etc.</span>
+                </div>
+
+                <!-- Interests Section -->
+                <div class="input-group">
+                  <label for="onInterests" class="input-label">Your Interests <span class="required">*</span></label>
+                  <div class="input-with-voice">
+                    <input 
+                      type="text" 
+                      id="onInterests" 
+                      class="onboarding-input" 
+                      placeholder="AI, Economics, Biology, Psychology, Engineering... Or click mic to speak"
+                      autocomplete="off"
+                      required
+                    />
+                    <button type="button" class="voice-input-btn" id="voiceBtnInterests" aria-label="Voice input for interests" title="Click to speak your interests">
+                      🎤
+                    </button>
+                  </div>
+                  <span class="input-hint">Separate multiple interests with commas</span>
+                </div>
+
+                <!-- Target Majors Section -->
+                <div class="input-group">
+                  <label for="onMajors" class="input-label">Target Majors <span class="required">*</span></label>
+                  <div class="chip-selector" id="majorSelector">
+                    <button type="button" class="chip-option" data-value="Computer Science" data-type="major">Computer Science</button>
+                    <button type="button" class="chip-option" data-value="Engineering" data-type="major">Engineering</button>
+                    <button type="button" class="chip-option" data-value="Business" data-type="major">Business</button>
+                    <button type="button" class="chip-option" data-value="Economics" data-type="major">Economics</button>
+                    <button type="button" class="chip-option" data-value="Biology" data-type="major">Biology</button>
+                    <button type="button" class="chip-option" data-value="Psychology" data-type="major">Psychology</button>
+                    <button type="button" class="chip-option" data-value="Medicine" data-type="major">Medicine</button>
+                    <button type="button" class="chip-option" data-value="Law" data-type="major">Law</button>
+                    <button type="button" class="chip-option" data-value="Arts" data-type="major">Arts</button>
+                    <button type="button" class="chip-option" data-value="Education" data-type="major">Education</button>
+                  </div>
+                  <div class="input-with-voice" style="margin-top: 12px;">
+                    <input 
+                      type="text" 
+                      id="onMajorsCustom" 
+                      class="onboarding-input" 
+                      placeholder="Or type custom majors (comma-separated) or click mic to speak"
+                      autocomplete="off"
+                    />
+                    <button type="button" class="voice-input-btn" id="voiceBtnMajors" aria-label="Voice input for majors" title="Click to speak your target majors">
+                      🎤
+                    </button>
+                  </div>
+                  <span class="input-hint">Click to select or type custom majors</span>
+                </div>
+
+                <!-- Target Universities Section -->
+                <div class="input-group" data-optional="true">
+                  <label for="onSchools" class="input-label">Target Universities</label>
+                  <div class="chip-selector" id="schoolSelector">
+                    <button type="button" class="chip-option" data-value="MIT" data-type="school">MIT</button>
+                    <button type="button" class="chip-option" data-value="Stanford" data-type="school">Stanford</button>
+                    <button type="button" class="chip-option" data-value="Harvard" data-type="school">Harvard</button>
+                    <button type="button" class="chip-option" data-value="Yale" data-type="school">Yale</button>
+                    <button type="button" class="chip-option" data-value="Princeton" data-type="school">Princeton</button>
+                    <button type="button" class="chip-option" data-value="UC Berkeley" data-type="school">UC Berkeley</button>
+                    <button type="button" class="chip-option" data-value="UCLA" data-type="school">UCLA</button>
+                    <button type="button" class="chip-option" data-value="Columbia" data-type="school">Columbia</button>
+                    <button type="button" class="chip-option" data-value="Cornell" data-type="school">Cornell</button>
+                    <button type="button" class="chip-option" data-value="UChicago" data-type="school">UChicago</button>
+                  </div>
+                  <div class="input-with-voice" style="margin-top: 12px;">
+                    <input 
+                      type="text" 
+                      id="onSchoolsCustom" 
+                      class="onboarding-input" 
+                      placeholder="Or type custom universities (comma-separated) or click mic to speak"
+                      autocomplete="off"
+                    />
+                    <button type="button" class="voice-input-btn" id="voiceBtnSchools" aria-label="Voice input for schools" title="Click to speak your target universities">
+                      🎤
+                    </button>
+                  </div>
+                  <span class="input-hint">Click to select or type custom universities</span>
+                </div>
+
+                <!-- Learning Style Section -->
+                <div class="input-group">
+                  <label class="input-label">Learning Style <span class="required">*</span></label>
+                  <div class="learning-style-selector" id="learningStyleSelector">
+                    <button type="button" class="learning-style-option" data-value="visual" aria-pressed="false">
+                      <span class="style-icon">👁️</span>
+                      <div class="style-content">
+                        <div class="style-label">Visual Learner</div>
+                        <div class="style-description">Learn best through images, diagrams, and visual aids</div>
+                      </div>
+                    </button>
+                    <button type="button" class="learning-style-option" data-value="auditory" aria-pressed="false">
+                      <span class="style-icon">👂</span>
+                      <div class="style-content">
+                        <div class="style-label">Auditory Learner</div>
+                        <div class="style-description">Learn best through listening and verbal explanations</div>
+                      </div>
+                    </button>
+                    <button type="button" class="learning-style-option" data-value="kinesthetic" aria-pressed="false">
+                      <span class="style-icon">✋</span>
+                      <div class="style-content">
+                        <div class="style-label">Kinesthetic Learner</div>
+                        <div class="style-description">Learn best through hands-on activities and practice</div>
+                      </div>
+                    </button>
+                    <button type="button" class="learning-style-option" data-value="reading" aria-pressed="false">
+                      <span class="style-icon">📖</span>
+                      <div class="style-content">
+                        <div class="style-label">Reading/Writing Learner</div>
+                        <div class="style-description">Learn best through reading and writing</div>
+                      </div>
+                    </button>
+                    <button type="button" class="learning-style-option" data-value="mixed" aria-pressed="false">
+                      <span class="style-icon">🔄</span>
+                      <div class="style-content">
+                        <div class="style-label">Mixed Learning Style</div>
+                        <div class="style-description">Combination of multiple learning styles</div>
+                      </div>
+                    </button>
+                  </div>
+                  <span class="input-hint">Select the learning style that best matches how you learn</span>
+                </div>
+
+                <!-- Information Box -->
+                <div class="step-info-box">
+                  <div class="info-icon">📝</div>
+                  <div class="info-content">
+                    <div class="info-title">Information Required</div>
+                    <div class="info-text">Please fill in all required fields marked with <span class="required">*</span>. You can type your answers or use the microphone buttons to speak them. The AI Tutor will guide you through each step.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="onboarding-step-footer">
+                <button id="nextWelcome" class="btn-onboarding-primary">Continue</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Floating Subtitle Component (fixed footer for onboarding) -->
+        <footer class="floating-subtitle-container" id="inputArea">
+          <!-- Waveform Indicator -->
+          <div class="subtitle-waveform" id="subtitleWaveform">
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+            <div class="waveform-bar"></div>
+          </div>
+          
+          <!-- Subtitle Box -->
+          <div class="subtitle-box" id="subtitleBox">
+            <span class="subtitle-text-display" id="subtitleTextDisplay"></span>
+            <span class="subtitle-word-highlight" id="subtitleWordHighlight"></span>
+          </div>
+          
+          <!-- Expanded Transcript View (hidden by default) -->
+          <div class="subtitle-transcript-expanded hidden" id="subtitleTranscriptExpanded">
+            <div class="transcript-header">
+              <h3>Full Transcript</h3>
+              <button class="close-transcript-btn" id="closeSubtitleTranscript">×</button>
+            </div>
+            <div class="transcript-content" id="subtitleTranscriptContent"></div>
+          </div>
+          
+          <!-- Action Sheet (hidden by default) -->
+          <div class="subtitle-action-sheet hidden" id="subtitleActionSheet">
+            <button class="action-btn" id="actionCopyText">Copy text</button>
+            <button class="action-btn" id="actionReplaySegment">Replay segment</button>
+            <button class="action-btn" id="actionTranslateText">Translate</button>
+          </div>
+          
+          <!-- Hidden Input Controls (for voice/text mode switching) -->
+          <div class="subtitle-input-controls hidden" id="subtitleInputControls">
+            <button id="micBtn" class="chip">🎤</button>
+            <input id="userInput" placeholder="Talk to your tutor…" />
+            <button id="sendBtn">Send</button>
+          </div>
+        </footer>
+      </section>
+    </section>
+
+    <!-- Authenticated Application Routes (Profile, Persona, GAP, Advisor, Roadmap) -->
+    <section id="route-app" class="route-shell hidden">
+      <!-- Profile Navigation (dynamically shown when needed) -->
+      <div id="profileNav" class="profile-nav hidden">
+        <div class="tabs top" id="topTabs">
+          <button type="button" class="tab small active" data-tab-route="profile" aria-selected="true">Profile</button>
+          <button type="button" class="tab small" data-tab-route="persona" aria-selected="false">Persona</button>
+          <button type="button" class="tab small" data-tab-route="gap" aria-selected="false">GAP</button>
+          <button type="button" class="tab small" data-tab-route="advisor" aria-selected="false">Major Advisor</button>
+          <button type="button" class="tab small" data-tab-route="roadmap" aria-selected="false">Roadmap</button>
+        </div>
+      </div>
+      
+      <!-- Views will be loaded dynamically via sections.js -->
+      <div id="view-profile-container"></div>
+      <div id="view-persona-container"></div>
+      <div id="view-gap-container"></div>
+      <div id="view-advisor-container"></div>
+      <div id="view-roadmap-container"></div>
+    </section>
+  </main>
+
+  <!-- Tutor Agent Footer (for app routes) -->
+  <footer id="tutorAgent" class="tutor-footer hidden" aria-live="polite" aria-atomic="true">
+    <div class="tutor-surface">
+      <!-- Status and Controls -->
+      <div class="tutor-meta">
+        <div class="tutor-status" role="status">
+          <span class="tutor-status-dot"></span>
+          <span class="tutor-status-text" id="tutorStatusText">AI Tutor · Listening</span>
+        </div>
+        <div class="tutor-controls">
+          <button id="toggleInputMode" type="button" class="tutor-control-btn" aria-label="Toggle input mode">
+            <span id="inputModeText">Voice Input</span>
+          </button>
+          <button id="toggleVoice" type="button" class="tutor-control-btn" aria-label="Toggle voice output">Voice: Off</button>
+          <button id="toggleTutor" type="button" class="tutor-control-btn ghost" aria-label="Hide tutor subtitle">Hide</button>
+        </div>
+      </div>
+
+      <!-- Waveform and Subtitle Display -->
+      <div class="tutor-core">
+        <div id="tutorWaveform" class="tutor-waveform">
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+          <span class="waveform-bar"></span>
+        </div>
+        <div id="tutorStream" class="tutor-subtitle" role="button" tabindex="0" aria-expanded="false" aria-label="Tap to expand transcript">
+          <span class="subtitle-text" id="subtitleText">Welcome! I'm your AI Tutor. I can help you with your profile and answer questions.</span>
+          <span class="subtitle-highlight" id="subtitleHighlight"></span>
+        </div>
+      </div>
+
+      <!-- Input Area: Voice/Text Input -->
+      <div id="tutorInputArea" class="tutor-input-area voice-mode" data-mode="voice">
+        <button id="micBtn" type="button" class="tutor-input-btn voice-mode" aria-label="Start voice input">🎤</button>
+        <input id="userInput" class="tutor-input" placeholder="Tap microphone to speak..." autocomplete="off" />
+        <button id="sendBtn" type="button" class="tutor-input-btn text-mode" aria-label="Send message">Send</button>
+      </div>
+      <!-- Note: Both onboarding (inputArea) and tutorAgent use same micBtn/userInput/sendBtn IDs,
+           but they are in different containers and never displayed simultaneously -->
+    </div>
+  </footer>
+
+  <!-- Scripts - Load core modules first, then main app -->
+  <script src="js/state.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/sections.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/subtitle.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/tutor.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/persona.js"></script>
+  <script src="js/gap.js"></script>
+  <script src="js/advisor.js"></script>
+  <script src="js/roadmap.js"></script>
+  <script src="js/router-agent.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Grade 7 Mission - SuperOS</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --primary: #AA1E23;
+      --primary-dark: #4A0509;
+      --primary-light: #74070E;
+      --text-primary: #4A0509;
+      --text-secondary: #74070E;
+      --border-color: #AA1E23;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-card-3) 100%);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0.3;
+      }
+      25% {
+        transform: translateY(-100px) translateX(50px) rotate(90deg);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateY(-200px) translateX(-30px) rotate(180deg);
+        opacity: 0.2;
+      }
+      75% {
+        transform: translateY(-150px) translateX(80px) rotate(270deg);
+        opacity: 0.4;
+      }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 15px;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(170, 30, 35, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.3;
+      }
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+    }
+
+    .mission-card {
+      background: var(--bg-card-2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(170, 30, 35, 0.1);
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .mission-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.2);
+      border-color: var(--primary);
+    }
+
+    .mission-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .mission-icon {
+      font-size: 32px;
+    }
+
+    .mission-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .mission-content {
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    .mission-content ul {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .mission-content li {
+      margin: 8px 0;
+    }
+
+    .milestone-card {
+      background: var(--bg-card-1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .milestone-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .milestone-content {
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    .back-button {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    .back-button a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .back-button a:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .mission-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>📚 Grade 7 Mission</h1>
+      <p>Age ~12–13 | Building Strong Foundations</p>
+    </div>
+
+    <!-- Build Strong Study Habits -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">📖</span>
+        <h2 class="mission-title">Build Strong Study Habits</h2>
+      </div>
+      <div class="mission-content">
+        <p>Establish time management, organization and a regular homework routine early. Focus on core classes (math, English, science); if available, take accelerated math (aim for Algebra by 8th grade, as students who do are more likely to go to college).</p>
+      </div>
+    </div>
+
+    <!-- Explore Your Interests -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">🎯</span>
+        <h2 class="mission-title">Explore Your Interests</h2>
+      </div>
+      <div class="mission-content">
+        <p>Join a variety of activities (sports teams, arts, clubs, competitions) to discover what you enjoy. Middle school is the time to try many things – later you'll narrow to 1–2 areas to pursue in depth.</p>
+      </div>
+    </div>
+
+    <!-- Read and Write for Fun -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">✍️</span>
+        <h2 class="mission-title">Read and Write for Fun</h2>
+      </div>
+      <div class="mission-content">
+        <p>Read widely (novels, magazines, articles) to build vocabulary and critical thinking. Keep a journal or write stories to practice expressing yourself, which will help with high school and future essays.</p>
+      </div>
+    </div>
+
+    <!-- Talk About the Future -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">💬</span>
+        <h2 class="mission-title">Talk About the Future</h2>
+      </div>
+      <div class="mission-content">
+        <p>Discuss your favorite subjects and career ideas with family or teachers. If possible, visit a nearby college campus or explore college websites to start picturing college life.</p>
+      </div>
+    </div>
+
+    <!-- Start Tracking Achievements -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">📊</span>
+        <h2 class="mission-title">Start Tracking Achievements</h2>
+      </div>
+      <div class="mission-content">
+        <p>Keep a simple record of your grades, awards, clubs and volunteer hours. This informal "resume" will make it easier to compile a formal profile later.</p>
+      </div>
+    </div>
+
+    <!-- Milestone -->
+    <div class="milestone-card">
+      <div class="milestone-title">
+        <span>🎯</span>
+        <span>Milestone: End 7th Grade</span>
+      </div>
+      <div class="milestone-content">
+        <p>End 7th grade with solid grades (A/B range), involvement in a few extracurriculars, and identified favorite subjects or talents (e.g. math, writing, art).</p>
+      </div>
+    </div>
+
+    <div class="back-button">
+      <a href="../directory.html">← Back to Directory</a>
+    </div>
+  </div>
+
+  <script>
+    // Create background particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Initialize particles on load
+    createParticles();
+  </script>
+</body>
+</html>
+

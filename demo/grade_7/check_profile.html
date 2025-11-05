@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Check Profile - Grade 7 Mission</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --primary: #AA1E23;
+      --primary-dark: #4A0509;
+      --primary-light: #74070E;
+      --text-primary: #4A0509;
+      --text-secondary: #74070E;
+      --border-color: #AA1E23;
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-card-3) 100%);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card-2);
+      border-bottom: 2px solid var(--primary);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .info-card {
+      background: var(--bg-card-2);
+      border: 2px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(170, 30, 35, 0.1);
+    }
+
+    .info-card.complete {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .info-card.incomplete {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .info-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-badge.complete {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .status-badge.incomplete {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-card-1);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-label {
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .info-value {
+      color: var(--text-primary);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-card-1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 0.5s ease;
+      border-radius: 4px;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📋 Check Grade 7 Profile</h1>
+    <p style="color: var(--text-secondary); margin-top: 8px;">Verify your information for Grade 7 mission</p>
+  </div>
+
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">Checking information...</div>
+
+    <!-- Study Habits -->
+    <div class="info-card" id="studyHabitsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📖</span>
+          <span>Study Habits</span>
+        </div>
+        <span class="status-badge" id="studyHabitsStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Time Management:</span>
+        <span class="info-value" id="timeManagementValue">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Homework Routine:</span>
+        <span class="info-value" id="homeworkRoutineValue">—</span>
+      </div>
+    </div>
+
+    <!-- Core Classes -->
+    <div class="info-card" id="coreClassesCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📚</span>
+          <span>Core Classes</span>
+        </div>
+        <span class="status-badge" id="coreClassesStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Math Level:</span>
+        <span class="info-value" id="mathLevelValue">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Current Grades:</span>
+        <span class="info-value" id="gradesValue">—</span>
+      </div>
+    </div>
+
+    <!-- Activities -->
+    <div class="info-card" id="activitiesCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🎯</span>
+          <span>Activities & Interests</span>
+        </div>
+        <span class="status-badge" id="activitiesStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Extracurriculars:</span>
+        <span class="info-value" id="extracurricularsValue">—</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Interests:</span>
+        <span class="info-value" id="interestsValue">—</span>
+      </div>
+    </div>
+
+    <!-- Achievement Tracking -->
+    <div class="info-card" id="achievementsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📊</span>
+          <span>Achievement Tracking</span>
+        </div>
+        <span class="status-badge" id="achievementsStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Records Started:</span>
+        <span class="info-value" id="recordsValue">—</span>
+      </div>
+    </div>
+
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>
+      Continue to Recommendations →
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.location.href='grade_7.html'" title="Back">←</button>
+
+  <script>
+    function getGrade7Profile() {
+      const stored = localStorage.getItem('grade7Profile');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      return {
+        studyHabits: { timeManagement: false, homeworkRoutine: false },
+        coreClasses: { mathLevel: null, grades: null },
+        activities: { extracurriculars: [], interests: [] },
+        achievements: { recordsStarted: false }
+      };
+    }
+
+    function checkProfileInfo() {
+      const profile = getGrade7Profile();
+      let completedCount = 0;
+      const totalCount = 4;
+
+      // Check Study Habits
+      const studyHabitsCard = document.getElementById('studyHabitsCard');
+      const studyHabitsStatus = document.getElementById('studyHabitsStatus');
+      if (profile.studyHabits.timeManagement && profile.studyHabits.homeworkRoutine) {
+        studyHabitsCard.classList.add('complete');
+        studyHabitsStatus.textContent = 'Complete';
+        studyHabitsStatus.className = 'status-badge complete';
+        document.getElementById('timeManagementValue').textContent = 'Established';
+        document.getElementById('homeworkRoutineValue').textContent = 'Regular';
+        completedCount++;
+      } else {
+        studyHabitsCard.classList.add('incomplete');
+        studyHabitsStatus.textContent = 'Incomplete';
+        studyHabitsStatus.className = 'status-badge incomplete';
+        document.getElementById('timeManagementValue').textContent = 'Not set';
+        document.getElementById('homeworkRoutineValue').textContent = 'Not established';
+      }
+
+      // Check Core Classes
+      const coreClassesCard = document.getElementById('coreClassesCard');
+      const coreClassesStatus = document.getElementById('coreClassesStatus');
+      if (profile.coreClasses.mathLevel && profile.coreClasses.grades) {
+        coreClassesCard.classList.add('complete');
+        coreClassesStatus.textContent = 'Complete';
+        coreClassesStatus.className = 'status-badge complete';
+        document.getElementById('mathLevelValue').textContent = profile.coreClasses.mathLevel;
+        document.getElementById('gradesValue').textContent = profile.coreClasses.grades;
+        completedCount++;
+      } else {
+        coreClassesCard.classList.add('incomplete');
+        coreClassesStatus.textContent = 'Incomplete';
+        coreClassesStatus.className = 'status-badge incomplete';
+        document.getElementById('mathLevelValue').textContent = 'Not recorded';
+        document.getElementById('gradesValue').textContent = 'Not recorded';
+      }
+
+      // Check Activities
+      const activitiesCard = document.getElementById('activitiesCard');
+      const activitiesStatus = document.getElementById('activitiesStatus');
+      if (profile.activities.extracurriculars.length > 0 || profile.activities.interests.length > 0) {
+        activitiesCard.classList.add('complete');
+        activitiesStatus.textContent = 'Complete';
+        activitiesStatus.className = 'status-badge complete';
+        document.getElementById('extracurricularsValue').textContent = profile.activities.extracurriculars.join(', ') || 'None';
+        document.getElementById('interestsValue').textContent = profile.activities.interests.join(', ') || 'None';
+        completedCount++;
+      } else {
+        activitiesCard.classList.add('incomplete');
+        activitiesStatus.textContent = 'Incomplete';
+        activitiesStatus.className = 'status-badge incomplete';
+        document.getElementById('extracurricularsValue').textContent = 'Not filled';
+        document.getElementById('interestsValue').textContent = 'Not filled';
+      }
+
+      // Check Achievements
+      const achievementsCard = document.getElementById('achievementsCard');
+      const achievementsStatus = document.getElementById('achievementsStatus');
+      if (profile.achievements.recordsStarted) {
+        achievementsCard.classList.add('complete');
+        achievementsStatus.textContent = 'Complete';
+        achievementsStatus.className = 'status-badge complete';
+        document.getElementById('recordsValue').textContent = 'Yes';
+        completedCount++;
+      } else {
+        achievementsCard.classList.add('incomplete');
+        achievementsStatus.textContent = 'Incomplete';
+        achievementsStatus.className = 'status-badge incomplete';
+        document.getElementById('recordsValue').textContent = 'No';
+      }
+
+      // Update progress
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const progress = (completedCount / totalCount) * 100;
+      progressFill.style.width = progress + '%';
+      progressText.textContent = `Completion: ${completedCount}/${totalCount} (${Math.round(progress)}%)`;
+
+      // Update button
+      const continueButton = document.getElementById('continueButton');
+      continueButton.disabled = false;
+      if (completedCount === totalCount) {
+        continueButton.textContent = 'Continue to Recommendations →';
+      } else {
+        continueButton.textContent = 'Continue (Some info incomplete) →';
+      }
+    }
+
+    function continueToNextStep() {
+      window.location.href = 'recommendation.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        checkProfileInfo();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
+

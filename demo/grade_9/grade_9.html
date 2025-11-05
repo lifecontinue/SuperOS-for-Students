@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Grade 9 Mission - SuperOS</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --primary: #AA1E23;
+      --primary-dark: #4A0509;
+      --primary-light: #74070E;
+      --text-primary: #4A0509;
+      --text-secondary: #74070E;
+      --border-color: #AA1E23;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-card-3) 100%);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0.3;
+      }
+      25% {
+        transform: translateY(-100px) translateX(50px) rotate(90deg);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateY(-200px) translateX(-30px) rotate(180deg);
+        opacity: 0.2;
+      }
+      75% {
+        transform: translateY(-150px) translateX(80px) rotate(270deg);
+        opacity: 0.4;
+      }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 15px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 15px;
+      position: relative;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(170, 30, 35, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.3;
+      }
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      position: relative;
+      z-index: 1;
+      font-weight: 500;
+    }
+
+    .mission-card {
+      background: var(--bg-card-2);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(170, 30, 35, 0.1);
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .mission-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.2);
+      border-color: var(--primary);
+    }
+
+    .mission-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .mission-icon {
+      font-size: 32px;
+    }
+
+    .mission-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+
+    .mission-content {
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    .mission-content ul {
+      margin: 12px 0;
+      padding-left: 24px;
+    }
+
+    .mission-content li {
+      margin: 8px 0;
+    }
+
+    .milestone-card {
+      background: var(--bg-card-1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .milestone-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .milestone-content {
+      color: var(--text-primary);
+      line-height: 1.8;
+    }
+
+    .back-button {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    .back-button a {
+      display: inline-block;
+      padding: 12px 24px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .back-button a:hover {
+      background: var(--primary-dark);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .mission-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <div class="header">
+      <h1>📚 Grade 9 Mission</h1>
+      <p>Freshman | Age ~14–15 | Starting High School Strong</p>
+    </div>
+
+    <!-- Academic Planning -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">📋</span>
+        <h2 class="mission-title">Academic Planning</h2>
+      </div>
+      <div class="mission-content">
+        <p>Finalize your 4-year high school plan with your counselor. Take the most challenging classes you can handle (honors or accelerated courses in math, science, language, history, etc.).</p>
+      </div>
+    </div>
+
+    <!-- Maintain Excellence -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">⭐</span>
+        <h2 class="mission-title">Maintain Excellence</h2>
+      </div>
+      <div class="mission-content">
+        <p>Keep up a strong GPA. Start a formal resume or activity sheet – record grades, test scores, honors, clubs, and community service (save examples of important projects or papers).</p>
+      </div>
+    </div>
+
+    <!-- Extracurricular Commitment -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">🎭</span>
+        <h2 class="mission-title">Extracurricular Commitment</h2>
+      </div>
+      <div class="mission-content">
+        <p>Focus on the 1–2 activities you care about most. Take on leadership where possible (e.g. club officer, team captain) to build depth and resume strength.</p>
+      </div>
+    </div>
+
+    <!-- Academic Competitions -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">🏆</span>
+        <h2 class="mission-title">Academic Competitions</h2>
+      </div>
+      <div class="mission-content">
+        <p>Participate in contests (Math Olympiad, Science Fair, History Day, debate, etc.) to challenge yourself and enhance your profile.</p>
+      </div>
+    </div>
+
+    <!-- Campus Visits -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">🏛️</span>
+        <h2 class="mission-title">Campus Visits</h2>
+      </div>
+      <div class="mission-content">
+        <p>If you can, take a campus tour or attend a college fair to see what colleges offer. Talk to upperclassmen or college students about what they study.</p>
+      </div>
+    </div>
+
+    <!-- Capstone Brainstorming -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">💡</span>
+        <h2 class="mission-title">Capstone Brainstorming</h2>
+      </div>
+      <div class="mission-content">
+        <p>Begin thinking about a multi-year passion project (a capstone). Jot down ideas for a project or research based on your interests.</p>
+      </div>
+    </div>
+
+    <!-- Summer Opportunities -->
+    <div class="mission-card">
+      <div class="mission-card-header">
+        <span class="mission-icon">☀️</span>
+        <h2 class="mission-title">Summer Opportunities</h2>
+      </div>
+      <div class="mission-content">
+        <p>Seek a summer program or internship related to your field of interest (e.g. a research program, writing workshop, or leadership camp).</p>
+      </div>
+    </div>
+
+    <!-- Milestone -->
+    <div class="milestone-card">
+      <div class="milestone-title">
+        <span>🎯</span>
+        <span>Milestone: End 9th Grade</span>
+      </div>
+      <div class="milestone-content">
+        <p>End 9th grade with a GPA around 3.5+, a growing activity resume, and initial work on a long-term project or leadership initiative.</p>
+      </div>
+    </div>
+
+    <div class="back-button">
+      <a href="../directory.html">← Back to Directory</a>
+    </div>
+  </div>
+
+  <script>
+    // Create background particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const particleCount = 30;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Initialize particles on load
+    createParticles();
+  </script>
+</body>
+</html>
+
