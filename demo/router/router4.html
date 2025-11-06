@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>温暖空间 - SuperOS</title>
+  <title>Warm Space - SuperOS</title>
   <style>
     :root {
       --bg-main: #FAF9F6;
@@ -28,7 +28,7 @@
     html, body { 
       background: var(--warm-gradient);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       font-size: 14px;
       line-height: 1.6;
       min-height: 100vh;
@@ -37,7 +37,7 @@
       margin: 0;
     }
 
-    /* 浮动爱心动画 */
+    /* Floating Hearts Animation */
     .floating-hearts {
       position: fixed;
       top: 0;
@@ -74,7 +74,7 @@
       }
     }
 
-    /* 顶部栏 */
+    /* Top Bar */
     .top-bar {
       display: flex;
       justify-content: space-between;
@@ -124,7 +124,7 @@
       color: var(--text);
     }
 
-    /* 主容器 */
+    /* Main Container */
     .container {
       max-width: 800px;
       margin: 0 auto;
@@ -133,7 +133,7 @@
       z-index: 10;
     }
 
-    /* 欢迎卡片 */
+    /* Welcome Card */
     .welcome-card {
       background: linear-gradient(135deg, rgba(250, 226, 216, 0.9), rgba(253, 241, 235, 0.9));
       border: 2px solid rgba(170, 30, 35, 0.2);
@@ -185,14 +185,7 @@
       margin-bottom: 20px;
     }
 
-    /* 功能卡片网格 */
-    .activities-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
+    /* Activity Card */
     .activity-card {
       background: var(--bg-card-2);
       border: 2px solid var(--border);
@@ -204,12 +197,10 @@
       overflow: visible;
       animation: fadeInUp 0.8s ease-out;
       animation-fill-mode: both;
+      min-height: 200px;
     }
 
     .activity-card:nth-child(1) { animation-delay: 0.1s; }
-    .activity-card:nth-child(2) { animation-delay: 0.2s; }
-    .activity-card:nth-child(3) { animation-delay: 0.3s; }
-    .activity-card:nth-child(4) { animation-delay: 0.4s; }
 
     .activity-card::before {
       content: '';
@@ -262,147 +253,290 @@
       line-height: 1.6;
     }
 
-    /* 呼吸练习 */
-    .breathing-exercise {
-      background: var(--bg-card-2);
-      border: 2px solid var(--border);
-      border-radius: 20px;
-      padding: 30px;
+    /* Breathing Exercise Container - Full Screen Style */
+    .breathing-container {
+      background: linear-gradient(135deg, rgba(250, 226, 216, 0.95), rgba(253, 241, 235, 0.95));
+      border-radius: 24px;
+      padding: 40px;
       text-align: center;
-      margin-bottom: 24px;
-      display: none;
+      position: relative;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      box-shadow: 0 12px 48px rgba(170, 30, 35, 0.15);
+    }
+    
+    .breathing-container > * {
+      flex-shrink: 0;
     }
 
-    .breathing-exercise.active {
-      display: block;
-      animation: fadeInUp 0.5s ease-out;
+    .breathing-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-top: 0;
+      margin-bottom: 30px;
+      height: auto;
+      line-height: 1.2;
     }
 
+    /* Breathing Circle with Enhanced Animations */
     .breathing-circle {
-      width: 200px;
-      height: 200px;
+      width: 250px;
+      height: 250px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      margin: 30px auto;
+      margin: 40px auto;
+      margin-bottom: 0;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 24px;
-      font-weight: 600;
-      box-shadow: 0 0 40px rgba(170, 30, 35, 0.3);
-      transition: all 4s ease-in-out;
+      font-size: 32px;
+      font-weight: 700;
+      box-shadow: 0 0 60px rgba(170, 30, 35, 0.4);
+      position: relative;
+      transition: all 4s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
     }
 
+    /* Breathing In Animation - Expanding with glow */
     .breathing-circle.breathing-in {
-      transform: scale(1.3);
+      transform: scale(1.4);
+      box-shadow: 0 0 80px rgba(170, 30, 35, 0.6), inset 0 0 40px rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light), var(--primary));
+      animation: breatheIn 4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
 
+    @keyframes breatheIn {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 60px rgba(170, 30, 35, 0.4);
+      }
+      100% {
+        transform: scale(1.4);
+        box-shadow: 0 0 100px rgba(170, 30, 35, 0.7), inset 0 0 50px rgba(255, 255, 255, 0.3);
+      }
+    }
+
+    /* Breathing Hold Animation - Gentle pulse at full expansion */
+    .breathing-circle.breathing-hold {
+      transform: scale(1.4);
+      box-shadow: 0 0 100px rgba(170, 30, 35, 0.7), inset 0 0 50px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light), var(--primary));
+      animation: breatheHold 2s ease-in-out infinite;
+    }
+
+    @keyframes breatheHold {
+      0%, 100% {
+        transform: scale(1.4);
+        box-shadow: 0 0 100px rgba(170, 30, 35, 0.7), inset 0 0 50px rgba(255, 255, 255, 0.3);
+      }
+      50% {
+        transform: scale(1.42);
+        box-shadow: 0 0 110px rgba(170, 30, 35, 0.75), inset 0 0 55px rgba(255, 255, 255, 0.35);
+      }
+    }
+
+    /* Breathing Out Animation - Contracting with fade */
     .breathing-circle.breathing-out {
       transform: scale(1);
+      box-shadow: 0 0 40px rgba(170, 30, 35, 0.3);
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      animation: breatheOut 6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes breatheOut {
+      0% {
+        transform: scale(1.4);
+        box-shadow: 0 0 100px rgba(170, 30, 35, 0.7), inset 0 0 50px rgba(255, 255, 255, 0.3);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 50px rgba(170, 30, 35, 0.4);
+      }
+    }
+
+    /* Pulsing rings effect for breathing */
+    .breathing-circle::before,
+    .breathing-circle::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      opacity: 0;
+    }
+
+    .breathing-circle.breathing-in::before {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      animation: ringExpand 4s ease-out infinite;
+    }
+
+    .breathing-circle.breathing-hold::before {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      animation: ringPulse 2s ease-in-out infinite;
+    }
+
+    .breathing-circle.breathing-out::after {
+      width: 120%;
+      height: 120%;
+      top: -10%;
+      left: -10%;
+      animation: ringContract 6s ease-out infinite;
+    }
+
+    @keyframes ringPulse {
+      0%, 100% {
+        transform: scale(1.4);
+        opacity: 0.5;
+      }
+      50% {
+        transform: scale(1.5);
+        opacity: 0.3;
+      }
+    }
+
+    @keyframes ringExpand {
+      0% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes ringContract {
+      0% {
+        transform: scale(1.2);
+        opacity: 0.6;
+      }
+      100% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
     }
 
     .breathing-instruction {
-      font-size: 18px;
+      font-size: 20px;
       color: var(--text);
-      margin-top: 20px;
+      margin-top: 30px;
+      margin-bottom: 0;
       font-weight: 500;
-    }
-
-    /* 鼓励卡片 */
-    .encouragement-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .encouragement-card {
-      background: var(--bg-card-1);
-      border: 2px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      min-height: 150px;
+      height: 80px;
+      width: 100%;
+      transition: opacity 0.8s ease-in-out, color 0.3s ease;
+      opacity: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-    }
-
-    .encouragement-card:hover {
-      transform: rotateY(5deg) scale(1.05);
-      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.2);
-    }
-
-    .encouragement-text {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    /* 点击收集爱心游戏 */
-    .heart-collector {
-      background: var(--bg-card-2);
-      border: 2px solid var(--border);
-      border-radius: 20px;
-      padding: 30px;
-      text-align: center;
-      margin-bottom: 24px;
-      display: none;
-    }
-
-    .heart-collector.active {
-      display: block;
-      animation: fadeInUp 0.5s ease-out;
-    }
-
-    .game-area {
-      min-height: 300px;
-      background: linear-gradient(135deg, rgba(250, 226, 216, 0.3), rgba(253, 241, 235, 0.3));
-      border-radius: 16px;
       position: relative;
-      margin: 20px 0;
-      overflow: hidden;
+      padding: 0 20px;
+      box-sizing: border-box;
     }
 
-    .clickable-heart {
-      position: absolute;
-      font-size: 40px;
-      cursor: pointer;
-      animation: heartPop 0.5s ease-out;
-      transition: transform 0.2s ease;
+    .breathing-instruction.fade-out {
+      opacity: 0;
     }
 
-    .clickable-heart:hover {
-      transform: scale(1.2);
+    .breathing-instruction.fade-in {
+      opacity: 1;
     }
 
-    @keyframes heartPop {
-      0% {
-        transform: scale(0);
-        opacity: 0;
-      }
-      50% {
-        transform: scale(1.2);
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .score {
-      font-size: 24px;
-      font-weight: 700;
+    .breathing-instruction.breathing-in {
       color: var(--primary);
-      margin: 20px 0;
     }
 
-    /* 每日励志语 */
+    .breathing-instruction.breathing-hold {
+      color: var(--primary-dark);
+    }
+
+    .breathing-instruction.breathing-out {
+      color: var(--text-muted);
+    }
+
+    .breathing-circle-text {
+      transition: opacity 0.6s ease-in-out;
+      opacity: 1;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .breathing-circle-text.fade-out {
+      opacity: 0;
+    }
+
+    .breathing-circle-text.fade-in {
+      opacity: 1;
+    }
+
+    /* Button */
+    .btn {
+      padding: 14px 28px;
+      border-radius: 12px;
+      border: 2px solid var(--primary);
+      background: var(--primary);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      display: inline-block;
+      margin-top: 20px;
+      margin-bottom: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      box-shadow: 0 6px 20px rgba(170, 30, 35, 0.3);
+    }
+
+    /* Close Button */
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(170, 30, 35, 0.1);
+      border: 2px solid var(--border);
+      color: var(--primary);
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .close-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    /* Daily Quote */
     .daily-quote {
       background: linear-gradient(135deg, rgba(250, 226, 216, 0.8), rgba(253, 241, 235, 0.8));
       border: 2px solid var(--border);
@@ -434,103 +568,7 @@
       color: var(--text-muted);
     }
 
-    /* 按钮 */
-    .btn {
-      padding: 12px 24px;
-      border-radius: 12px;
-      border: 2px solid var(--primary);
-      background: var(--primary);
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: inline-block;
-      margin: 8px;
-    }
-
-    .btn:hover {
-      background: var(--primary-dark);
-      border-color: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(170, 30, 35, 0.3);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--primary);
-    }
-
-    .btn-secondary:hover {
-      background: var(--bg-card-1);
-      color: var(--primary-dark);
-    }
-
-    /* 关闭按钮 */
-    .close-btn {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(170, 30, 35, 0.1);
-      border: none;
-      color: var(--primary);
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      z-index: 10;
-    }
-    
-    /* 卡片内的呼吸练习样式 */
-    .activity-card .breathing-circle {
-      width: 180px;
-      height: 180px;
-      font-size: 20px;
-      margin: 20px auto;
-    }
-    
-    .activity-card .breathing-instruction {
-      font-size: 16px;
-      margin-top: 15px;
-    }
-    
-    .activity-card h2 {
-      margin-top: 0;
-      margin-bottom: 15px;
-    }
-
-    .close-btn:hover {
-      background: var(--primary);
-      color: white;
-      transform: rotate(90deg);
-    }
-
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-      .activities-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .welcome-card {
-        padding: 30px 20px;
-      }
-
-      .welcome-title {
-        font-size: 24px;
-      }
-
-      .breathing-circle {
-        width: 150px;
-        height: 150px;
-      }
-    }
-
-    /* 粒子效果 */
+    /* Particles */
     .particles {
       position: fixed;
       top: 0;
@@ -566,103 +604,104 @@
         opacity: 0;
       }
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .breathing-container {
+        padding: 30px 20px;
+        min-height: 550px;
+      }
+
+      .breathing-circle {
+        width: 200px;
+        height: 200px;
+        font-size: 24px;
+        margin: 30px auto;
+      }
+
+      .breathing-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .breathing-instruction {
+        height: 70px;
+        font-size: 18px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        margin-top: 15px;
+      }
+
+      .welcome-card {
+        padding: 30px 20px;
+      }
+
+      .welcome-title {
+        font-size: 24px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- 浮动爱心 -->
+  <!-- Floating Hearts -->
   <div class="floating-hearts" id="floatingHearts"></div>
   
-  <!-- 粒子效果 -->
+  <!-- Particles -->
   <div class="particles" id="particles"></div>
 
-  <!-- 顶部栏 -->
+  <!-- Top Bar -->
   <div class="top-bar">
     <div class="logo-section">
       <div class="logo-circle">💝</div>
-      <div class="logo-text">温暖空间</div>
+      <div class="logo-text">Warm Space</div>
     </div>
   </div>
 
-  <!-- 主容器 -->
+  <!-- Main Container -->
   <div class="container">
-    <!-- 欢迎卡片 -->
+    <!-- Welcome Card -->
     <div class="welcome-card">
-      <div class="welcome-emoji">💕</div>
-      <h1 class="welcome-title">欢迎来到温暖空间</h1>
-      <p class="welcome-message">
-        我知道你最近压力很大，但请记住：你已经做得很棒了！<br>
-        这里是一个充满爱和温暖的地方，你可以在这里放松、获得鼓励，或者只是简单地消磨时间。<br>
-        无论何时，你都不是一个人。💖
+      <div class="welcome-emoji" id="welcomeEmoji">💕</div>
+      <h1 class="welcome-title">Welcome to Warm Space</h1>
+      <p class="welcome-message" id="welcomeMessage">
+        Loading your personalized message...
       </p>
     </div>
 
-    <!-- 活动卡片网格 -->
-    <div class="activities-grid">
-      <div class="activity-card" id="breathingCard" onclick="openBreathingExercise()">
-        <span class="activity-icon">🌬️</span>
-        <h3 class="activity-title">呼吸练习</h3>
-        <p class="activity-description">跟随呼吸节奏，让心情平静下来</p>
+    <!-- Breathing Exercise Container -->
+    <div class="breathing-container" id="breathingContainer">
+      <h2 class="breathing-title">🌬️ Breathing Exercise</h2>
+      <div class="breathing-circle" id="breathingCircle">
+        <span class="breathing-circle-text" id="breathingCircleText">Breathe</span>
       </div>
-
-      <div class="activity-card">
-        <span class="activity-icon">✨</span>
-        <h3 class="activity-title">鼓励卡片</h3>
-        <p class="activity-description" id="encouragementText">你比想象中更坚强！</p>
-      </div>
-
-      <div class="activity-card">
-        <span class="activity-icon">📜</span>
-        <h3 class="activity-title">每日励志</h3>
-        <p class="activity-description" id="quoteTextCard">"每一个困难都是成长的机会，你已经走过了那么多路，未来也一定会更好。"</p>
-      </div>
+      <p class="breathing-instruction" id="breathingInstruction">Ready to begin...</p>
+      <button class="btn" id="breathingBtn" onclick="startBreathing()">Start Exercise</button>
     </div>
 
-    <!-- 每日励志语 -->
+    <!-- Daily Quote -->
     <div class="daily-quote">
       <div class="quote-icon">💭</div>
-      <p class="quote-text" id="quoteText">"每一个困难都是成长的机会，你已经走过了那么多路，未来也一定会更好。"</p>
-      <p class="quote-author">— SuperOS 温暖空间</p>
-    </div>
-
-
-    <!-- 收集爱心游戏 -->
-    <div class="heart-collector" id="heartCollector">
-      <button class="close-btn" onclick="closeHeartCollector()">×</button>
-      <h2 style="margin-bottom: 20px; color: var(--primary-dark);">💖 收集爱心</h2>
-      <div class="score">收集数: <span id="heartScore">0</span> ❤️</div>
-      <div class="game-area" id="gameArea"></div>
-      <button class="btn" onclick="startHeartGame()">开始游戏</button>
+      <p class="quote-text" id="quoteText">"Every challenge is an opportunity for growth. You've come so far, and the future will be even better."</p>
+      <p class="quote-author">— SuperOS Warm Space</p>
     </div>
   </div>
 
   <script>
-    // 鼓励话语库
-    const encouragements = [
-      "你比想象中更坚强！",
-      "每一天都是新的开始，你值得拥有美好！",
-      "你的努力一定会开花结果，相信自己！",
-      "困难只是暂时的，但你的勇气是永恒的！",
-      "你已经走了这么远，为什么不继续前进呢？",
-      "每个人都有自己的节奏，不用和别人比较！",
-      "你的存在本身就是一件美好的事！",
-      "累了就休息，但不要放弃！",
-      "今天的你已经很棒了，明天会更好！",
-      "你拥有改变一切的力量，相信自己！"
-    ];
-
-    // 励志语录库
+    // Quotes Library
     const quotes = [
-      { text: "每一个困难都是成长的机会，你已经走过了那么多路，未来也一定会更好。", author: "SuperOS 温暖空间" },
-      { text: "不要担心你现在的压力，它们只是让你变得更强大的催化剂。", author: "SuperOS 温暖空间" },
-      { text: "即使是最黑暗的夜晚，也会有黎明的到来。", author: "SuperOS 温暖空间" },
-      { text: "你今天的努力，是明天成功的基石。", author: "SuperOS 温暖空间" },
-      { text: "深呼吸，放松一下。你已经做得很好了。", author: "SuperOS 温暖空间" },
-      { text: "压力只是生活的一部分，但你的笑容可以让一切变得美好。", author: "SuperOS 温暖空间" },
-      { text: "记住，你不是一个人在战斗。我们都在这里支持你。", author: "SuperOS 温暖空间" },
-      { text: "每一个微笑都是对困难的胜利。", author: "SuperOS 温暖空间" }
+      { text: "Every challenge is an opportunity for growth. You've come so far, and the future will be even better.", author: "SuperOS Warm Space" },
+      { text: "Don't worry about your current stress - it's just a catalyst making you stronger.", author: "SuperOS Warm Space" },
+      { text: "Even the darkest night will have a dawn.", author: "SuperOS Warm Space" },
+      { text: "Your efforts today are the foundation of tomorrow's success.", author: "SuperOS Warm Space" },
+      { text: "Take a deep breath and relax. You're doing great.", author: "SuperOS Warm Space" },
+      { text: "Stress is just part of life, but your smile can make everything beautiful.", author: "SuperOS Warm Space" },
+      { text: "Remember, you're not fighting alone. We're all here to support you.", author: "SuperOS Warm Space" },
+      { text: "Every smile is a victory over difficulty.", author: "SuperOS Warm Space" }
     ];
 
-    // 初始化浮动爱心
+    // Initialize Floating Hearts
     function initFloatingHearts() {
       const container = document.getElementById('floatingHearts');
       const heartSymbols = ['💕', '💖', '❤️', '💗', '💝'];
@@ -678,7 +717,7 @@
       }
     }
 
-    // 初始化粒子效果
+    // Initialize Particles
     function initParticles() {
       const container = document.getElementById('particles');
       
@@ -692,78 +731,261 @@
       }
     }
 
-    // 呼吸练习
+    // Weather and Location API - Using free APIs
+    async function getWeatherAndLocation() {
+      try {
+        // Get user location
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+        });
+        
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        
+        // Get location name using free Nominatim API (OpenStreetMap)
+        let locationName = 'your area';
+        try {
+          const locationResponse = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`);
+          const locationData = await locationResponse.json();
+          if (locationData && locationData.address) {
+            locationName = locationData.address.city || 
+                          locationData.address.town || 
+                          locationData.address.village || 
+                          locationData.address.county || 
+                          'your area';
+          }
+        } catch (e) {
+          console.log('Location name unavailable');
+        }
+        
+        // Get weather data using Open-Meteo (free, no API key needed)
+        const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=weather_code,temperature_2m&timezone=auto`);
+        const weatherData = await weatherResponse.json();
+        
+        if (weatherData && weatherData.current) {
+          const weatherCode = weatherData.current.weather_code;
+          const temp = Math.round(weatherData.current.temperature_2m);
+          
+          // Convert WMO weather code to weather type
+          const weatherType = getWeatherTypeFromCode(weatherCode);
+          
+          return {
+            location: locationName,
+            weather: weatherType,
+            temp: temp,
+            emoji: getWeatherEmoji(weatherType)
+          };
+        }
+        
+        return null;
+      } catch (error) {
+        console.log('Weather API unavailable, using fallback');
+        return null;
+      }
+    }
+
+    function getWeatherTypeFromCode(code) {
+      // WMO Weather interpretation codes
+      if (code === 0) return 'Clear';
+      if (code >= 1 && code <= 3) return 'Clouds';
+      if (code >= 45 && code <= 48) return 'Fog';
+      if (code >= 51 && code <= 67) return 'Rain';
+      if (code >= 71 && code <= 77) return 'Snow';
+      if (code >= 80 && code <= 82) return 'Rain';
+      if (code >= 85 && code <= 86) return 'Snow';
+      if (code >= 95 && code <= 99) return 'Thunderstorm';
+      return 'Clouds';
+    }
+
+    function getWeatherEmoji(weather) {
+      const weatherEmojis = {
+        'Clear': '☀️',
+        'Clouds': '☁️',
+        'Rain': '🌧️',
+        'Drizzle': '🌦️',
+        'Thunderstorm': '⛈️',
+        'Snow': '❄️',
+        'Mist': '🌫️',
+        'Fog': '🌫️'
+      };
+      return weatherEmojis[weather] || '🌤️';
+    }
+
+    function generateWelcomeMessage(weatherData) {
+      const messages = [];
+      
+      if (weatherData) {
+        const { location, weather, temp, emoji } = weatherData;
+        
+        // Weather-based ice breakers
+        if (weather === 'Clear') {
+          messages.push(`It's a beautiful ${emoji} sunny day in ${location}! Perfect weather to take a moment and breathe.`);
+          messages.push(`The sun is shining ${emoji} in ${location} today. Why not let its warmth inspire some calm breathing?`);
+        } else if (weather === 'Clouds') {
+          messages.push(`Cloudy skies ${emoji} in ${location} today - sometimes the best days are the quiet, peaceful ones.`);
+          messages.push(`Those clouds ${emoji} above ${location} remind us that even soft moments can be beautiful.`);
+        } else if (weather === 'Rain') {
+          messages.push(`Rainy day ${emoji} in ${location} - the perfect soundtrack for a calming breathing session.`);
+          messages.push(`The gentle rain ${emoji} in ${location} is like nature's way of saying "slow down and breathe."`);
+        } else if (weather === 'Snow') {
+          messages.push(`Snow falling ${emoji} in ${location} - each flake is unique, just like your breathing rhythm.`);
+          messages.push(`A snowy day ${emoji} in ${location} - the perfect time to find warmth within through breathing.`);
+        }
+        
+        // Temperature-based messages
+        if (temp > 25) {
+          messages.push(`It's ${temp}°C in ${location} - a warm day perfect for taking a refreshing breathing break!`);
+        } else if (temp < 10) {
+          messages.push(`It's ${temp}°C in ${location} - a cozy day to stay inside and focus on your breathing.`);
+        }
+      }
+      
+      // Fallback messages
+      const fallbacks = [
+        "I know you've been under pressure lately, but remember: you're doing great!",
+        "This is a place filled with love and warmth, where you can relax and find peace.",
+        "Every breath you take is a step toward calmness and clarity.",
+        "You're not alone in this journey. Take a moment to breathe and reset.",
+        "Sometimes the best thing we can do is simply pause and breathe."
+      ];
+      
+      const selectedMessage = messages.length > 0 
+        ? messages[Math.floor(Math.random() * messages.length)]
+        : fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      
+      return selectedMessage + " You're never alone. 💖";
+    }
+
+    async function updateWelcomeMessage() {
+      const messageEl = document.getElementById('welcomeMessage');
+      const emojiEl = document.getElementById('welcomeEmoji');
+      
+      const weatherData = await getWeatherAndLocation();
+      const message = generateWelcomeMessage(weatherData);
+      
+      if (messageEl) {
+        messageEl.textContent = message;
+      }
+      
+      if (emojiEl && weatherData) {
+        emojiEl.textContent = weatherData.emoji;
+      }
+    }
+
+    // Breathing Exercise
     let breathingInterval = null;
     let isBreathing = false;
-
-    function openBreathingExercise() {
-      const card = document.getElementById('breathingCard');
-      card.innerHTML = `
-        <button class="close-btn" onclick="closeBreathingExercise()">×</button>
-        <h2 style="margin-bottom: 20px; color: var(--primary-dark);">🌬️ 呼吸练习</h2>
-        <div class="breathing-circle" id="breathingCircle">吸</div>
-        <p class="breathing-instruction" id="breathingInstruction">准备开始...</p>
-        <button class="btn" id="breathingBtn" onclick="startBreathing()">开始练习</button>
-      `;
-      card.style.cursor = 'default';
-      card.onclick = null;
-      // 重置呼吸状态
-      isBreathing = false;
-      breathingInterval = null;
-    }
-
-    function closeBreathingExercise() {
-      const card = document.getElementById('breathingCard');
-      card.innerHTML = `
-        <span class="activity-icon">🌬️</span>
-        <h3 class="activity-title">呼吸练习</h3>
-        <p class="activity-description">跟随呼吸节奏，让心情平静下来</p>
-      `;
-      card.style.cursor = 'pointer';
-      card.onclick = openBreathingExercise;
-      stopBreathing();
-    }
+    let currentPhase = 'idle'; // idle, inhale, hold, exhale, rest
 
     function startBreathing() {
       const btn = document.getElementById('breathingBtn');
       if (isBreathing) {
         stopBreathing();
-        if (btn) btn.textContent = '开始练习';
+        if (btn) btn.textContent = 'Start Exercise';
         return;
       }
 
       isBreathing = true;
-      if (btn) btn.textContent = '停止练习';
+      if (btn) btn.textContent = 'I feel good';
+      
       const circle = document.getElementById('breathingCircle');
       const instruction = document.getElementById('breathingInstruction');
-      let phase = 0; // 0: 吸气, 1: 屏息, 2: 呼气, 3: 休息
+      
+      // Start breathing cycle
+      runBreathingCycle(circle, instruction);
+    }
 
-      breathingInterval = setInterval(() => {
-        switch (phase % 4) {
-          case 0: // 吸气 4秒
-            circle.textContent = '吸';
-            circle.classList.add('breathing-in');
-            circle.classList.remove('breathing-out');
-            instruction.textContent = '慢慢吸气... 感受气息充满你的身体';
-            phase++;
-            break;
-          case 1: // 屏息 2秒
-            instruction.textContent = '保持... 感受平静';
-            phase++;
-            break;
-          case 2: // 呼气 6秒
-            circle.textContent = '呼';
-            circle.classList.remove('breathing-in');
-            circle.classList.add('breathing-out');
-            instruction.textContent = '慢慢呼气... 释放所有的压力和紧张';
-            phase++;
-            break;
-          case 3: // 休息 2秒
-            instruction.textContent = '休息一下... 准备下一次呼吸';
-            phase++;
-            break;
+    function updateTextSmooth(element, newText, className) {
+      if (!element) return;
+      
+      // Fade out
+      element.classList.add('fade-out');
+      element.classList.remove('fade-in');
+      
+      setTimeout(() => {
+        // Update text and class
+        if (element.id === 'breathingCircleText') {
+          element.textContent = newText;
+        } else {
+          element.textContent = newText;
         }
-      }, 2000);
+        
+        // Remove old phase classes
+        element.classList.remove('breathing-in', 'breathing-out', 'breathing-hold');
+        
+        // Add new phase class if provided
+        if (className) {
+          element.classList.add(className);
+        }
+        
+        // Fade in
+        element.classList.remove('fade-out');
+        element.classList.add('fade-in');
+      }, 400); // Half of transition time
+    }
+
+    function runBreathingCycle(circle, instruction) {
+      if (!isBreathing) return;
+      
+      const circleText = document.getElementById('breathingCircleText');
+
+      // Phase 1: Inhale (4 seconds) - Smooth expansion
+      currentPhase = 'inhale';
+      updateTextSmooth(circleText, 'INHALE', 'breathing-in');
+      circle.classList.remove('breathing-out', 'breathing-hold');
+      circle.classList.add('breathing-in');
+      
+      setTimeout(() => {
+        updateTextSmooth(instruction, 'Breathe in slowly... Feel the air filling your body', 'breathing-in');
+      }, 200);
+
+      setTimeout(() => {
+        if (!isBreathing) return;
+        
+        // Phase 2: Hold (2 seconds) - Gentle pulse at full expansion
+        currentPhase = 'hold';
+        updateTextSmooth(circleText, 'HOLD', 'breathing-hold');
+        circle.classList.remove('breathing-in', 'breathing-out');
+        circle.classList.add('breathing-hold');
+        
+        setTimeout(() => {
+          updateTextSmooth(instruction, 'Hold... Feel the calm and peace', 'breathing-hold');
+        }, 200);
+
+        setTimeout(() => {
+          if (!isBreathing) return;
+          
+          // Phase 3: Exhale (6 seconds) - Smooth contraction
+          currentPhase = 'exhale';
+          updateTextSmooth(circleText, 'EXHALE', 'breathing-out');
+          circle.classList.remove('breathing-in', 'breathing-hold');
+          circle.classList.add('breathing-out');
+          
+          setTimeout(() => {
+            updateTextSmooth(instruction, 'Breathe out slowly... Release all stress and tension', 'breathing-out');
+          }, 200);
+
+          setTimeout(() => {
+            if (!isBreathing) return;
+            
+            // Phase 4: Rest (2 seconds) - Brief pause
+            currentPhase = 'rest';
+            updateTextSmooth(circleText, 'REST', null);
+            circle.classList.remove('breathing-in', 'breathing-out', 'breathing-hold');
+            
+            setTimeout(() => {
+              updateTextSmooth(instruction, 'Rest... Prepare for the next breath', null);
+            }, 200);
+
+            setTimeout(() => {
+              // Loop back to inhale for continuous cycle
+              if (isBreathing) {
+                runBreathingCycle(circle, instruction);
+              }
+            }, 2000);
+          }, 6000);
+        }, 2000);
+      }, 4000);
     }
 
     function stopBreathing() {
@@ -772,105 +994,43 @@
         breathingInterval = null;
       }
       isBreathing = false;
+      currentPhase = 'idle';
+      
       const circle = document.getElementById('breathingCircle');
       const instruction = document.getElementById('breathingInstruction');
       const btn = document.getElementById('breathingBtn');
+      
+      const circleText = document.getElementById('breathingCircleText');
+      
       if (circle) {
-        circle.classList.remove('breathing-in', 'breathing-out');
-        circle.textContent = '吸';
+        circle.classList.remove('breathing-in', 'breathing-out', 'breathing-hold');
+        circle.style.transform = 'scale(1)';
+        circle.style.animation = 'none';
+        circle.style.boxShadow = '0 0 60px rgba(170, 30, 35, 0.4)';
       }
-      if (instruction) instruction.textContent = '准备开始...';
-      if (btn) btn.textContent = '开始练习';
+      if (circleText) {
+        circleText.textContent = 'Breathe';
+        circleText.classList.remove('breathing-in', 'breathing-out', 'breathing-hold', 'fade-out', 'fade-in');
+      }
+      if (instruction) {
+        instruction.textContent = 'Ready to begin...';
+        instruction.classList.remove('breathing-in', 'breathing-out', 'breathing-hold', 'fade-out', 'fade-in');
+      }
+      if (btn) btn.textContent = 'Start Exercise';
     }
 
-    // 初始化鼓励卡片和励志语（页面加载时显示随机内容）
-    function initRandomContent() {
-      // 设置鼓励卡片
-      const randomEncouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
-      document.getElementById('encouragementText').textContent = randomEncouragement;
-      
-      // 设置每日励志卡片
+    // Initialize random quote on page load
+    function initRandomQuote() {
       const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      document.getElementById('quoteTextCard').textContent = '"' + randomQuote.text + '"';
-      
-      // 同时更新下方的每日励志语
       document.getElementById('quoteText').textContent = '"' + randomQuote.text + '"';
     }
 
-    // 收集爱心游戏
-    let heartGameInterval = null;
-    let score = 0;
-
-    function openHeartCollector() {
-      document.getElementById('heartCollector').classList.add('active');
-    }
-
-    function closeHeartCollector() {
-      document.getElementById('heartCollector').classList.remove('active');
-      stopHeartGame();
-      score = 0;
-      document.getElementById('heartScore').textContent = '0';
-    }
-
-    function startHeartGame() {
-      if (heartGameInterval) {
-        stopHeartGame();
-        return;
-      }
-
-      const gameArea = document.getElementById('gameArea');
-      gameArea.innerHTML = '';
-
-      heartGameInterval = setInterval(() => {
-        createClickableHeart();
-      }, 1000);
-
-      // 创建初始爱心
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => createClickableHeart(), i * 300);
-      }
-    }
-
-    function stopHeartGame() {
-      if (heartGameInterval) {
-        clearInterval(heartGameInterval);
-        heartGameInterval = null;
-      }
-    }
-
-    function createClickableHeart() {
-      const gameArea = document.getElementById('gameArea');
-      const heart = document.createElement('div');
-      heart.className = 'clickable-heart';
-      heart.textContent = '💖';
-      heart.style.left = Math.random() * (gameArea.offsetWidth - 40) + 'px';
-      heart.style.top = Math.random() * (gameArea.offsetHeight - 40) + 'px';
-      
-      heart.onclick = function() {
-        score++;
-        document.getElementById('heartScore').textContent = score;
-        this.style.transform = 'scale(2)';
-        this.style.opacity = '0';
-        setTimeout(() => this.remove(), 300);
-      };
-
-      gameArea.appendChild(heart);
-
-      // 3秒后自动消失
-      setTimeout(() => {
-        if (heart.parentNode) {
-          heart.style.opacity = '0';
-          heart.style.transform = 'scale(0)';
-          setTimeout(() => heart.remove(), 300);
-        }
-      }, 3000);
-    }
-
-    // 页面加载时初始化
+    // Initialize on page load
     window.addEventListener('load', () => {
       initFloatingHearts();
       initParticles();
-      initRandomContent();
+      initRandomQuote();
+      updateWelcomeMessage();
     });
   </script>
 </body>
