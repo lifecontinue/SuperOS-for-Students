@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>AI Navigator - Daily Router</title>
+  <title>AI Navigator - Opportunity Recommendations</title>
   <style>
     :root {
       --bg-dark: #FAF9F6;
@@ -131,115 +131,170 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Daily Check-in Modal */
-    .checkin-modal {
-      position: fixed;
+    /* Opportunity Recommendation Cards */
+    .opportunity-recommendation {
+      background: linear-gradient(135deg, rgba(170, 30, 35, 0.05), rgba(116, 7, 14, 0.05));
+      border: 2px solid var(--primary);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .opportunity-recommendation::before {
+      content: '';
+      position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    }
+
+    .opportunity-recommendation:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.3);
+      border-color: var(--primary-light);
+    }
+
+    .recommendation-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      backdrop-filter: blur(8px);
-      animation: fadeIn 0.3s ease;
-    }
-
-    .checkin-modal.hidden {
-      display: none;
-    }
-
-    .checkin-card {
-      background: var(--bg-card);
-      border: 2px solid var(--primary);
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--primary);
+      color: white;
       border-radius: 20px;
-      padding: 32px 24px;
-      margin: 20px;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 8px 32px rgba(168, 85, 247, 0.3);
-      animation: slideUp 0.4s ease;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
     }
 
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    .recommendation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
     }
 
-    .checkin-title {
-      font-size: 22px;
+    .recommendation-title {
+      font-size: 18px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 8px;
-      text-align: center;
+      margin-bottom: 4px;
+      flex: 1;
     }
 
-    .checkin-subtitle {
+    .recommendation-category {
+      display: inline-block;
+      padding: 4px 10px;
+      background: var(--bg-hover);
+      color: var(--primary);
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .recommendation-match {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .recommendation-description {
       font-size: 14px;
       color: var(--text-muted);
-      margin-bottom: 24px;
-      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 16px;
     }
 
-    .mood-buttons {
+    .recommendation-reasons {
+      background: var(--bg-hover);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .recommendation-reasons-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .reason-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .reason-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .reason-item::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .recommendation-actions {
       display: flex;
       gap: 12px;
-      justify-content: center;
-      margin-bottom: 24px;
     }
 
-    .mood-btn {
+    .action-btn {
       flex: 1;
-      padding: 16px;
-      border-radius: 12px;
-      border: 2px solid var(--border);
-      background: var(--bg-hover);
-      color: var(--text);
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 6px;
     }
 
-    .mood-btn:hover {
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-
-    .mood-btn.active {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      border-color: var(--primary);
-      box-shadow: 0 4px 20px var(--primary-glow);
-      color: white;
-    }
-
-    .mood-emoji {
-      font-size: 32px;
-    }
-
-    .checkin-submit {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
+    .action-btn.primary {
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px var(--primary-glow);
+      box-shadow: 0 4px 12px var(--primary-glow);
     }
 
-    .checkin-submit:hover {
+    .action-btn.primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 30px var(--primary-glow);
+      box-shadow: 0 6px 20px var(--primary-glow);
+    }
+
+    .action-btn.secondary {
+      background: var(--bg-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .action-btn.secondary:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
 
     /* Your Path Today Section */
@@ -356,30 +411,6 @@
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .opportunity-message {
-      background: var(--bg-hover);
-      border-left: 4px solid var(--primary);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: var(--text);
-      line-height: 1.6;
-    }
-
-    .radar-chart-container {
-      width: 100%;
-      height: 300px;
-      margin-bottom: 20px;
-      position: relative;
-    }
-
-    .radar-chart {
-      width: 100%;
-      height: 100%;
-      position: relative;
     }
 
     .boost-btn {
@@ -694,13 +725,17 @@
       .router-container {
         padding: 16px;
       }
-      
-      .checkin-card {
-        padding: 24px 20px;
+
+      .opportunity-recommendation {
+        padding: 16px;
       }
-      
-      .mood-buttons {
+
+      .recommendation-actions {
         flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
       }
 
       .roadmap-stage-indicator {
@@ -740,18 +775,18 @@
       </div>
     </div>
 
-    <!-- Opportunity Report -->
+    <!-- Recommended Opportunities -->
     <div class="opportunity-section">
-      <h2 class="section-title">Opportunity Report</h2>
-      <div class="opportunity-message" id="opportunityMessage">
-        You're excelling in Academics! Let's boost your Community Service profile.
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+        <h2 class="section-title" style="margin-bottom: 0;">Recommended for You</h2>
+        <span style="font-size: 24px;">✨</span>
       </div>
-      <div class="radar-chart-container">
-        <canvas id="radarChart" class="radar-chart"></canvas>
+      <p class="section-subtitle" style="margin-bottom: 20px;">
+        Based on your profile, we've found opportunities that match your interests and goals.
+      </p>
+      <div id="opportunityRecommendations">
+        <!-- Recommendations will be dynamically loaded -->
       </div>
-      <button class="boost-btn" id="boostBtn">
-        🚀 Boost My Profile
-      </button>
     </div>
 
     <!-- Roadmap Section -->
@@ -772,29 +807,6 @@
     </div>
   </div>
 
-  <!-- Daily Check-in Modal -->
-  <div class="checkin-modal" id="checkinModal">
-    <div class="checkin-card">
-      <h2 class="checkin-title">Hey <span id="studentName">Alex</span>, how are you feeling today?</h2>
-      <p class="checkin-subtitle">Your mood helps us personalize your daily experience</p>
-      <div class="mood-buttons">
-        <button class="mood-btn" data-mood="great">
-          <span class="mood-emoji">😊</span>
-          <span>Great</span>
-        </button>
-        <button class="mood-btn" data-mood="okay">
-          <span class="mood-emoji">😐</span>
-          <span>Okay</span>
-        </button>
-        <button class="mood-btn" data-mood="stressed">
-          <span class="mood-emoji">😰</span>
-          <span>Stressed</span>
-        </button>
-      </div>
-      <button class="checkin-submit" id="checkinSubmit" disabled>Continue</button>
-    </div>
-  </div>
-
   <!-- Notification Panel -->
   <div class="notification-panel" id="notificationPanel">
     <div class="notification-header">
@@ -810,13 +822,11 @@
     // State management - integrate with global state if available
     const routerState = {
       studentName: (typeof state !== 'undefined' && state.profile && state.profile.name) ? state.profile.name : 'Student',
-      lastCheckinDate: localStorage.getItem('lastCheckinDate') || '',
-      currentDate: new Date().toDateString(),
-      selectedMood: null,
       quests: [],
       notifications: [],
       currentStage: null,
       roadmapData: null,
+      opportunities: [],
       profileData: {
         academics: 85,
         communityService: 45,
@@ -833,7 +843,7 @@
 
     // Try to get profile data from global state if available
     if (typeof state !== 'undefined' && state.gap) {
-      // If GAP data exists, use it for radar chart
+      // If GAP data exists, use it for opportunity recommendations
       // This would need to be mapped from the actual GAP structure
     }
 
@@ -1028,61 +1038,149 @@
 
     // Initialize
     async function init() {
-      checkDailyCheckin();
       await loadRoadmapData();
       loadQuests();
       loadNotifications();
+      loadOpportunities();
       setupEventListeners();
-      drawRadarChart();
-      updateOpportunityMessage();
     }
 
-    // Check if daily check-in is needed
-    function checkDailyCheckin() {
-      const today = new Date().toDateString();
-      if (routerState.lastCheckinDate !== today) {
-        showCheckinModal();
-      }
-    }
-
-    // Show check-in modal
-    function showCheckinModal() {
-      const modal = document.getElementById('checkinModal');
-      modal.classList.remove('hidden');
+    // Load opportunities
+    function loadOpportunities() {
+      // Mock opportunity data - in real app, this would come from AI recommendation system
+      const data = routerState.profileData;
+      const sorted = Object.entries(data).sort((a, b) => a[1] - b[1]);
+      const lowestAreas = sorted.slice(0, 3).map(([key]) => key);
       
-      // Update student name
-      let studentName = routerState.studentName;
-      if (typeof state !== 'undefined' && state.profile && state.profile.name) {
-        studentName = state.profile.name;
-        routerState.studentName = studentName;
-      }
-      document.getElementById('studentName').textContent = studentName;
+      routerState.opportunities = [
+        {
+          id: 'opp-1',
+          title: 'Community Service Leadership Program',
+          category: 'Community Service',
+          matchScore: 92,
+          description: 'Perfect opportunity to boost your community service profile while developing leadership skills.',
+          reasons: [
+            'Matches your current academic strengths',
+            'Addresses your community service gap',
+            'Builds leadership experience',
+            'Deadline in 2 weeks - perfect timing'
+          ],
+          deadline: '2024-03-15',
+          type: 'Program'
+        },
+        {
+          id: 'opp-2',
+          title: 'Youth Entrepreneurship Challenge',
+          category: 'Business',
+          matchScore: 88,
+          description: 'Combine your business interests with hands-on experience in entrepreneurship and innovation.',
+          reasons: [
+            'Aligns with your business profile',
+            'Complements your creative arts skills',
+            'Networking opportunities',
+            'Scholarship awards available'
+          ],
+          deadline: '2024-03-20',
+          type: 'Competition'
+        },
+        {
+          id: 'opp-3',
+          title: 'STEM Research Fellowship',
+          category: 'Academics',
+          matchScore: 95,
+          description: 'Build on your academic excellence with a research opportunity in STEM fields.',
+          reasons: [
+            'Leverages your strong academics',
+            'Research experience for college apps',
+            'Mentorship from professionals',
+            'Publication opportunity'
+          ],
+          deadline: '2024-03-25',
+          type: 'Fellowship'
+        }
+      ];
+
+      renderOpportunities();
     }
+
+    // Render opportunities
+    function renderOpportunities() {
+      const container = document.getElementById('opportunityRecommendations');
+      if (!container) return;
+
+      if (routerState.opportunities.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <div>No opportunities found at the moment. Check back later!</div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = routerState.opportunities.map(opp => `
+        <div class="opportunity-recommendation" data-opp-id="${opp.id}">
+          <div class="recommendation-badge">
+            <span>⭐</span>
+            <span>Recommended</span>
+          </div>
+          <div class="recommendation-header">
+            <div style="flex: 1;">
+              <div class="recommendation-title">${opp.title}</div>
+              <span class="recommendation-category">${opp.category}</span>
+            </div>
+            <div class="recommendation-match">
+              <span>${opp.matchScore}% Match</span>
+            </div>
+          </div>
+          <div class="recommendation-description">${opp.description}</div>
+          <div class="recommendation-reasons">
+            <div class="recommendation-reasons-title">Why This Opportunity</div>
+            <div class="reason-list">
+              ${opp.reasons.map(reason => `
+                <div class="reason-item">${reason}</div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="recommendation-actions">
+            <button class="action-btn primary" onclick="handleOpportunityAction('${opp.id}', 'apply')">
+              <span>Apply Now</span>
+              <span>→</span>
+            </button>
+            <button class="action-btn secondary" onclick="handleOpportunityAction('${opp.id}', 'save')">
+              <span>Save</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Handle opportunity actions
+    window.handleOpportunityAction = function(oppId, action) {
+      const opportunity = routerState.opportunities.find(o => o.id === oppId);
+      if (!opportunity) return;
+
+      if (action === 'apply') {
+        // In a real app, this would navigate to application page
+        console.log('Apply to:', opportunity.title);
+        if (typeof setRoute === 'function') {
+          setRoute('opportunity-detail', { id: oppId });
+        }
+      } else if (action === 'save') {
+        // Save to favorites
+        const saved = JSON.parse(localStorage.getItem('savedOpportunities') || '[]');
+        if (!saved.includes(oppId)) {
+          saved.push(oppId);
+          localStorage.setItem('savedOpportunities', JSON.stringify(saved));
+          alert('Opportunity saved!');
+        } else {
+          alert('Already saved!');
+        }
+      }
+    };
 
     // Setup event listeners
     function setupEventListeners() {
-      // Mood buttons
-      document.querySelectorAll('.mood-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          routerState.selectedMood = this.dataset.mood;
-          document.getElementById('checkinSubmit').disabled = false;
-        });
-      });
-
-      // Check-in submit
-      document.getElementById('checkinSubmit').addEventListener('click', function() {
-        if (routerState.selectedMood) {
-          localStorage.setItem('lastCheckinDate', routerState.currentDate);
-          localStorage.setItem('lastMood', routerState.selectedMood);
-          document.getElementById('checkinModal').classList.add('hidden');
-          
-          // Show welcome message based on mood
-          showWelcomeMessage(routerState.selectedMood);
-        }
-      });
-
       // Notification button
       document.getElementById('notificationBtn').addEventListener('click', function() {
         const panel = document.getElementById('notificationPanel');
@@ -1092,11 +1190,6 @@
       // Close notifications
       document.getElementById('closeNotifications').addEventListener('click', function() {
         document.getElementById('notificationPanel').classList.remove('show');
-      });
-
-      // Boost button
-      document.getElementById('boostBtn').addEventListener('click', function() {
-        showRoadmap();
       });
 
       // Close roadmap
@@ -1228,117 +1321,6 @@
       }
     }
 
-    // Draw radar chart
-    function drawRadarChart() {
-      const canvas = document.getElementById('radarChart');
-      const ctx = canvas.getContext('2d');
-      
-      // Set canvas size
-      const size = Math.min(canvas.parentElement.clientWidth, 300);
-      canvas.width = size;
-      canvas.height = size;
-
-      const centerX = size / 2;
-      const centerY = size / 2;
-      const radius = size * 0.35;
-      const categories = Object.keys(routerState.profileData);
-      const maxValue = 100;
-
-      // Draw background circles
-      ctx.strokeStyle = 'rgba(240, 246, 252, 0.1)';
-      ctx.lineWidth = 1;
-      for (let i = 1; i <= 5; i++) {
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, (radius * i) / 5, 0, Math.PI * 2);
-        ctx.stroke();
-      }
-
-      // Draw category lines
-      const angleStep = (Math.PI * 2) / categories.length;
-      ctx.strokeStyle = 'rgba(240, 246, 252, 0.2)';
-      ctx.lineWidth = 1;
-      categories.forEach((_, index) => {
-        const angle = angleStep * index - Math.PI / 2;
-        const x = centerX + Math.cos(angle) * radius;
-        const y = centerY + Math.sin(angle) * radius;
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      });
-
-      // Draw data polygon
-      ctx.beginPath();
-      categories.forEach((category, index) => {
-        const value = routerState.profileData[category];
-        const angle = angleStep * index - Math.PI / 2;
-        const distance = (value / maxValue) * radius;
-        const x = centerX + Math.cos(angle) * distance;
-        const y = centerY + Math.sin(angle) * distance;
-        
-        if (index === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          ctx.lineTo(x, y);
-        }
-      });
-      ctx.closePath();
-      
-      // Fill polygon with gradient
-      const gradient = ctx.createLinearGradient(0, 0, size, size);
-      gradient.addColorStop(0, 'rgba(168, 85, 247, 0.3)');
-      gradient.addColorStop(0.5, 'rgba(59, 130, 246, 0.3)');
-      gradient.addColorStop(1, 'rgba(239, 68, 68, 0.3)');
-      ctx.fillStyle = gradient;
-      ctx.fill();
-      
-      ctx.strokeStyle = '#AA1E23';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Draw category labels
-      ctx.fillStyle = '#e6edf3';
-      ctx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      categories.forEach((category, index) => {
-        const angle = angleStep * index - Math.PI / 2;
-        const labelRadius = radius + 20;
-        const x = centerX + Math.cos(angle) * labelRadius;
-        const y = centerY + Math.sin(angle) * labelRadius;
-        
-        const label = category.replace(/([A-Z])/g, ' $1').trim();
-        ctx.fillText(label, x, y);
-      });
-    }
-
-    // Update opportunity message
-    function updateOpportunityMessage() {
-      const data = routerState.profileData;
-      const sorted = Object.entries(data).sort((a, b) => b[1] - a[1]);
-      const highest = sorted[0];
-      const lowest = sorted[sorted.length - 1];
-      
-      const highestName = highest[0].replace(/([A-Z])/g, ' $1').trim();
-      const lowestName = lowest[0].replace(/([A-Z])/g, ' $1').trim();
-      
-      const message = `You're excelling in ${highestName}! Let's boost your ${lowestName} profile.`;
-      document.getElementById('opportunityMessage').textContent = message;
-    }
-
-    // Show welcome message
-    function showWelcomeMessage(mood) {
-      const messages = {
-        great: 'Awesome! Let\'s make today productive! 🚀',
-        okay: 'No worries! We\'ll help you stay on track. 💪',
-        stressed: 'Take it one step at a time. You\'ve got this! 🌟'
-      };
-      
-      // In a real app, this could show a toast notification
-      console.log(messages[mood]);
-    }
-
     // Handle navigation
     function handleNavigation(route) {
       if (typeof setRoute === 'function') {
@@ -1397,15 +1379,6 @@
     } else {
       init();
     }
-
-    // Handle window resize for radar chart
-    let resizeTimeout;
-    window.addEventListener('resize', function() {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(function() {
-        drawRadarChart();
-      }, 250);
-    });
 
     // Check for scheduled notifications periodically
     setInterval(scheduleNotifications, 60000); // Check every minute

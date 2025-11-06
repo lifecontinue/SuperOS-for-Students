@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AI Navigator - First Generation</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --first-gen-blue: #3b82f6;
+      --first-gen-orange: #f97316;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    /* Main Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(249, 115, 22, 0.1));
+      border: 2px solid var(--first-gen-blue);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+      text-align: center;
+    }
+
+    .welcome-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .welcome-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Section */
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Resource Cards */
+    .resource-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .resource-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resource-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--first-gen-blue);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .resource-card:hover {
+      border-color: var(--first-gen-blue);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .resource-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .resource-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .resource-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .resource-content {
+      flex: 1;
+    }
+
+    .resource-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .resource-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Support Network */
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .support-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .support-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .support-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .support-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Action Button */
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--first-gen-blue), var(--first-gen-orange));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      margin-top: 12px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .router-container {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div class="app-title">First Generation</div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <div class="welcome-icon">🌟</div>
+      <div class="welcome-title">First-Gen Student Support</div>
+      <div class="welcome-text">
+        You're pioneering a new path! We're here to guide you through every step of the college journey.
+      </div>
+    </div>
+
+    <!-- Support Network -->
+    <div class="section">
+      <h2 class="section-title">🤝 Your Support Network</h2>
+      <div class="support-grid" id="supportGrid">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- First-Gen Scholarships -->
+    <div class="section">
+      <h2 class="section-title">💰 First-Gen Scholarships</h2>
+      <p class="section-subtitle">Scholarships specifically for first-generation students</p>
+      <div class="resource-list" id="scholarshipsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- College Prep Resources -->
+    <div class="section">
+      <h2 class="section-title">📚 College Prep Resources</h2>
+      <p class="section-subtitle">Essential guides and tools for your journey</p>
+      <div class="resource-list" id="resourcesList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Mentorship Programs -->
+    <div class="section">
+      <h2 class="section-title">👥 Mentorship Programs</h2>
+      <p class="section-subtitle">Connect with mentors who understand your journey</p>
+      <div class="resource-list" id="mentorshipList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // First-Gen data
+    const firstGenData = {
+      support: [
+        {
+          icon: '🏫',
+          title: 'College Counselor',
+          description: 'Dedicated first-gen advisor'
+        },
+        {
+          icon: '👨‍🎓',
+          title: 'Peer Mentors',
+          description: 'Connect with current students'
+        },
+        {
+          icon: '📖',
+          title: 'Tutoring',
+          description: 'Free academic support'
+        },
+        {
+          icon: '💼',
+          title: 'Career Services',
+          description: 'Explore career paths'
+        }
+      ],
+      scholarships: [
+        {
+          icon: '💰',
+          title: 'First-Gen Grant Program',
+          description: 'Financial aid specifically for first-generation students',
+          deadline: '2024-05-01'
+        },
+        {
+          icon: '🎓',
+          title: 'Pell Grant Plus',
+          description: 'Additional funding for first-gen Pell recipients',
+          deadline: '2024-04-15'
+        }
+      ],
+      resources: [
+        {
+          icon: '📋',
+          title: 'Application Checklist',
+          description: 'Step-by-step guide to college applications'
+        },
+        {
+          icon: '💵',
+          title: 'Financial Aid Guide',
+          description: 'Understanding FAFSA and financial aid'
+        },
+        {
+          icon: '🏠',
+          title: 'Campus Visit Prep',
+          description: 'What to ask and look for on visits'
+        }
+      ],
+      mentorship: [
+        {
+          icon: '🤝',
+          title: 'First-Gen Mentorship',
+          description: 'Connect with alumni and current students',
+          deadline: 'Ongoing'
+        },
+        {
+          icon: '💬',
+          title: 'Support Groups',
+          description: 'Join first-gen student communities',
+          deadline: 'Ongoing'
+        }
+      ]
+    };
+
+    // Render functions
+    function renderSupport() {
+      const container = document.getElementById('supportGrid');
+      if (!container) return;
+
+      container.innerHTML = firstGenData.support.map(item => `
+        <div class="support-card">
+          <div class="support-icon">${item.icon}</div>
+          <div class="support-title">${item.title}</div>
+          <div class="support-desc">${item.description}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderResources(containerId, resources) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.innerHTML = resources.map(resource => `
+        <div class="resource-card" data-id="${resource.id || resource.title}">
+          <div class="resource-header">
+            <div class="resource-icon">${resource.icon}</div>
+            <div class="resource-content">
+              <div class="resource-title">${resource.title}</div>
+              <div class="resource-description">${resource.description}</div>
+              ${resource.deadline ? `<div style="margin-top: 8px; font-size: 12px; color: var(--text-dim);">⏱️ ${resource.deadline === 'Ongoing' ? 'Ongoing' : 'Deadline: ' + resource.deadline}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.resource-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const id = this.dataset.id;
+          handleResourceClick(id);
+        });
+      });
+    }
+
+    function handleResourceClick(id) {
+      console.log('View resource:', id);
+      // In real app, this would navigate to resource details
+    }
+
+    // Initialize
+    function init() {
+      renderSupport();
+      renderResources('scholarshipsList', firstGenData.scholarships);
+      renderResources('resourcesList', firstGenData.resources);
+      renderResources('mentorshipList', firstGenData.mentorship);
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
+

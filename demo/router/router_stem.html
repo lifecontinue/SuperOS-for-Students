@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AI Navigator - STEM Focus</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --stem-blue: #06b6d4;
+      --stem-green: #10b981;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    /* Main Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* STEM Profile Section */
+    .profile-section {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(16, 185, 129, 0.1));
+      border: 2px solid var(--stem-blue);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .profile-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--stem-blue), var(--stem-green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+    }
+
+    .profile-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .profile-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .stem-fields {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .field-tag {
+      padding: 6px 12px;
+      background: rgba(6, 182, 212, 0.2);
+      border: 1px solid var(--stem-blue);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--stem-blue);
+    }
+
+    /* Section */
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* STEM Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--stem-blue);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Opportunity Cards */
+    .opportunity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .opportunity-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opportunity-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--stem-blue);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .opportunity-card:hover {
+      border-color: var(--stem-blue);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+    }
+
+    .opportunity-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .opportunity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .opportunity-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .opportunity-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--stem-blue);
+      color: white;
+    }
+
+    .opportunity-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .opportunity-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Lab Projects */
+    .project-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .project-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .project-icon {
+      font-size: 24px;
+    }
+
+    .project-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .project-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-left: 36px;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .router-container {
+        padding: 16px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div class="app-title">STEM Focus</div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- STEM Profile -->
+    <div class="profile-section">
+      <div class="profile-header">
+        <div class="profile-icon">🔬</div>
+        <div>
+          <div class="profile-title">STEM Profile</div>
+          <div class="profile-subtitle">Science, Technology, Engineering & Math</div>
+        </div>
+      </div>
+      <div class="stem-fields">
+        <span class="field-tag">Computer Science</span>
+        <span class="field-tag">Engineering</span>
+        <span class="field-tag">Mathematics</span>
+      </div>
+      <div class="stats-grid" style="margin-top: 16px;">
+        <div class="stat-card">
+          <div class="stat-value">5</div>
+          <div class="stat-label">AP STEM</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Competitions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Research Opportunities -->
+    <div class="section">
+      <h2 class="section-title">🔬 Research Opportunities</h2>
+      <p class="section-subtitle">Build your research experience</p>
+      <div class="opportunity-list" id="researchList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- STEM Competitions -->
+    <div class="section">
+      <h2 class="section-title">🏆 STEM Competitions</h2>
+      <p class="section-subtitle">Test your skills and knowledge</p>
+      <div class="opportunity-list" id="competitionsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Lab Projects -->
+    <div class="section">
+      <h2 class="section-title">⚗️ Lab Projects</h2>
+      <p class="section-subtitle">Your current and past projects</p>
+      <div id="projectsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Coding & Tech -->
+    <div class="section">
+      <h2 class="section-title">💻 Coding & Tech</h2>
+      <p class="section-subtitle">Develop your technical skills</p>
+      <div class="opportunity-list" id="techList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // STEM data
+    const stemData = {
+      research: [
+        {
+          id: 'research-1',
+          title: 'Biomedical Research Lab',
+          description: 'Summer research program at university hospital',
+          deadline: '2024-03-20',
+          match: 95
+        },
+        {
+          id: 'research-2',
+          title: 'AI Research Internship',
+          description: 'Work on machine learning projects',
+          deadline: '2024-04-01',
+          match: 92
+        }
+      ],
+      competitions: [
+        {
+          id: 'comp-1',
+          title: 'Science Olympiad',
+          description: 'Competitive science tournament',
+          deadline: '2024-03-25',
+          match: 90
+        },
+        {
+          id: 'comp-2',
+          title: 'Hackathon Championship',
+          description: '48-hour coding competition',
+          deadline: '2024-04-15',
+          match: 88
+        }
+      ],
+      projects: [
+        {
+          icon: '🧬',
+          title: 'DNA Sequencing Project',
+          description: 'Analyzing genetic data for research'
+        },
+        {
+          icon: '🤖',
+          title: 'Robotics System',
+          description: 'Building autonomous navigation system'
+        },
+        {
+          icon: '📊',
+          title: 'Data Analysis Tool',
+          description: 'Developing predictive analytics platform'
+        }
+      ],
+      tech: [
+        {
+          id: 'tech-1',
+          title: 'Coding Bootcamp',
+          description: 'Intensive programming course',
+          deadline: '2024-05-01',
+          match: 85
+        },
+        {
+          id: 'tech-2',
+          title: 'Open Source Contribution',
+          description: 'Contribute to open source projects',
+          deadline: 'Ongoing',
+          match: 90
+        }
+      ]
+    };
+
+    // Render functions
+    function renderOpportunities(containerId, opportunities) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.innerHTML = opportunities.map(opp => `
+        <div class="opportunity-card" data-id="${opp.id}">
+          <div class="opportunity-header">
+            <div class="opportunity-title">${opp.title}</div>
+            <span class="opportunity-badge">${opp.match}% Match</span>
+          </div>
+          <div class="opportunity-description">${opp.description}</div>
+          <div class="opportunity-meta">
+            <span>⏱️ ${opp.deadline === 'Ongoing' ? 'Ongoing' : 'Deadline: ' + opp.deadline}</span>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.opportunity-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const id = this.dataset.id;
+          handleOpportunityClick(id);
+        });
+      });
+    }
+
+    function renderProjects() {
+      const container = document.getElementById('projectsList');
+      if (!container) return;
+
+      container.innerHTML = stemData.projects.map(project => `
+        <div class="project-card">
+          <div class="project-header">
+            <div class="project-icon">${project.icon}</div>
+            <div class="project-title">${project.title}</div>
+          </div>
+          <div class="project-desc">${project.description}</div>
+        </div>
+      `).join('');
+    }
+
+    function handleOpportunityClick(id) {
+      console.log('View opportunity:', id);
+      // In real app, this would navigate to opportunity details
+    }
+
+    // Initialize
+    function init() {
+      renderOpportunities('researchList', stemData.research);
+      renderOpportunities('competitionsList', stemData.competitions);
+      renderProjects();
+      renderOpportunities('techList', stemData.tech);
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
+

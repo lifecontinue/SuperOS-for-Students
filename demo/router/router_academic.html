@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AI Navigator - Academic Excellence</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --academic-blue: #3b82f6;
+      --academic-gold: #fbbf24;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    /* Main Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Academic Profile Section */
+    .profile-section {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(251, 191, 36, 0.1));
+      border: 2px solid var(--academic-blue);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .profile-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--academic-blue), var(--academic-gold));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .profile-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .profile-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--academic-blue);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Section */
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Opportunity Cards */
+    .opportunity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .opportunity-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .opportunity-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--academic-blue);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .opportunity-card:hover {
+      border-color: var(--academic-blue);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .opportunity-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .opportunity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .opportunity-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .opportunity-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--academic-blue);
+      color: white;
+    }
+
+    .opportunity-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .opportunity-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Achievement List */
+    .achievement-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .achievement-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 10px;
+      border-left: 3px solid var(--academic-gold);
+    }
+
+    .achievement-icon {
+      font-size: 24px;
+    }
+
+    .achievement-content {
+      flex: 1;
+    }
+
+    .achievement-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .achievement-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Action Button */
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--academic-blue), var(--academic-gold));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      margin-top: 12px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .router-container {
+        padding: 16px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div class="app-title">Academic Excellence</div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Academic Profile -->
+    <div class="profile-section">
+      <div class="profile-header">
+        <div class="profile-icon">🎓</div>
+        <div>
+          <div class="profile-title">Academic Profile</div>
+          <div class="profile-subtitle">Excellence in Academics</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">4.2</div>
+          <div class="stat-label">GPA</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">AP Classes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">1560</div>
+          <div class="stat-label">SAT Score</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Research Opportunities -->
+    <div class="section">
+      <h2 class="section-title">🔬 Research Opportunities</h2>
+      <p class="section-subtitle">Build your research portfolio with these opportunities</p>
+      <div class="opportunity-list" id="researchOpportunities">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Academic Competitions -->
+    <div class="section">
+      <h2 class="section-title">🏆 Academic Competitions</h2>
+      <p class="section-subtitle">Showcase your knowledge and skills</p>
+      <div class="opportunity-list" id="competitionOpportunities">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="section">
+      <h2 class="section-title">⭐ Recent Achievements</h2>
+      <div class="achievement-list" id="achievementsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="section">
+      <h2 class="section-title">📚 Recommended Next Steps</h2>
+      <p class="section-subtitle">Continue building your academic profile</p>
+      <div class="opportunity-list" id="nextStepsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Academic data
+    const academicData = {
+      research: [
+        {
+          id: 'research-1',
+          title: 'STEM Research Fellowship',
+          type: 'Research',
+          description: 'Work with university professors on cutting-edge research projects',
+          deadline: '2024-03-15',
+          match: 95
+        },
+        {
+          id: 'research-2',
+          title: 'Summer Research Program',
+          type: 'Research',
+          description: '8-week intensive research program at local university',
+          deadline: '2024-04-01',
+          match: 88
+        }
+      ],
+      competitions: [
+        {
+          id: 'comp-1',
+          title: 'National Science Olympiad',
+          type: 'Competition',
+          description: 'Compete in various science disciplines at the national level',
+          deadline: '2024-03-20',
+          match: 92
+        },
+        {
+          id: 'comp-2',
+          title: 'Math League Championship',
+          type: 'Competition',
+          description: 'Regional and national math competition series',
+          deadline: '2024-04-10',
+          match: 90
+        }
+      ],
+      achievements: [
+        {
+          icon: '🏅',
+          title: 'National Honor Society',
+          description: 'Inducted as member'
+        },
+        {
+          icon: '📊',
+          title: 'AP Scholar with Distinction',
+          description: 'Awarded for outstanding AP performance'
+        },
+        {
+          icon: '🔬',
+          title: 'Science Fair Winner',
+          description: 'Regional science fair 1st place'
+        }
+      ],
+      nextSteps: [
+        {
+          id: 'step-1',
+          title: 'Enroll in Advanced Courses',
+          description: 'Consider AP Calculus BC or AP Physics C',
+          deadline: '2024-05-01'
+        },
+        {
+          id: 'step-2',
+          title: 'Prepare for Subject Tests',
+          description: 'SAT Subject Tests in Math II and Chemistry',
+          deadline: '2024-06-01'
+        }
+      ]
+    };
+
+    // Render functions
+    function renderOpportunities(containerId, opportunities) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.innerHTML = opportunities.map(opp => `
+        <div class="opportunity-card" data-id="${opp.id}">
+          <div class="opportunity-header">
+            <div class="opportunity-title">${opp.title}</div>
+            <span class="opportunity-badge">${opp.match}% Match</span>
+          </div>
+          <div class="opportunity-description">${opp.description}</div>
+          <div class="opportunity-meta">
+            <span>⏱️ Deadline: ${opp.deadline}</span>
+            <span>📌 ${opp.type}</span>
+          </div>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      container.querySelectorAll('.opportunity-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const id = this.dataset.id;
+          handleOpportunityClick(id);
+        });
+      });
+    }
+
+    function renderAchievements() {
+      const container = document.getElementById('achievementsList');
+      if (!container) return;
+
+      container.innerHTML = academicData.achievements.map(ach => `
+        <div class="achievement-item">
+          <div class="achievement-icon">${ach.icon}</div>
+          <div class="achievement-content">
+            <div class="achievement-title">${ach.title}</div>
+            <div class="achievement-desc">${ach.desc}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderNextSteps() {
+      const container = document.getElementById('nextStepsList');
+      if (!container) return;
+
+      container.innerHTML = academicData.nextSteps.map(step => `
+        <div class="opportunity-card" data-id="${step.id}">
+          <div class="opportunity-header">
+            <div class="opportunity-title">${step.title}</div>
+          </div>
+          <div class="opportunity-description">${step.description}</div>
+          <div class="opportunity-meta">
+            <span>⏱️ By: ${step.deadline}</span>
+          </div>
+        </div>
+      `).join();
+    }
+
+    function handleOpportunityClick(id) {
+      console.log('View opportunity:', id);
+      // In real app, this would navigate to opportunity details
+    }
+
+    // Initialize
+    function init() {
+      renderOpportunities('researchOpportunities', academicData.research);
+      renderOpportunities('competitionOpportunities', academicData.competitions);
+      renderAchievements();
+      renderNextSteps();
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
+

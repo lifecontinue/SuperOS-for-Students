@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AI Navigator - Scholarship Finder</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --scholarship-gold: #fbbf24;
+      --scholarship-green: #10b981;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    /* Main Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scholarship Summary */
+    .summary-section {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(16, 185, 129, 0.15));
+      border: 2px solid var(--scholarship-gold);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+      text-align: center;
+    }
+
+    .summary-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .summary-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .summary-amount {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--scholarship-gold), var(--scholarship-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .summary-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Section */
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Scholarship Cards */
+    .scholarship-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .scholarship-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scholarship-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--scholarship-gold);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .scholarship-card:hover {
+      border-color: var(--scholarship-gold);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+    }
+
+    .scholarship-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .scholarship-card.high-value {
+      border-color: var(--scholarship-gold);
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(251, 191, 36, 0.05));
+    }
+
+    .scholarship-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .scholarship-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .scholarship-amount-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--scholarship-gold);
+      color: white;
+      white-space: nowrap;
+    }
+
+    .scholarship-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .scholarship-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+    }
+
+    .scholarship-tag {
+      padding: 4px 8px;
+      background: rgba(251, 191, 36, 0.2);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--scholarship-gold);
+    }
+
+    /* Progress Section */
+    .progress-section {
+      background: var(--bg-hover);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .progress-bar-container {
+      height: 8px;
+      background: rgba(251, 191, 36, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--scholarship-gold), var(--scholarship-green));
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    /* Action Button */
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--scholarship-gold), var(--scholarship-green));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+      margin-top: 12px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .router-container {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div class="app-title">Scholarship Finder</div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Scholarship Summary -->
+    <div class="summary-section">
+      <div class="summary-icon">💰</div>
+      <div class="summary-title">Total Potential</div>
+      <div class="summary-amount">$45,000+</div>
+      <div class="summary-subtitle">Based on your profile matches</div>
+    </div>
+
+    <!-- Application Progress -->
+    <div class="section">
+      <h2 class="section-title">📊 Application Progress</h2>
+      <div class="progress-section">
+        <div class="progress-header">
+          <span>Applications Completed</span>
+          <strong>3 / 8</strong>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: 37.5%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- High-Value Scholarships -->
+    <div class="section">
+      <h2 class="section-title">⭐ High-Value Scholarships</h2>
+      <p class="section-subtitle">Top opportunities matching your profile</p>
+      <div class="scholarship-list" id="highValueList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Merit-Based -->
+    <div class="section">
+      <h2 class="section-title">🏅 Merit-Based Scholarships</h2>
+      <p class="section-subtitle">Based on academic and extracurricular achievements</p>
+      <div class="scholarship-list" id="meritList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Need-Based -->
+    <div class="section">
+      <h2 class="section-title">💙 Need-Based Scholarships</h2>
+      <p class="section-subtitle">Financial aid opportunities</p>
+      <div class="scholarship-list" id="needList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Application Tips -->
+    <div class="section">
+      <h2 class="section-title">💡 Application Tips</h2>
+      <div class="scholarship-list" id="tipsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Scholarship data
+    const scholarshipData = {
+      highValue: [
+        {
+          id: 'sch-1',
+          title: 'National Merit Scholarship',
+          amount: '$2,500',
+          description: 'Awarded to top scoring students on PSAT/NMSQT',
+          deadline: '2024-10-15',
+          tag: 'Merit',
+          match: 95
+        },
+        {
+          id: 'sch-2',
+          title: 'Gates Scholarship',
+          amount: 'Full Ride',
+          description: 'Full scholarship for outstanding minority students',
+          deadline: '2024-09-15',
+          tag: 'Need-Based',
+          match: 92
+        }
+      ],
+      merit: [
+        {
+          id: 'sch-3',
+          title: 'Academic Excellence Award',
+          amount: '$5,000',
+          description: 'For students with GPA 3.8+ and strong test scores',
+          deadline: '2024-03-30',
+          tag: 'Merit',
+          match: 88
+        },
+        {
+          id: 'sch-4',
+          title: 'STEM Excellence Scholarship',
+          amount: '$3,000',
+          description: 'For students pursuing STEM fields',
+          deadline: '2024-04-15',
+          tag: 'STEM',
+          match: 90
+        }
+      ],
+      need: [
+        {
+          id: 'sch-5',
+          title: 'Financial Need Grant',
+          amount: '$4,000',
+          description: 'Based on FAFSA and financial need',
+          deadline: '2024-05-01',
+          tag: 'Need-Based',
+          match: 85
+        }
+      ],
+      tips: [
+        {
+          id: 'tip-1',
+          title: 'Start Early',
+          description: 'Begin applications 2-3 months before deadlines',
+          deadline: 'Ongoing'
+        },
+        {
+          id: 'tip-2',
+          title: 'Personalize Essays',
+          description: 'Tailor each essay to the specific scholarship',
+          deadline: 'Ongoing'
+        }
+      ]
+    };
+
+    // Render functions
+    function renderScholarships(containerId, scholarships, isHighValue = false) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.innerHTML = scholarships.map(sch => `
+        <div class="scholarship-card ${isHighValue ? 'high-value' : ''}" data-id="${sch.id}">
+          <div class="scholarship-header">
+            <div class="scholarship-title">${sch.title}</div>
+            <div class="scholarship-amount-badge">${sch.amount}</div>
+          </div>
+          <div class="scholarship-description">${sch.description}</div>
+          <div class="scholarship-meta">
+            ${sch.match ? `<span>${sch.match}% Match</span>` : ''}
+            <span>⏱️ ${sch.deadline === 'Ongoing' ? 'Ongoing' : 'Deadline: ' + sch.deadline}</span>
+            ${sch.tag ? `<span class="scholarship-tag">${sch.tag}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.scholarship-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const id = this.dataset.id;
+          handleScholarshipClick(id);
+        });
+      });
+    }
+
+    function handleScholarshipClick(id) {
+      console.log('View scholarship:', id);
+      // In real app, this would navigate to scholarship details
+    }
+
+    // Initialize
+    function init() {
+      renderScholarships('highValueList', scholarshipData.highValue, true);
+      renderScholarships('meritList', scholarshipData.merit);
+      renderScholarships('needList', scholarshipData.need);
+      renderScholarships('tipsList', scholarshipData.tips);
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
+

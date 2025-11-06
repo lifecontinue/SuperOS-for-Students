@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>AI Navigator - International Students</title>
+  <style>
+    :root {
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.3);
+      --international-teal: #14b8a6;
+      --international-blue: #3b82f6;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      text-align: center;
+    }
+
+    /* Main Container */
+    .router-container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-bottom: 100px;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Profile Section */
+    .profile-section {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(59, 130, 246, 0.1));
+      border: 2px solid var(--international-teal);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .profile-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--international-teal), var(--international-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+    }
+
+    .profile-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .profile-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .country-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: rgba(20, 184, 166, 0.1);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    /* Section */
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Resource Cards */
+    .resource-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .resource-card {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resource-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--international-teal);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+    }
+
+    .resource-card:hover {
+      border-color: var(--international-teal);
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2);
+    }
+
+    .resource-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .resource-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .resource-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .resource-content {
+      flex: 1;
+    }
+
+    .resource-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .resource-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .resource-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 8px;
+    }
+
+    .resource-tag {
+      padding: 4px 8px;
+      background: rgba(20, 184, 166, 0.2);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--international-teal);
+    }
+
+    /* Checklist */
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .checklist-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .checklist-content {
+      flex: 1;
+    }
+
+    .checklist-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .checklist-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Action Button */
+    .action-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--international-teal), var(--international-blue));
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+      margin-top: 12px;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(20, 184, 166, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .router-container {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo-section">
+      <div class="logo-circle">S</div>
+    </div>
+    <div class="app-title">International Students</div>
+    <div style="width: 32px;"></div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="router-container">
+    <!-- Profile Section -->
+    <div class="profile-section">
+      <div class="profile-header">
+        <div class="profile-icon">🌍</div>
+        <div>
+          <div class="profile-title">International Student</div>
+          <div class="profile-subtitle">Your Global Journey to US Colleges</div>
+        </div>
+      </div>
+      <div class="country-info">
+        <span>🌏</span>
+        <span>From: [Your Country]</span>
+      </div>
+    </div>
+
+    <!-- Visa & Immigration -->
+    <div class="section">
+      <h2 class="section-title">🛂 Visa & Immigration</h2>
+      <p class="section-subtitle">Essential information for international students</p>
+      <div class="resource-list" id="visaList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Test Requirements -->
+    <div class="section">
+      <h2 class="section-title">📝 Test Requirements</h2>
+      <p class="section-subtitle">English proficiency and standardized tests</p>
+      <div id="testChecklist">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- International Scholarships -->
+    <div class="section">
+      <h2 class="section-title">💰 International Scholarships</h2>
+      <p class="section-subtitle">Financial aid for international students</p>
+      <div class="resource-list" id="scholarshipsList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+
+    <!-- Application Timeline -->
+    <div class="section">
+      <h2 class="section-title">📅 Application Timeline</h2>
+      <p class="section-subtitle">Important dates for international applicants</p>
+      <div class="resource-list" id="timelineList">
+        <!-- Will be populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // International student data
+    const internationalData = {
+      visa: [
+        {
+          icon: '📋',
+          title: 'F-1 Student Visa Guide',
+          description: 'Complete guide to obtaining your student visa',
+          tag: 'Visa'
+        },
+        {
+          icon: '📄',
+          title: 'I-20 Form Process',
+          description: 'Understanding and obtaining your I-20',
+          tag: 'Immigration'
+        }
+      ],
+      tests: [
+        {
+          icon: '✅',
+          title: 'TOEFL/IELTS',
+          description: 'English proficiency test required',
+          status: 'Required'
+        },
+        {
+          icon: '✅',
+          title: 'SAT/ACT',
+          description: 'Standardized tests for admission',
+          status: 'Required'
+        },
+        {
+          icon: '📚',
+          title: 'SAT Subject Tests',
+          description: 'Some schools require subject tests',
+          status: 'Optional'
+        }
+      ],
+      scholarships: [
+        {
+          icon: '💰',
+          title: 'International Student Scholarship',
+          description: 'Merit-based aid for international students',
+          deadline: '2024-04-01',
+          tag: 'Merit'
+        },
+        {
+          icon: '🎓',
+          title: 'Global Excellence Award',
+          description: 'Full or partial tuition for outstanding international students',
+          deadline: '2024-03-15',
+          tag: 'Full Ride'
+        }
+      ],
+      timeline: [
+        {
+          icon: '📅',
+          title: 'Early Application (Sept-Nov)',
+          description: 'Early Decision/Early Action deadlines',
+          deadline: '2024-11-01'
+        },
+        {
+          icon: '📅',
+          title: 'Regular Application (Dec-Jan)',
+          description: 'Regular Decision deadlines',
+          deadline: '2025-01-15'
+        },
+        {
+          icon: '🛂',
+          title: 'Visa Application (Apr-May)',
+          description: 'Apply for F-1 visa after acceptance',
+          deadline: '2025-05-01'
+        }
+      ]
+    };
+
+    // Render functions
+    function renderResources(containerId, resources) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.innerHTML = resources.map(resource => `
+        <div class="resource-card" data-id="${resource.id || resource.title}">
+          <div class="resource-header">
+            <div class="resource-icon">${resource.icon}</div>
+            <div class="resource-content">
+              <div class="resource-title">${resource.title}</div>
+              <div class="resource-description">${resource.description}</div>
+              <div class="resource-meta">
+                ${resource.tag ? `<span class="resource-tag">${resource.tag}</span>` : ''}
+                ${resource.deadline ? `<span>⏱️ ${resource.deadline}</span>` : ''}
+                ${resource.status ? `<span>${resource.status}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      container.querySelectorAll('.resource-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const id = this.dataset.id;
+          handleResourceClick(id);
+        });
+      });
+    }
+
+    function renderTestChecklist() {
+      const container = document.getElementById('testChecklist');
+      if (!container) return;
+
+      container.innerHTML = internationalData.tests.map(test => `
+        <div class="checklist-item">
+          <div class="checklist-icon">${test.icon}</div>
+          <div class="checklist-content">
+            <div class="checklist-title">${test.title}</div>
+            <div class="checklist-desc">${test.description} • ${test.status}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function handleResourceClick(id) {
+      console.log('View resource:', id);
+      // In real app, this would navigate to resource details
+    }
+
+    // Initialize
+    function init() {
+      renderResources('visaList', internationalData.visa);
+      renderTestChecklist();
+      renderResources('scholarshipsList', internationalData.scholarships);
+      renderResources('timelineList', internationalData.timeline);
+    }
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
+
