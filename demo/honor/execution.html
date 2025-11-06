@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Execute Honor Tasks - Honor Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --primary-dark: #4A0509;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.2);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      border-color: var(--primary);
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .task-content {
+      display: none;
+    }
+
+    .task-content.active {
+      display: block;
+    }
+
+    .task-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .task-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .task-status {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .task-status.pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .task-status.completed {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .task-description {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.8;
+    }
+
+    .research-results {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .research-item {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .research-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .research-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .research-content {
+      color: var(--text-muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .preparation-checklist {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+      background: var(--bg-card);
+      border-radius: 8px;
+    }
+
+    .checklist-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .checklist-checkbox.checked {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .checklist-checkbox.checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .checklist-label {
+      flex: 1;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .application-form {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .btn-primary {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .btn-secondary {
+      padding: 10px 20px;
+      background: var(--bg-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary-light);
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .tabs {
+        gap: 6px;
+      }
+
+      .tab {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Execute Honor Tasks</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Complete various tasks to prepare for honors and awards applications</p>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('research')">🔍 Research</div>
+      <div class="tab" onclick="switchTab('preparation')">📝 Preparation</div>
+      <div class="tab" onclick="switchTab('application')">✍️ Application</div>
+    </div>
+
+    <!-- Research Tasks -->
+    <div class="task-content active" id="researchContent">
+      <div class="task-section">
+        <div class="task-header">
+          <div class="task-title">Research Honor Programs</div>
+          <span class="task-status pending" id="researchStatus1">进行中</span>
+        </div>
+        <div class="task-description">
+          Research the honors and awards you plan to apply for. Understand their requirements, eligibility criteria, deadlines, and selection process.
+        </div>
+        <button class="btn-primary" onclick="completeResearch('research-1')">完成研究</button>
+        <div class="research-results" id="researchResults1" style="display: none;">
+          <div class="research-item">
+            <div class="research-title">Eligibility Requirements</div>
+            <div class="research-content">
+              Most honors require: Minimum GPA (usually 3.5+), specific coursework, letters of recommendation, and personal essays or statements.
+            </div>
+          </div>
+          <div class="research-item">
+            <div class="research-title">Application Deadlines</div>
+            <div class="research-content">
+              Deadlines vary by program. National programs typically have deadlines in fall/winter (October-February), while local programs may have rolling deadlines.
+            </div>
+          </div>
+          <div class="research-item">
+            <div class="research-title">Selection Criteria</div>
+            <div class="research-content">
+              Selection committees look for: Academic excellence, leadership qualities, community service, unique achievements, and personal character.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-section">
+        <div class="task-header">
+          <div class="task-title">Research Similar Programs</div>
+          <span class="task-status pending" id="researchStatus2">进行中</span>
+        </div>
+        <div class="task-description">
+          Explore other honor programs and awards that might be suitable for your profile and goals.
+        </div>
+        <button class="btn-primary" onclick="completeResearch('research-2')">完成研究</button>
+        <div class="research-results" id="researchResults2" style="display: none;">
+          <div class="research-item">
+            <div class="research-title">Related Programs</div>
+            <div class="research-content">
+              Consider exploring: Subject-specific honors (STEM, Arts, Humanities), leadership awards, service awards, and regional/national competitions.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preparation Tasks -->
+    <div class="task-content" id="preparationContent">
+      <div class="task-section">
+        <div class="task-header">
+          <div class="task-title">Prepare Application Materials</div>
+          <span class="task-status pending" id="prepStatus1">进行中</span>
+        </div>
+        <div class="task-description">
+          Gather all necessary documents and materials for your honor applications.
+        </div>
+        <button class="btn-primary" onclick="showPreparationChecklist('prep-1')">查看清单</button>
+        <div class="preparation-checklist" id="prepChecklist1" style="display: none;">
+          <div class="checklist-item">
+            <div class="checklist-checkbox" onclick="toggleChecklistItem(this)"></div>
+            <div class="checklist-label">Official transcripts</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox" onclick="toggleChecklistItem(this)"></div>
+            <div class="checklist-label">Letters of recommendation (2-3)</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox" onclick="toggleChecklistItem(this)"></div>
+            <div class="checklist-label">Resume/CV</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox" onclick="toggleChecklistItem(this)"></div>
+            <div class="checklist-label">Personal statement or essay</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox" onclick="toggleChecklistItem(this)"></div>
+            <div class="checklist-label">Portfolio of achievements</div>
+          </div>
+          <div class="checklist-item">
+            <div class="checklist-checkbox" onclick="toggleChecklistItem(this)"></div>
+            <div class="checklist-label">Test scores (if required)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-section">
+        <div class="task-header">
+          <div class="task-title">Build Honors Portfolio</div>
+          <span class="task-status pending" id="prepStatus2">进行中</span>
+        </div>
+        <div class="task-description">
+          Create a comprehensive portfolio showcasing your achievements, awards, and activities.
+        </div>
+        <button class="btn-primary" onclick="completePrep('prep-2')">标记完成</button>
+      </div>
+    </div>
+
+    <!-- Application Tasks -->
+    <div class="task-content" id="applicationContent">
+      <div class="task-section">
+        <div class="task-header">
+          <div class="task-title">Complete Honor Application</div>
+          <span class="task-status pending" id="appStatus1">进行中</span>
+        </div>
+        <div class="task-description">
+          Fill out and submit your honor application. Make sure all information is accurate and complete.
+        </div>
+        <button class="btn-primary" onclick="showApplicationForm('app-1')">填写申请表</button>
+        <div class="application-form" id="appForm1" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" placeholder="Enter your full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" placeholder="Enter your email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Personal Statement</label>
+            <textarea class="form-textarea" placeholder="Write about your achievements, goals, and why you deserve this honor"></textarea>
+          </div>
+          <div class="form-group">
+            <button class="btn-primary" onclick="submitApplication('app-1')">Submit Application</button>
+            <button class="btn-secondary" onclick="document.getElementById('appForm1').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="action-button" onclick="viewProgress()">
+      View Progress Summary →
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.location.href='tasklist.html'" title="Back">←</button>
+
+  <script>
+    function switchTab(tabName) {
+      // Switch tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      event.target.classList.add('active');
+
+      // Switch content
+      document.querySelectorAll('.task-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(tabName + 'Content').classList.add('active');
+    }
+
+    function completeResearch(researchId) {
+      const statusEl = document.getElementById(researchId.replace('research-', 'researchStatus'));
+      const resultsEl = document.getElementById(researchId.replace('research-', 'researchResults'));
+      
+      if (statusEl && resultsEl) {
+        statusEl.textContent = '已完成';
+        statusEl.className = 'task-status completed';
+        resultsEl.style.display = 'block';
+        
+        // Save completion status
+        let completed = JSON.parse(localStorage.getItem('completedHonorTasks') || '[]');
+        if (!completed.includes(researchId)) {
+          completed.push(researchId);
+          localStorage.setItem('completedHonorTasks', JSON.stringify(completed));
+        }
+      }
+    }
+
+    function showPreparationChecklist(prepId) {
+      const checklist = document.getElementById('prepChecklist1');
+      if (checklist) {
+        checklist.style.display = checklist.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    function toggleChecklistItem(checkbox) {
+      checkbox.classList.toggle('checked');
+    }
+
+    function completePrep(prepId) {
+      alert('已标记准备任务完成！');
+      let completed = JSON.parse(localStorage.getItem('completedHonorTasks') || '[]');
+      if (!completed.includes(prepId)) {
+        completed.push(prepId);
+        localStorage.setItem('completedHonorTasks', JSON.stringify(completed));
+      }
+      const statusEl = document.getElementById('prepStatus2');
+      if (statusEl) {
+        statusEl.textContent = '已完成';
+        statusEl.className = 'task-status completed';
+      }
+    }
+
+    function showApplicationForm(appId) {
+      const form = document.getElementById('appForm1');
+      if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    function submitApplication(appId) {
+      alert('申请已提交！');
+      let completed = JSON.parse(localStorage.getItem('completedHonorTasks') || '[]');
+      if (!completed.includes(appId)) {
+        completed.push(appId);
+        localStorage.setItem('completedHonorTasks', JSON.stringify(completed));
+      }
+      const statusEl = document.getElementById('appStatus1');
+      if (statusEl) {
+        statusEl.textContent = '已完成';
+        statusEl.className = 'task-status completed';
+      }
+      document.getElementById('appForm1').style.display = 'none';
+    }
+
+    function viewProgress() {
+      alert('查看进度总结功能');
+      // Can navigate to a progress summary page
+    }
+
+    // Restore state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const completed = JSON.parse(localStorage.getItem('completedHonorTasks') || '[]');
+      
+      // Restore research task status
+      if (completed.includes('research-1')) {
+        completeResearch('research-1');
+      }
+      if (completed.includes('research-2')) {
+        completeResearch('research-2');
+      }
+    });
+  </script>
+</body>
+</html>
+

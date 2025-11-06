@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Create Summer School Task List - Summer School Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --border: rgba(170, 30, 35, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .task-category {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .task-item {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+    }
+    .task-checkbox.checked {
+      background: var(--primary);
+    }
+    .task-checkbox.checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 14px;
+    }
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Create Summer School Task List</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Create a personalized task list for your summer school applications</p>
+  </div>
+  <div class="container">
+    <div id="taskCategories"></div>
+    <button class="action-button" onclick="startTasks()">Start Executing Tasks →</button>
+  </div>
+  <button class="back-button" onclick="window.history.back()">←</button>
+  <script>
+    function createTaskList() {
+      const saved = localStorage.getItem('selectedSummerSchoolRecommendations');
+      const selected = saved ? JSON.parse(saved) : [{ id: 'default', title: 'Summer Program' }];
+      const tasks = {
+        application: [
+          { id: 'app-1', title: 'Research programs', description: 'Research and compare different summer school programs', priority: 'high' },
+          { id: 'app-2', title: 'Complete application', description: 'Fill out application forms and submit required documents', priority: 'high' },
+          { id: 'app-3', title: 'Write essays', description: 'Complete application essays and personal statements', priority: 'high' }
+        ],
+        preparation: [
+          { id: 'prep-1', title: 'Obtain transcripts', description: 'Request official transcripts from school', priority: 'high' },
+          { id: 'prep-2', title: 'Request recommendation letters', description: 'Ask teachers for recommendation letters', priority: 'high' },
+          { id: 'prep-3', title: 'Prepare for interviews', description: 'If required, prepare for program interviews', priority: 'medium' }
+        ],
+        enrollment: [
+          { id: 'enroll-1', title: 'Accept offer', description: 'Accept program offer and complete enrollment', priority: 'high' },
+          { id: 'enroll-2', title: 'Complete logistics', description: 'Arrange housing, transportation, and other logistics', priority: 'high' },
+          { id: 'enroll-3', title: 'Prepare for program', description: 'Review program materials and prepare for arrival', priority: 'medium' }
+        ]
+      };
+      document.getElementById('taskCategories').innerHTML = [
+        { id: 'application', icon: '📝', title: 'Application Tasks', tasks: tasks.application },
+        { id: 'preparation', icon: '📋', title: 'Preparation Tasks', tasks: tasks.preparation },
+        { id: 'enrollment', icon: '✅', title: 'Enrollment Tasks', tasks: tasks.enrollment }
+      ].map(cat => `
+        <div class="task-category">
+          <h2 style="margin-bottom: 16px;">${cat.icon} ${cat.title}</h2>
+          ${cat.tasks.map(t => `
+            <div class="task-item" data-task-id="${t.id}">
+              <div class="task-checkbox" onclick="toggleTask('${t.id}', this)"></div>
+              <div>
+                <div style="font-weight: 600; margin-bottom: 4px;">${t.title}</div>
+                <div style="color: var(--text-muted); font-size: 13px;">${t.description}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+    function toggleTask(taskId, checkbox) {
+      checkbox.classList.toggle('checked');
+      let completed = JSON.parse(localStorage.getItem('completedSummerSchoolTasks') || '[]');
+      if (checkbox.classList.contains('checked')) {
+        if (!completed.includes(taskId)) completed.push(taskId);
+      } else {
+        completed = completed.filter(id => id !== taskId);
+      }
+      localStorage.setItem('completedSummerSchoolTasks', JSON.stringify(completed));
+    }
+    function startTasks() {
+      localStorage.setItem('summerSchoolTaskListCreated', 'true');
+      window.location.href = 'execution.html';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      createTaskList();
+      JSON.parse(localStorage.getItem('completedSummerSchoolTasks') || '[]').forEach(taskId => {
+        const cb = document.querySelector(`[data-task-id="${taskId}"] .task-checkbox`);
+        if (cb) cb.classList.add('checked');
+      });
+    });
+  </script>
+</body>
+</html>
+

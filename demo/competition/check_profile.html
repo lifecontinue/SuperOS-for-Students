@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Check Competition Profile - Competition Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.2);
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .info-card.complete {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+    .info-card.incomplete {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .info-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-badge.complete {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+    .status-badge.incomplete {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 0.5s ease;
+    }
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Check Competition Profile</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Please confirm your competition experience information is complete</p>
+  </div>
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div style="text-align: center; color: var(--text-muted); margin-bottom: 20px;" id="progressText">Checking information...</div>
+    <div class="info-card" id="competitionExperienceCard">
+      <div class="info-card-header">
+        <div class="info-card-title"><span>🏆</span><span>Competition Experience</span></div>
+        <span class="status-badge" id="competitionExperienceStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span style="color: var(--text-dim);">Previous Competitions:</span>
+        <span id="competitionExperienceValue">—</span>
+      </div>
+    </div>
+    <div class="info-card" id="competitionCategoriesCard">
+      <div class="info-card-header">
+        <div class="info-card-title"><span>🎯</span><span>Competition Categories</span></div>
+        <span class="status-badge" id="competitionCategoriesStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span style="color: var(--text-dim);">Interest Areas:</span>
+        <span id="competitionCategoriesValue">—</span>
+      </div>
+    </div>
+    <div class="info-card" id="skillsCard">
+      <div class="info-card-header">
+        <div class="info-card-title"><span>💪</span><span>Competition Skills</span></div>
+        <span class="status-badge" id="skillsStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span style="color: var(--text-dim);">Relevant Skills:</span>
+        <span id="skillsValue">—</span>
+      </div>
+    </div>
+    <div class="info-card" id="awardsCard">
+      <div class="info-card-header">
+        <div class="info-card-title"><span>🥇</span><span>Previous Awards</span></div>
+        <span class="status-badge" id="awardsStatus">Checking</span>
+      </div>
+      <div class="info-item">
+        <span style="color: var(--text-dim);">Awards Won:</span>
+        <span id="awardsValue">—</span>
+      </div>
+    </div>
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>Continue Next Step</button>
+  </div>
+  <button class="back-button" onclick="window.history.back()">←</button>
+  <script>
+    function getCompetitionProfile() {
+      const stored = localStorage.getItem('competitionProfile');
+      return stored ? JSON.parse(stored) : {
+        competitionExperience: null,
+        competitionCategories: null,
+        skills: null,
+        awards: null
+      };
+    }
+    function checkProfileInfo() {
+      const profile = getCompetitionProfile();
+      let completedCount = 0;
+      const totalCount = 4;
+      function checkCard(cardId, statusId, valueId, profileValue) {
+        const card = document.getElementById(cardId);
+        const status = document.getElementById(statusId);
+        const value = document.getElementById(valueId);
+        if (profileValue && (Array.isArray(profileValue) ? profileValue.length > 0 : profileValue)) {
+          card.classList.add('complete');
+          card.classList.remove('incomplete');
+          status.textContent = 'Complete';
+          status.className = 'status-badge complete';
+          value.textContent = Array.isArray(profileValue) ? profileValue.join(', ') : profileValue;
+          completedCount++;
+        } else {
+          card.classList.add('incomplete');
+          card.classList.remove('complete');
+          status.textContent = 'Incomplete';
+          status.className = 'status-badge incomplete';
+          value.textContent = 'Not filled';
+        }
+      }
+      checkCard('competitionExperienceCard', 'competitionExperienceStatus', 'competitionExperienceValue', profile.competitionExperience);
+      checkCard('competitionCategoriesCard', 'competitionCategoriesStatus', 'competitionCategoriesValue', profile.competitionCategories);
+      checkCard('skillsCard', 'skillsStatus', 'skillsValue', profile.skills);
+      checkCard('awardsCard', 'awardsStatus', 'awardsValue', profile.awards);
+      const progress = (completedCount / totalCount) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      document.getElementById('progressText').textContent = `Completion: ${completedCount}/${totalCount} (${Math.round(progress)}%)`;
+      const btn = document.getElementById('continueButton');
+      btn.disabled = completedCount === 0;
+      btn.textContent = completedCount === totalCount ? 'Continue Next Step →' : 'Continue (Incomplete Info) →';
+    }
+    function continueToNextStep() {
+      window.location.href = 'recommendation.html';
+    }
+    document.addEventListener('DOMContentLoaded', () => setTimeout(checkProfileInfo, 500));
+  </script>
+</body>
+</html>
+

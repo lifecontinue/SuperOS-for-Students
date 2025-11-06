@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Check Extracurricular Profile - Extracurricular Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --primary-dark: #4A0509;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.2);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .info-card.complete {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .info-card.incomplete {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .info-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.complete {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .status-badge.incomplete {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .info-card-content {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-label {
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 0.5s ease;
+      border-radius: 4px;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .info-card {
+        padding: 20px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Check Extracurricular Profile</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Please confirm your extracurricular activities information is complete</p>
+  </div>
+
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">Checking information...</div>
+
+    <!-- Clubs & Organizations Card -->
+    <div class="info-card" id="clubsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🎯</span>
+          <span>Clubs & Organizations</span>
+        </div>
+        <span class="status-badge" id="clubsStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Current Clubs:</span>
+          <span class="info-value" id="clubsValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sports & Athletics Card -->
+    <div class="info-card" id="sportsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>⚽</span>
+          <span>Sports & Athletics</span>
+        </div>
+        <span class="status-badge" id="sportsStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Sports Activities:</span>
+          <span class="info-value" id="sportsValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arts & Music Card -->
+    <div class="info-card" id="artsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🎨</span>
+          <span>Arts & Music</span>
+        </div>
+        <span class="status-badge" id="artsStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Arts Activities:</span>
+          <span class="info-value" id="artsValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Volunteer Work Card -->
+    <div class="info-card" id="volunteerCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🤝</span>
+          <span>Volunteer Work</span>
+        </div>
+        <span class="status-badge" id="volunteerStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Volunteer Hours:</span>
+          <span class="info-value" id="volunteerValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>
+      Continue Next Step
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.history.back()" title="Back">←</button>
+
+  <script>
+    function getExtracurricularProfile() {
+      const stored = localStorage.getItem('extracurricularProfile');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      
+      return {
+        clubs: null,
+        sports: null,
+        arts: null,
+        volunteer: null
+      };
+    }
+
+    function checkProfileInfo() {
+      const profile = getExtracurricularProfile();
+      let completedCount = 0;
+      const totalCount = 4;
+
+      // Check Clubs
+      const clubsCard = document.getElementById('clubsCard');
+      const clubsStatus = document.getElementById('clubsStatus');
+      const clubsValue = document.getElementById('clubsValue');
+      
+      if (profile.clubs && profile.clubs.length > 0) {
+        clubsCard.classList.add('complete');
+        clubsCard.classList.remove('incomplete');
+        clubsStatus.textContent = 'Complete';
+        clubsStatus.className = 'status-badge complete';
+        clubsValue.textContent = Array.isArray(profile.clubs) ? profile.clubs.join(', ') : profile.clubs;
+        completedCount++;
+      } else {
+        clubsCard.classList.add('incomplete');
+        clubsCard.classList.remove('complete');
+        clubsStatus.textContent = 'Incomplete';
+        clubsStatus.className = 'status-badge incomplete';
+        clubsValue.textContent = 'Not filled';
+      }
+
+      // Check Sports
+      const sportsCard = document.getElementById('sportsCard');
+      const sportsStatus = document.getElementById('sportsStatus');
+      const sportsValue = document.getElementById('sportsValue');
+      
+      if (profile.sports && profile.sports.length > 0) {
+        sportsCard.classList.add('complete');
+        sportsCard.classList.remove('incomplete');
+        sportsStatus.textContent = 'Complete';
+        sportsStatus.className = 'status-badge complete';
+        sportsValue.textContent = Array.isArray(profile.sports) ? profile.sports.join(', ') : profile.sports;
+        completedCount++;
+      } else {
+        sportsCard.classList.add('incomplete');
+        sportsCard.classList.remove('complete');
+        sportsStatus.textContent = 'Incomplete';
+        sportsStatus.className = 'status-badge incomplete';
+        sportsValue.textContent = 'Not filled';
+      }
+
+      // Check Arts
+      const artsCard = document.getElementById('artsCard');
+      const artsStatus = document.getElementById('artsStatus');
+      const artsValue = document.getElementById('artsValue');
+      
+      if (profile.arts && profile.arts.length > 0) {
+        artsCard.classList.add('complete');
+        artsCard.classList.remove('incomplete');
+        artsStatus.textContent = 'Complete';
+        artsStatus.className = 'status-badge complete';
+        artsValue.textContent = Array.isArray(profile.arts) ? profile.arts.join(', ') : profile.arts;
+        completedCount++;
+      } else {
+        artsCard.classList.add('incomplete');
+        artsCard.classList.remove('complete');
+        artsStatus.textContent = 'Incomplete';
+        artsStatus.className = 'status-badge incomplete';
+        artsValue.textContent = 'Not filled';
+      }
+
+      // Check Volunteer
+      const volunteerCard = document.getElementById('volunteerCard');
+      const volunteerStatus = document.getElementById('volunteerStatus');
+      const volunteerValue = document.getElementById('volunteerValue');
+      
+      if (profile.volunteer && profile.volunteer.hours > 0) {
+        volunteerCard.classList.add('complete');
+        volunteerCard.classList.remove('incomplete');
+        volunteerStatus.textContent = 'Complete';
+        volunteerStatus.className = 'status-badge complete';
+        volunteerValue.textContent = `${profile.volunteer.hours} hours`;
+        completedCount++;
+      } else {
+        volunteerCard.classList.add('incomplete');
+        volunteerCard.classList.remove('complete');
+        volunteerStatus.textContent = 'Incomplete';
+        volunteerStatus.className = 'status-badge incomplete';
+        volunteerValue.textContent = 'Not filled';
+      }
+
+      // Update progress
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const progress = (completedCount / totalCount) * 100;
+      progressFill.style.width = progress + '%';
+      progressText.textContent = `Completion: ${completedCount}/${totalCount} (${Math.round(progress)}%)`;
+
+      // Update button
+      const continueButton = document.getElementById('continueButton');
+      if (completedCount === totalCount) {
+        continueButton.disabled = false;
+        continueButton.textContent = 'Continue Next Step →';
+      } else {
+        continueButton.disabled = false;
+        continueButton.textContent = 'Continue (Incomplete Info) →';
+      }
+
+      return completedCount === totalCount;
+    }
+
+    function continueToNextStep() {
+      window.location.href = 'recommendation.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        checkProfileInfo();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
+

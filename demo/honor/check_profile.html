@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Check Honor Profile - Honor Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --primary-dark: #4A0509;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.2);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .info-card.complete {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .info-card.incomplete {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .info-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.complete {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .status-badge.incomplete {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .info-card-content {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-label {
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 0.5s ease;
+      border-radius: 4px;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .info-card {
+        padding: 20px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Check Honor Profile</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Please confirm your honors and awards information is complete</p>
+  </div>
+
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">Checking information...</div>
+
+    <!-- Academic Honors Card -->
+    <div class="info-card" id="academicHonorsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🏆</span>
+          <span>Academic Honors</span>
+        </div>
+        <span class="status-badge" id="academicHonorsStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Academic Awards:</span>
+          <span class="info-value" id="academicHonorsValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competition Awards Card -->
+    <div class="info-card" id="competitionCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🥇</span>
+          <span>Competition Awards</span>
+        </div>
+        <span class="status-badge" id="competitionStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Competition Achievements:</span>
+          <span class="info-value" id="competitionValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leadership Card -->
+    <div class="info-card" id="leadershipCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>👑</span>
+          <span>Leadership Positions</span>
+        </div>
+        <span class="status-badge" id="leadershipStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Leadership Roles:</span>
+          <span class="info-value" id="leadershipValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Community Service Card -->
+    <div class="info-card" id="communityCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🤝</span>
+          <span>Community Service</span>
+        </div>
+        <span class="status-badge" id="communityStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Service Hours:</span>
+          <span class="info-value" id="communityValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>
+      Continue Next Step
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.history.back()" title="Back">←</button>
+
+  <script>
+    // Simulate getting honor profile from localStorage or state
+    function getHonorProfile() {
+      const stored = localStorage.getItem('honorProfile');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      
+      // Default example data
+      return {
+        academicHonors: null,
+        competitionAwards: null,
+        leadershipPositions: null,
+        communityService: null
+      };
+    }
+
+    function checkProfileInfo() {
+      const profile = getHonorProfile();
+      let completedCount = 0;
+      const totalCount = 4;
+
+      // Check Academic Honors
+      const academicCard = document.getElementById('academicHonorsCard');
+      const academicStatus = document.getElementById('academicHonorsStatus');
+      const academicValue = document.getElementById('academicHonorsValue');
+      
+      if (profile.academicHonors && profile.academicHonors.length > 0) {
+        academicCard.classList.add('complete');
+        academicCard.classList.remove('incomplete');
+        academicStatus.textContent = 'Complete';
+        academicStatus.className = 'status-badge complete';
+        academicValue.textContent = Array.isArray(profile.academicHonors) ? profile.academicHonors.join(', ') : profile.academicHonors;
+        completedCount++;
+      } else {
+        academicCard.classList.add('incomplete');
+        academicCard.classList.remove('complete');
+        academicStatus.textContent = 'Incomplete';
+        academicStatus.className = 'status-badge incomplete';
+        academicValue.textContent = 'Not filled';
+      }
+
+      // Check Competition Awards
+      const competitionCard = document.getElementById('competitionCard');
+      const competitionStatus = document.getElementById('competitionStatus');
+      const competitionValue = document.getElementById('competitionValue');
+      
+      if (profile.competitionAwards && profile.competitionAwards.length > 0) {
+        competitionCard.classList.add('complete');
+        competitionCard.classList.remove('incomplete');
+        competitionStatus.textContent = 'Complete';
+        competitionStatus.className = 'status-badge complete';
+        competitionValue.textContent = Array.isArray(profile.competitionAwards) ? profile.competitionAwards.join(', ') : profile.competitionAwards;
+        completedCount++;
+      } else {
+        competitionCard.classList.add('incomplete');
+        competitionCard.classList.remove('complete');
+        competitionStatus.textContent = 'Incomplete';
+        competitionStatus.className = 'status-badge incomplete';
+        competitionValue.textContent = 'Not filled';
+      }
+
+      // Check Leadership Positions
+      const leadershipCard = document.getElementById('leadershipCard');
+      const leadershipStatus = document.getElementById('leadershipStatus');
+      const leadershipValue = document.getElementById('leadershipValue');
+      
+      if (profile.leadershipPositions && profile.leadershipPositions.length > 0) {
+        leadershipCard.classList.add('complete');
+        leadershipCard.classList.remove('incomplete');
+        leadershipStatus.textContent = 'Complete';
+        leadershipStatus.className = 'status-badge complete';
+        leadershipValue.textContent = Array.isArray(profile.leadershipPositions) ? profile.leadershipPositions.join(', ') : profile.leadershipPositions;
+        completedCount++;
+      } else {
+        leadershipCard.classList.add('incomplete');
+        leadershipCard.classList.remove('complete');
+        leadershipStatus.textContent = 'Incomplete';
+        leadershipStatus.className = 'status-badge incomplete';
+        leadershipValue.textContent = 'Not filled';
+      }
+
+      // Check Community Service
+      const communityCard = document.getElementById('communityCard');
+      const communityStatus = document.getElementById('communityStatus');
+      const communityValue = document.getElementById('communityValue');
+      
+      if (profile.communityService && profile.communityService.hours > 0) {
+        communityCard.classList.add('complete');
+        communityCard.classList.remove('incomplete');
+        communityStatus.textContent = 'Complete';
+        communityStatus.className = 'status-badge complete';
+        communityValue.textContent = `${profile.communityService.hours} hours`;
+        completedCount++;
+      } else {
+        communityCard.classList.add('incomplete');
+        communityCard.classList.remove('complete');
+        communityStatus.textContent = 'Incomplete';
+        communityStatus.className = 'status-badge incomplete';
+        communityValue.textContent = 'Not filled';
+      }
+
+      // Update progress bar
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const progress = (completedCount / totalCount) * 100;
+      progressFill.style.width = progress + '%';
+      progressText.textContent = `Completion: ${completedCount}/${totalCount} (${Math.round(progress)}%)`;
+
+      // Update continue button
+      const continueButton = document.getElementById('continueButton');
+      if (completedCount === totalCount) {
+        continueButton.disabled = false;
+        continueButton.textContent = 'Continue Next Step →';
+      } else {
+        continueButton.disabled = false; // Allow continue even if incomplete (for demo)
+        continueButton.textContent = 'Continue (Incomplete Info) →';
+      }
+
+      return completedCount === totalCount;
+    }
+
+    function continueToNextStep() {
+      // Navigate to recommendation page
+      window.location.href = 'recommendation.html';
+    }
+
+    // Check on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        checkProfileInfo();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
+

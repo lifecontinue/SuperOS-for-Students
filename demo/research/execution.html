@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Execute Research Tasks - Research Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --border: rgba(170, 30, 35, 0.2);
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .tab {
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+    }
+    .task-content {
+      display: none;
+    }
+    .task-content.active {
+      display: block;
+    }
+    .task-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .btn-primary {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Execute Research Tasks</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Complete tasks to progress in your research projects</p>
+  </div>
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('planning')">📋 Planning</div>
+      <div class="tab" onclick="switchTab('execution')">🔬 Execution</div>
+      <div class="tab" onclick="switchTab('analysis')">📊 Analysis</div>
+    </div>
+    <div class="task-content active" id="planningContent">
+      <div class="task-section">
+        <h2 style="margin-bottom: 16px;">Define Research Question</h2>
+        <p style="color: var(--text-muted); margin-bottom: 16px;">Develop a clear and focused research question</p>
+        <button class="btn-primary" onclick="completeTask('plan-1')">标记完成</button>
+      </div>
+    </div>
+    <div class="task-content" id="executionContent">
+      <div class="task-section">
+        <h2 style="margin-bottom: 16px;">Collect Data</h2>
+        <p style="color: var(--text-muted); margin-bottom: 16px;">Gather data through experiments or surveys</p>
+        <button class="btn-primary" onclick="completeTask('exec-1')">标记完成</button>
+      </div>
+    </div>
+    <div class="task-content" id="analysisContent">
+      <div class="task-section">
+        <h2 style="margin-bottom: 16px;">Analyze Results</h2>
+        <p style="color: var(--text-muted); margin-bottom: 16px;">Process and analyze collected data</p>
+        <button class="btn-primary" onclick="completeTask('analysis-1')">标记完成</button>
+      </div>
+    </div>
+  </div>
+  <button class="back-button" onclick="window.location.href='tasklist.html'">←</button>
+  <script>
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      document.querySelectorAll('.task-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tabName + 'Content').classList.add('active');
+    }
+    function completeTask(taskId) {
+      alert('任务已标记完成！');
+      let completed = JSON.parse(localStorage.getItem('completedResearchTasks') || '[]');
+      if (!completed.includes(taskId)) completed.push(taskId);
+      localStorage.setItem('completedResearchTasks', JSON.stringify(completed));
+    }
+  </script>
+</body>
+</html>
+

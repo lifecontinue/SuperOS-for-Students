@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Test Recommendations - Test Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .intro-text {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+    .recommendations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .recommendation-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .recommendation-card.selected {
+      border-color: var(--primary);
+      background: rgba(170, 30, 35, 0.15);
+    }
+    .recommendation-icon { font-size: 48px; margin-bottom: 16px; text-align: center; }
+    .recommendation-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; text-align: center; }
+    .recommendation-description { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; text-align: center; }
+    .match-score-badge {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .match-score { text-align: center; margin-bottom: 16px; }
+    .recommendation-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .recommendation-meta-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+    .action-button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Test Recommendations</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Based on your profile, we recommend the following standardized tests</p>
+  </div>
+  <div class="container">
+    <div class="intro-text">Based on your academic goals and current test scores, we have identified standardized tests that would benefit your application.</div>
+    <div class="recommendations-grid" id="recommendationsGrid"></div>
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>Continue to Create Task List →</button>
+  </div>
+  <button class="back-button" onclick="window.location.href='check_profile.html'">←</button>
+  <script>
+    const recommendations = [
+      { id: 'sat', icon: '📝', title: 'SAT', description: 'Scholastic Assessment Test for college admissions', matchScore: 95, type: 'College Admissions', frequency: 'Multiple times/year' },
+      { id: 'act', icon: '📊', title: 'ACT', description: 'American College Testing alternative to SAT', matchScore: 93, type: 'College Admissions', frequency: 'Multiple times/year' },
+      { id: 'ap', icon: '🎓', title: 'AP Exams', description: 'Advanced Placement exams for college credit', matchScore: 90, type: 'Advanced Placement', frequency: 'Once/year' },
+      { id: 'ib', icon: '🌐', title: 'IB Exams', description: 'International Baccalaureate program exams', matchScore: 88, type: 'International', frequency: 'Once/year' },
+      { id: 'toefl', icon: '🇺🇸', title: 'TOEFL', description: 'Test of English as a Foreign Language', matchScore: 85, type: 'English Proficiency', frequency: 'Multiple times/year' },
+      { id: 'ielts', icon: '🇬🇧', title: 'IELTS', description: 'International English Language Testing System', matchScore: 85, type: 'English Proficiency', frequency: 'Multiple times/year' }
+    ];
+    let selectedRecommendations = [];
+    function renderRecommendations() {
+      document.getElementById('recommendationsGrid').innerHTML = recommendations.map(rec => `
+        <div class="recommendation-card" data-id="${rec.id}" onclick="toggleRecommendation('${rec.id}')">
+          <div class="recommendation-icon">${rec.icon}</div>
+          <div class="recommendation-title">${rec.title}</div>
+          <div class="recommendation-description">${rec.description}</div>
+          <div class="match-score"><span class="match-score-badge">Match: ${rec.matchScore}%</span></div>
+          <div class="recommendation-meta">
+            <div class="recommendation-meta-item">
+              <span>Type:</span>
+              <span>${rec.type}</span>
+            </div>
+            <div class="recommendation-meta-item">
+              <span>Frequency:</span>
+              <span>${rec.frequency}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    function toggleRecommendation(recId) {
+      const card = document.querySelector(`[data-id="${recId}"]`);
+      const index = selectedRecommendations.indexOf(recId);
+      if (index > -1) {
+        selectedRecommendations.splice(index, 1);
+        card.classList.remove('selected');
+      } else {
+        selectedRecommendations.push(recId);
+        card.classList.add('selected');
+      }
+      const btn = document.getElementById('continueButton');
+      btn.disabled = selectedRecommendations.length === 0;
+      btn.textContent = selectedRecommendations.length > 0 ? `Continue (${selectedRecommendations.length} selected) →` : 'Please select at least one';
+    }
+    function continueToNextStep() {
+      if (selectedRecommendations.length === 0) return;
+      localStorage.setItem('selectedTestRecommendations', JSON.stringify(recommendations.filter(r => selectedRecommendations.includes(r.id))));
+      window.location.href = 'tasklist.html';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      renderRecommendations();
+      const saved = localStorage.getItem('selectedTestRecommendations');
+      if (saved) {
+        const savedRecs = JSON.parse(saved);
+        selectedRecommendations = savedRecs.map(r => r.id);
+        selectedRecommendations.forEach(id => document.querySelector(`[data-id="${id}"]`)?.classList.add('selected'));
+        if (selectedRecommendations.length > 0) {
+          document.getElementById('continueButton').disabled = false;
+          document.getElementById('continueButton').textContent = `Continue (${selectedRecommendations.length} selected) →`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+

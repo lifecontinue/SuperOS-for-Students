@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Check Standardized Test Profile - Test Advisor</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card-1: #FAE2D8;
+      --bg-card-2: #FDF1EB;
+      --bg-card-3: #F5F1EE;
+      --bg-dark: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #AA1E23;
+      --primary-glow: rgba(170, 30, 35, 0.4);
+      --primary-light: #74070E;
+      --primary-dark: #4A0509;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #AA1E23;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --text-dim: #AA1E23;
+      --border: rgba(170, 30, 35, 0.2);
+      --border-glow: rgba(170, 30, 35, 0.3);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      padding-bottom: 40px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .info-card.complete {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .info-card.incomplete {
+      border-color: var(--warning);
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .info-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.complete {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .status-badge.incomplete {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .info-card-content {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-hover);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-label {
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    .info-value {
+      color: var(--text);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .action-button {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      margin-top: 20px;
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.3s ease;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1) rotate(-90deg);
+      box-shadow: 0 6px 30px var(--primary-glow);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-hover);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      transition: width 0.5s ease;
+      border-radius: 4px;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+
+      .info-card {
+        padding: 20px;
+      }
+
+      .back-button {
+        bottom: 20px;
+        left: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Check Standardized Test Profile</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Please confirm your standardized test information is complete</p>
+  </div>
+
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">Checking information...</div>
+
+    <!-- SAT/ACT Scores Card -->
+    <div class="info-card" id="satActCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📝</span>
+          <span>SAT/ACT Scores</span>
+        </div>
+        <span class="status-badge" id="satActStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Test Scores:</span>
+          <span class="info-value" id="satActValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AP/IB Exams Card -->
+    <div class="info-card" id="apIbCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📚</span>
+          <span>AP/IB Exams</span>
+        </div>
+        <span class="status-badge" id="apIbStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Exam Results:</span>
+          <span class="info-value" id="apIbValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOEFL/IELTS Card -->
+    <div class="info-card" id="toeflIeltsCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>🌍</span>
+          <span>TOEFL/IELTS</span>
+        </div>
+        <span class="status-badge" id="toeflIeltsStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">English Test Scores:</span>
+          <span class="info-value" id="toeflIeltsValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test Preparation Card -->
+    <div class="info-card" id="preparationCard">
+      <div class="info-card-header">
+        <div class="info-card-title">
+          <span>📖</span>
+          <span>Test Preparation</span>
+        </div>
+        <span class="status-badge" id="preparationStatus">Checking</span>
+      </div>
+      <div class="info-card-content">
+        <div class="info-item">
+          <span class="info-label">Preparation Status:</span>
+          <span class="info-value" id="preparationValue">—</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="action-button" id="continueButton" onclick="continueToNextStep()" disabled>
+      Continue Next Step
+    </button>
+  </div>
+
+  <button class="back-button" onclick="window.history.back()" title="Back">←</button>
+
+  <script>
+    function getTestProfile() {
+      const stored = localStorage.getItem('testProfile');
+      if (stored) {
+        return JSON.parse(stored);
+      }
+      
+      return {
+        satAct: null,
+        apIb: null,
+        toeflIelts: null,
+        preparation: null
+      };
+    }
+
+    function checkProfileInfo() {
+      const profile = getTestProfile();
+      let completedCount = 0;
+      const totalCount = 4;
+
+      function checkCard(cardId, statusId, valueId, profileValue) {
+        const card = document.getElementById(cardId);
+        const status = document.getElementById(statusId);
+        const value = document.getElementById(valueId);
+        
+        if (profileValue && (Array.isArray(profileValue) ? profileValue.length > 0 : profileValue)) {
+          card.classList.add('complete');
+          card.classList.remove('incomplete');
+          status.textContent = 'Complete';
+          status.className = 'status-badge complete';
+          value.textContent = Array.isArray(profileValue) ? profileValue.join(', ') : profileValue;
+          completedCount++;
+        } else {
+          card.classList.add('incomplete');
+          card.classList.remove('complete');
+          status.textContent = 'Incomplete';
+          status.className = 'status-badge incomplete';
+          value.textContent = 'Not filled';
+        }
+      }
+
+      checkCard('satActCard', 'satActStatus', 'satActValue', profile.satAct);
+      checkCard('apIbCard', 'apIbStatus', 'apIbValue', profile.apIb);
+      checkCard('toeflIeltsCard', 'toeflIeltsStatus', 'toeflIeltsValue', profile.toeflIelts);
+      checkCard('preparationCard', 'preparationStatus', 'preparationValue', profile.preparation);
+
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const progress = (completedCount / totalCount) * 100;
+      progressFill.style.width = progress + '%';
+      progressText.textContent = `Completion: ${completedCount}/${totalCount} (${Math.round(progress)}%)`;
+
+      const continueButton = document.getElementById('continueButton');
+      continueButton.disabled = completedCount === 0;
+      continueButton.textContent = completedCount === totalCount ? 'Continue Next Step →' : 'Continue (Incomplete Info) →';
+    }
+
+    function continueToNextStep() {
+      window.location.href = 'recommendation.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        checkProfileInfo();
+      }, 500);
+    });
+  </script>
+</body>
+</html>
+
