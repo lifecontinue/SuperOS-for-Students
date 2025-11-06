@@ -1,18 +1,25 @@
 :root {
-  --bg: #081020;
-  --bg2: #0b132b;
-  --neon: #6ea8fe;
-  --neon2: #7ee787;
-  --neon3: #ff9aa9;
-  --text: #e6e9ef;
-  --text-muted: #9aa4b2;
-  --border: rgba(255,255,255,0.12);
-  --border-light: rgba(255,255,255,0.08);
+  --bg-main: #FAF9F6;
+  --bg-card-1: #FAE2D8;
+  --bg-card-2: #FDF1EB;
+  --bg-card-3: #F5F1EE;
+  --bg: #FAF9F6;
+  --bg2: #FDF1EB;
+  --neon: #AA1E23;
+  --neon2: #74070E;
+  --neon3: #AA1E23;
+  --primary: #AA1E23;
+  --primary-light: #74070E;
+  --primary-dark: #4A0509;
+  --text: #4A0509;
+  --text-muted: #74070E;
+  --border: rgba(170, 30, 35, 0.2);
+  --border-light: rgba(170, 30, 35, 0.1);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { 
-  background: radial-gradient(1200px 600px at 50% -10%, #0f1b3a, #080d1a 60%), linear-gradient(180deg, #07122a, #040812);
+  background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 14px;
@@ -24,7 +31,7 @@ html, body {
 /* Header */
 .app-header {
   padding: 16px 20px;
-  background: rgba(8,16,32,0.6);
+  background: rgba(250, 225, 216, 0.6);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(10px);
   position: sticky;
@@ -36,7 +43,7 @@ html, body {
   font-weight: 600;
   color: var(--text);
   text-align: center;
-  text-shadow: 0 0 20px rgba(110,168,254,0.3);
+  text-shadow: 0 0 20px rgba(170, 30, 35, 0.3);
 }
 
 /* Main Layout */
@@ -78,7 +85,7 @@ html, body {
 
 /* Card */
 .card {
-  background: rgba(11,19,43,0.7);
+  background: rgba(253, 241, 235, 0.7);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 20px;
@@ -117,7 +124,7 @@ html, body {
 
 /* Buttons */
 button {
-  background: rgba(110,168,254,0.15);
+  background: rgba(170, 30, 35,0.15);
   border: 1px solid rgba(110,168,254,0.3);
   border-radius: 8px;
   padding: 10px 16px;
@@ -129,7 +136,7 @@ button {
   font-family: inherit;
 }
 button:hover {
-  background: rgba(110,168,254,0.25);
+  background: rgba(170, 30, 35,0.25);
   border-color: rgba(110,168,254,0.5);
   box-shadow: 0 0 12px rgba(110,168,254,0.3);
 }
@@ -233,7 +240,7 @@ input::placeholder, textarea::placeholder {
 }
 .tab:hover {
   color: var(--text);
-  background: rgba(110,168,254,0.1);
+  background: rgba(170, 30, 35,0.1);
 }
 .tab.active {
   color: var(--neon);
@@ -257,7 +264,7 @@ input::placeholder, textarea::placeholder {
 
 .tab.small.locked:hover {
   opacity: 0.8;
-  background: rgba(110,168,254,0.05);
+  background: rgba(170, 30, 35,0.05);
 }
 
 .tab-label {
@@ -432,7 +439,7 @@ input::placeholder, textarea::placeholder {
 .badge-pill {
   display: inline-block;
   padding: 4px 10px;
-  background: rgba(110,168,254,0.15);
+  background: rgba(170, 30, 35,0.15);
   border: 1px solid rgba(110,168,254,0.3);
   border-radius: 12px;
   font-size: 12px;
@@ -490,7 +497,7 @@ input::placeholder, textarea::placeholder {
 
 .onboarding-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #6ea8fe, #7ee787, #ffd700);
+  background: linear-gradient(90deg, #AA1E23, #74070E, #ffd700);
   background-size: 200% 100%;
   border-radius: 8px;
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -884,7 +891,7 @@ input::placeholder, textarea::placeholder {
   font-size: 15px;
   font-weight: 600;
   color: var(--bg);
-  background: linear-gradient(135deg, var(--neon), #7ee787);
+  background: linear-gradient(135deg, var(--neon), #74070E);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -928,7 +935,7 @@ input::placeholder, textarea::placeholder {
 }
 
 .btn-onboarding-finish {
-  background: linear-gradient(135deg, #7ee787, #6ea8fe);
+  background: linear-gradient(135deg, #74070E, #AA1E23);
   padding: 14px 36px;
   font-size: 16px;
 }
@@ -1177,7 +1184,7 @@ input::placeholder, textarea::placeholder {
 .tutor-message.follow-up .tutor-label {
   background: rgba(126, 231, 135, 0.2);
   border-color: rgba(126, 231, 135, 0.4);
-  color: #7ee787;
+  color: #74070E;
 }
 
 /* Confirm Review Section */
@@ -1493,7 +1500,7 @@ input::placeholder, textarea::placeholder {
 
 .suggestion-item.confirmed {
   border-color: var(--accent);
-  background: rgba(110,168,254,0.1);
+  background: rgba(170, 30, 35,0.1);
 }
 
 .suggestion-header {
@@ -1563,13 +1570,13 @@ input::placeholder, textarea::placeholder {
 }
 
 .suggestion-btn.confirm-btn {
-  background: rgba(110,168,254,0.2);
+  background: rgba(170, 30, 35,0.2);
   color: var(--accent);
   border: 1px solid rgba(110,168,254,0.3);
 }
 
 .suggestion-btn.confirm-btn:hover {
-  background: rgba(110,168,254,0.3);
+  background: rgba(170, 30, 35,0.3);
   transform: translateY(-1px);
 }
 
@@ -1707,7 +1714,7 @@ input::placeholder, textarea::placeholder {
 
 .major-card.selected {
   border-color: var(--accent);
-  background: rgba(110,168,254,0.15);
+  background: rgba(170, 30, 35,0.15);
   box-shadow: 0 4px 16px rgba(110,168,254,0.3);
 }
 
@@ -1778,7 +1785,7 @@ input::placeholder, textarea::placeholder {
 }
 
 .highlight-tag {
-  background: rgba(110,168,254,0.15);
+  background: rgba(170, 30, 35,0.15);
   color: var(--accent);
   padding: 4px 10px;
   border-radius: 12px;
@@ -1827,7 +1834,7 @@ input::placeholder, textarea::placeholder {
 }
 
 .major-badge {
-  background: rgba(110,168,254,0.2);
+  background: rgba(170, 30, 35,0.2);
   color: var(--accent);
   padding: 8px 16px;
   border-radius: 20px;
@@ -1846,7 +1853,7 @@ input::placeholder, textarea::placeholder {
 .tag {
   display: inline-block;
   padding: 4px 8px;
-  background: rgba(110,168,254,0.15);
+  background: rgba(170, 30, 35,0.15);
   border-radius: 6px;
   font-size: 11px;
   color: var(--neon);
@@ -1865,7 +1872,7 @@ input::placeholder, textarea::placeholder {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(110,168,254,0.1);
+  background: rgba(170, 30, 35,0.1);
   border: 1px solid rgba(110,168,254,0.2);
   border-radius: 8px;
   padding: 6px 10px;

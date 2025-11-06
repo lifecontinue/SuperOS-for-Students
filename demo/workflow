@@ -1,0 +1,573 @@
+# SuperOS for Students - 用户使用旅程流程图
+
+## 📋 目录
+1. [登录与注册](#1-登录与注册)
+2. [Onboarding流程](#2-onboarding流程)
+3. [Persona展示](#3-persona展示)
+4. [Profile页面](#4-profile页面)
+5. [Roadmap解锁](#5-roadmap解锁)
+6. [Mission解锁](#6-mission解锁)
+7. [支线任务](#7-支线任务)
+8. [Router日常交互](#8-router日常交互)
+
+---
+
+## 1. 登录与注册
+
+### 入口
+📄 **文件**: [`login.html`](./login.html)
+
+### 功能
+- ✅ 邮箱注册登录
+- ✅ Google账号同步登录
+- ✅ Capp账号同步登录
+
+### 流程
+```
+[未登录用户]
+    ↓
+[登录页面 login.html]
+    ├─→ 邮箱注册/登录
+    ├─→ Google OAuth登录
+    └─→ Capp账号同步登录
+        ↓
+    [认证成功]
+        ↓
+    [进入Onboarding流程]
+```
+
+---
+
+## 2. Onboarding流程
+
+### 入口
+📄 **文件**: [`login.html`](./login.html) (包含在登录页面中)
+
+### 功能
+- 🎤 语音交互输入
+- 📝 表单填写配合
+- 📊 进度跟踪
+
+### 收集信息
+1. **基本信息**
+   - 姓名 (Name)
+   - 学术背景 (Academic Background)
+   - 兴趣爱好 (Interests)
+   - 目标专业 (Target Majors)
+   - 目标大学 (Target Universities) - 可选
+   - 学习风格 (Learning Style)
+
+2. **交互方式**
+   - 文字输入
+   - 语音输入 (🎤 按钮)
+   - AI Tutor引导
+
+### 流程
+```
+[Onboarding开始]
+    ↓
+[步骤1: 基本信息收集]
+    ↓
+[步骤2: 学术背景]
+    ↓
+[步骤3: 兴趣爱好]
+    ↓
+[步骤4: 目标专业]
+    ↓
+[步骤5: 学习风格]
+    ↓
+[Onboarding完成]
+    ↓
+[生成初始Persona]
+    ↓
+[进入Profile页面]
+```
+
+### 相关文件
+- 📄 [`login.html`](./login.html) - Onboarding表单和流程
+- 📄 [`sections/view-auth.html`](./sections/view-auth.html) - 认证视图组件
+
+---
+
+## 3. Persona展示
+
+### 入口
+📄 **文件**: [`sections/view-persona.html`](./sections/view-persona.html)
+
+### 功能
+- 🎭 展示学生初步Persona
+- 📖 Core Narrative (核心叙事)
+- ⭐ Highlights (亮点)
+- 🎯 Anchor Points (锚点)
+- 📈 Development Plan (发展规划)
+
+### 流程
+```
+[Onboarding完成]
+    ↓
+[AI生成初始Persona]
+    ↓
+[展示Persona页面]
+    ├─→ Persona 1: [标题]
+    ├─→ Persona 2: [标题]
+    └─→ Persona 3: [标题]
+        ↓
+[学生了解自己的Persona]
+        ↓
+[进入Profile页面完善信息]
+```
+
+### 相关文件
+- 📄 [`sections/view-persona.html`](./sections/view-persona.html)
+- 📄 [`js/persona.js`](./js/persona.js) - Persona生成逻辑
+
+---
+
+## 4. Profile页面
+
+### 入口
+📄 **文件**: [`sections/view-profile.html`](./sections/view-profile.html)
+
+### 功能
+- 📝 持续补充学生Context
+- 📋 Common App字段指南
+- 🎤 语音输入支持
+- ✏️ 实时编辑
+
+### Profile Sections
+1. **Identity & Contact** - 身份和联系方式
+2. **School & CEEB** - 学校和CEEB代码
+3. **Transcript / GPA** - 成绩单和GPA
+4. **Activities** - 活动经历
+5. **Testing** - 标准化考试
+6. **Recommenders** - 推荐人
+7. **Essays** - 文书
+8. **Permissions / FERPA** - 权限和FERPA
+
+### 流程
+```
+[进入Profile页面]
+    ↓
+[查看各Section状态]
+    ├─→ empty (未填写)
+    ├─→ pending (待处理)
+    ├─→ updated (已更新)
+    └─→ risk (风险)
+        ↓
+[点击Section展开编辑]
+    ↓
+[填写/编辑信息]
+    ├─→ 文字输入
+    ├─→ 语音输入 (🎤)
+    └─→ AI Tutor辅助
+        ↓
+[保存更新]
+        ↓
+[Profile完整度提升]
+        ↓
+[解锁更多功能]
+```
+
+### 相关文件
+- 📄 [`sections/view-profile.html`](./sections/view-profile.html)
+- 📄 [`js/profile.js`](./js/profile.js) - Profile管理逻辑
+- 📄 [`js/editor.js`](./js/editor.js) - 编辑器功能
+
+---
+
+## 5. Roadmap解锁
+
+### 入口
+📄 **文件**: [`sections/view-roadmap.html`](./sections/view-roadmap.html)
+📄 **详细页面**: [`roadmap/roadmap.html`](./roadmap/roadmap.html)
+
+### 功能
+- 🗺️ 根据学生阶段解锁不同Roadmap
+- 📊 阶段可视化
+- ✅ 任务跟踪
+
+### Roadmap阶段
+根据学生当前阶段，解锁对应的Roadmap:
+
+1. **Pre-High School** (高中前)
+   - 📄 [`roadmap/roadmap_pre_high_school.html`](./roadmap/roadmap_pre_high_school.html)
+
+2. **Building Candidacy** (建立候选资格)
+   - 📄 [`roadmap/roadmap_building_candidacy.html`](./roadmap/roadmap_building_candidacy.html)
+
+3. **Application** (申请阶段)
+   - 📄 [`roadmap/roadmap_application.html`](./roadmap/roadmap_application.html)
+
+4. **Post-Application** (申请后)
+   - 📄 [`roadmap/roadmap_post_application.html`](./roadmap/roadmap_post_application.html)
+
+### 流程
+```
+[Profile完成度达到阈值]
+    ↓
+[根据学生阶段判断]
+    ├─→ Pre-High School
+    ├─→ Building Candidacy
+    ├─→ Application
+    └─→ Post-Application
+        ↓
+[解锁对应Roadmap]
+        ↓
+[展示阶段Roadmap]
+        ↓
+[查看可解锁的Missions]
+```
+
+### 相关文件
+- 📄 [`sections/view-roadmap.html`](./sections/view-roadmap.html)
+- 📄 [`roadmap/roadmap.html`](./roadmap/roadmap.html)
+- 📄 [`roadmap/roadmap_pre_high_school.html`](./roadmap/roadmap_pre_high_school.html)
+- 📄 [`roadmap/roadmap_building_candidacy.html`](./roadmap/roadmap_building_candidacy.html)
+- 📄 [`roadmap/roadmap_application.html`](./roadmap/roadmap_application.html)
+- 📄 [`roadmap/roadmap_post_application.html`](./roadmap/roadmap_post_application.html)
+- 📄 [`roadmap/roadmap_content.json`](./roadmap/roadmap_content.json)
+- 📄 [`roadmap/roadmap_stages.json`](./roadmap/roadmap_stages.json)
+- 📄 [`js/roadmap.js`](./js/roadmap.js) - Roadmap逻辑
+
+---
+
+## 6. Mission解锁
+
+### 功能
+- 🎯 从Roadmap解锁不同Missions
+- 📋 Mission任务列表
+- ✅ 进度跟踪
+
+### 流程
+```
+[查看Roadmap]
+    ↓
+[点击Mission卡片]
+    ↓
+[解锁Mission]
+    ↓
+[查看Mission详情]
+    ├─→ 任务列表
+    ├─→ 完成标准
+    └─→ 进度跟踪
+        ↓
+[开始执行Mission]
+        ↓
+[开启相关支线任务]
+```
+
+---
+
+## 7. 支线任务
+
+从Roadmap解锁的Missions可以开启不同的支线任务模块：
+
+### 7.1 Capstone (顶点项目)
+
+#### 入口
+📄 **文件**: [`capstone/capstone.html`](./capstone/capstone.html)
+
+#### 功能
+- 📝 Capstone项目创建和管理
+- 💬 对话组件
+- ✅ 任务列表管理
+
+#### 相关文件
+- 📄 [`capstone/capstone.html`](./capstone/capstone.html)
+- 📄 [`capstone/component.html`](./capstone/component.html)
+- 📄 [`capstone/conversation_component.html`](./capstone/conversation_component.html)
+- 📄 [`capstone/taskslist.html`](./capstone/taskslist.html)
+
+#### 流程
+```
+[Mission解锁Capstone]
+    ↓
+[进入Capstone页面]
+    ↓
+[创建Capstone项目]
+    ├─→ 项目描述
+    ├─→ 目标设定
+    └─→ 时间线
+        ↓
+[管理任务列表]
+        ↓
+[与AI Tutor对话]
+        ↓
+[跟踪项目进度]
+```
+
+---
+
+### 7.2 Major Advisor (专业顾问)
+
+#### 入口
+📄 **文件**: [`major_advisor/view-advisor.html`](./major_advisor/view-advisor.html)
+
+#### 功能
+- 🎯 目标专业分析
+- 📊 Profile检查
+- 📋 任务列表创建
+- ✅ 任务执行
+- 🔍 专业推荐和优化
+
+#### 相关文件
+- 📄 [`major_advisor/view-advisor.html`](./major_advisor/view-advisor.html)
+- 📄 [`major_advisor/analyze_target_major.html`](./major_advisor/analyze_target_major.html)
+- 📄 [`major_advisor/check_profile.html`](./major_advisor/check_profile.html)
+- 📄 [`major_advisor/create_tasklist.html`](./major_advisor/create_tasklist.html)
+- 📄 [`major_advisor/execute_tasks.html`](./major_advisor/execute_tasks.html)
+- 📄 [`major_advisor/recommend_categories.html`](./major_advisor/recommend_categories.html)
+- 📄 [`major_advisor/refine_majors.html`](./major_advisor/refine_majors.html)
+- 📄 [`js/advisor.js`](./js/advisor.js) - Major Advisor逻辑
+
+#### 流程
+```
+[Mission解锁Major Advisor]
+    ↓
+[进入Major Advisor页面]
+    ↓
+[选择功能]
+    ├─→ 分析目标专业
+    │   └─→ analyze_target_major.html
+    ├─→ 检查Profile
+    │   └─→ check_profile.html
+    ├─→ 创建任务列表
+    │   └─→ create_tasklist.html
+    ├─→ 执行任务
+    │   └─→ execute_tasks.html
+    ├─→ 推荐专业类别
+    │   └─→ recommend_categories.html
+    └─→ 优化专业选择
+        └─→ refine_majors.html
+```
+
+---
+
+### 7.3 Academic (学术)
+
+#### 入口
+📄 **文件**: 学术模块相关页面
+
+#### 功能
+- 📚 学术Profile检查
+- 🎯 目标达成
+- 📊 GPA管理
+- 📖 课程推荐
+
+#### 相关文件
+- 📄 [`academic/check_academic_profile.html`](./academic/check_academic_profile.html)
+- 📄 [`academic/achieve_goal.html`](./academic/achieve_goal.html)
+- 📄 [`academic/manage_gpa.html`](./academic/manage_gpa.html)
+- 📄 [`academic/recommend_courses.html`](./academic/recommend_courses.html)
+
+#### 流程
+```
+[Mission解锁Academic]
+    ↓
+[进入Academic模块]
+    ↓
+[选择功能]
+    ├─→ 检查学术Profile
+    │   └─→ check_academic_profile.html
+    ├─→ 达成目标
+    │   └─→ achieve_goal.html
+    ├─→ 管理GPA
+    │   └─→ manage_gpa.html
+    └─→ 推荐课程
+        └─→ recommend_courses.html
+```
+
+---
+
+## 8. Router日常交互
+
+### 入口
+📄 **主要文件**: [`router/router.html`](./router/router.html)
+
+### 功能
+- 🌅 每日暖场交互
+- 🧭 智能路由引导
+- 📊 状态仪表板
+- 🔍 审查功能
+
+### Router页面 (根据学生阶段)
+
+1. **Pre-High School Router**
+   - 📄 [`router/router_pre_high_school.html`](./router/router_pre_high_school.html)
+
+2. **Building Candidacy Router**
+   - 📄 [`router/router_building_candidacy.html`](./router/router_building_candidacy.html)
+
+3. **Application Router**
+   - 📄 [`router/router_application.html`](./router/router_application.html)
+
+4. **Post-Application Router**
+   - 📄 [`router/router_post_application.html`](./router/router_post_application.html)
+
+5. **Review Router**
+   - 📄 [`router/router_review.html`](./router/router_review.html)
+
+6. **Status Dashboard**
+   - 📄 [`router/router_status_dashboard.html`](./router/router_status_dashboard.html)
+
+### 流程
+```
+[用户每日登录]
+    ↓
+[进入Router页面]
+    ↓
+[AI Tutor暖场交互]
+    ├─→ 问候
+    ├─→ 检查上次进度
+    └─→ 提供建议
+        ↓
+[Router智能分析]
+    ├─→ 检查Profile完整度
+    ├─→ 检查任务进度
+    ├─→ 检查截止日期
+    └─→ 生成建议
+        ↓
+[引导用户]
+    ├─→ 完善Profile
+    │   └─→ 跳转到 view-profile.html
+    ├─→ 查看Roadmap
+    │   └─→ 跳转到 view-roadmap.html
+    ├─→ 执行Mission任务
+    │   ├─→ Capstone
+    │   ├─→ Major Advisor
+    │   └─→ Academic
+    ├─→ 查看Persona
+    │   └─→ 跳转到 view-persona.html
+    └─→ 更多交互行为
+        ↓
+[根据Router规则导航]
+```
+
+### 相关文件
+- 📄 [`router/router.html`](./router/router.html) - 主Router页面
+- 📄 [`router/router_pre_high_school.html`](./router/router_pre_high_school.html)
+- 📄 [`router/router_building_candidacy.html`](./router/router_building_candidacy.html)
+- 📄 [`router/router_application.html`](./router/router_application.html)
+- 📄 [`router/router_post_application.html`](./router/router_post_application.html)
+- 📄 [`router/router_review.html`](./router/router_review.html)
+- 📄 [`router/router_status_dashboard.html`](./router/router_status_dashboard.html)
+- 📄 [`router/router2.html`](./router/router2.html) - Router变体
+- 📄 [`router/router3.html`](./router/router3.html) - Router变体
+- 📄 [`js/router.js`](./js/router.js) - Router导航逻辑
+- 📄 [`js/router-agent.js`](./js/router-agent.js) - Router AI Agent逻辑
+
+---
+
+## 🔄 完整用户旅程流程图
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SuperOS用户旅程                          │
+└─────────────────────────────────────────────────────────────┘
+
+1. [登录/注册]
+   ├─→ login.html
+   │   ├─→ 邮箱注册/登录
+   │   ├─→ Google OAuth
+   │   └─→ Capp账号同步
+   │
+2. [Onboarding]
+   └─→ login.html (Onboarding流程)
+       ├─→ 语音交互 + 表单填写
+       └─→ 收集基本信息
+       
+3. [Persona展示]
+   └─→ sections/view-persona.html
+       └─→ 学生了解自己的Persona
+       
+4. [Profile页面]
+   └─→ sections/view-profile.html
+       ├─→ 持续补充Context
+       └─→ Common App字段管理
+       
+5. [Roadmap解锁]
+   └─→ sections/view-roadmap.html
+       └─→ roadmap/roadmap_*.html
+           ├─→ Pre-High School
+           ├─→ Building Candidacy
+           ├─→ Application
+           └─→ Post-Application
+           
+6. [Mission解锁]
+   └─→ 从Roadmap解锁不同Missions
+   
+7. [支线任务]
+   ├─→ Capstone
+   │   └─→ capstone/capstone.html
+   ├─→ Major Advisor
+   │   └─→ major_advisor/view-advisor.html
+   └─→ Academic
+       └─→ academic/*.html
+       
+8. [Router日常交互]
+   └─→ router/router.html
+       ├─→ 暖场交互
+       ├─→ 智能路由引导
+       └─→ 根据阶段显示不同Router页面
+```
+
+---
+
+## 📱 核心功能模块
+
+### 导航与路由
+- 📄 [`index.html`](./index.html) - 主应用入口
+- 📄 [`js/router.js`](./js/router.js) - 路由逻辑
+- 📄 [`js/sections.js`](./js/sections.js) - 视图组件管理
+
+### 认证与状态
+- 📄 [`js/auth.js`](./js/auth.js) - 认证逻辑
+- 📄 [`js/state.js`](./js/state.js) - 状态管理
+
+### AI交互
+- 📄 [`js/tutor.js`](./js/tutor.js) - AI Tutor逻辑
+- 📄 [`js/voice.js`](./js/voice.js) - 语音输入
+- 📄 [`js/subtitle.js`](./js/subtitle.js) - 字幕显示
+
+### 工具函数
+- 📄 [`js/utils.js`](./js/utils.js) - 工具函数
+- 📄 [`js/gap.js`](./js/gap.js) - GAP分析
+
+---
+
+## 🎯 关键特性
+
+1. **多模态交互**
+   - 🎤 语音输入
+   - ⌨️ 文字输入
+   - 💬 AI对话
+
+2. **个性化引导**
+   - 🧭 智能Router
+   - 📊 阶段感知
+   - 🎯 任务推荐
+
+3. **持续完善**
+   - 📝 Profile动态更新
+   - 🎭 Persona迭代
+   - 📈 进度跟踪
+
+4. **模块化设计**
+   - 🔌 可扩展的模块
+   - 🔄 组件复用
+   - 📦 清晰的文件结构
+
+---
+
+## 📝 注意事项
+
+1. **文件路径**: 所有HTML文件路径都是相对于`demo/`目录
+2. **状态管理**: 使用`state.js`管理全局状态
+3. **路由逻辑**: 使用`router.js`处理页面导航
+4. **组件加载**: 使用`sections.js`动态加载视图组件
+
+---
+
+**最后更新**: 2024
+**版本**: V1.0
+
