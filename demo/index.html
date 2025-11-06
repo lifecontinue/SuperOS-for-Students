@@ -1,659 +1,1416 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>Page Directory - SuperOS</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuperOS for Students - 用户使用旅程流程图</title>
   <style>
     :root {
+      /* 背景色 */
       --bg-main: #FAF9F6;
       --bg-card-1: #FAE2D8;
       --bg-card-2: #FDF1EB;
       --bg-card-3: #F5F1EE;
+      
+      /* 按钮/边框色 */
       --primary: #AA1E23;
       --primary-dark: #4A0509;
       --primary-light: #74070E;
+      
+      /* 文字色 */
       --text-primary: #4A0509;
       --text-secondary: #74070E;
+      --text-muted: #AA1E23;
+      
+      /* 其他 */
       --border-color: #AA1E23;
+      --shadow: rgba(170, 30, 35, 0.1);
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
       background: linear-gradient(135deg, var(--bg-main) 0%, var(--bg-card-3) 100%);
       color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      font-size: 14px;
       line-height: 1.6;
       min-height: 100vh;
       padding: 0;
-      margin: 0;
-      overflow-x: hidden;
     }
 
-    .particles {
-      position: fixed;
+    /* 头部 */
+    .header {
+      background: linear-gradient(135deg, var(--bg-card-1) 0%, var(--bg-card-2) 100%);
+      padding: 40px 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px var(--shadow);
+      position: sticky;
       top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
+      z-index: 100;
+      border-bottom: 3px solid var(--primary);
     }
 
-    .particle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
+    .header h1 {
+      font-size: 2.5em;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .header p {
+      color: var(--text-secondary);
+      font-size: 1.1em;
+    }
+
+    /* 主容器 - 左右分栏布局 */
+    .main-wrapper {
+      display: flex;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px 15px;
+      align-items: flex-start;
+    }
+
+    /* 左侧目录导航 - 固定定位 */
+    .toc-sidebar {
+      position: sticky;
+      top: 100px;
+      width: 220px;
+      flex-shrink: 0;
+      height: fit-content;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+
+    /* 自定义滚动条样式 */
+    .toc-sidebar::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .toc-sidebar::-webkit-scrollbar-track {
+      background: var(--bg-card-3);
+      border-radius: 3px;
+    }
+
+    .toc-sidebar::-webkit-scrollbar-thumb {
+      background: var(--primary-light);
+      border-radius: 3px;
+    }
+
+    .toc-sidebar::-webkit-scrollbar-thumb:hover {
       background: var(--primary);
-      border-radius: 50%;
-      opacity: 0.3;
-      animation: float 15s infinite ease-in-out;
     }
 
-    @keyframes float {
-      0%, 100% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-        opacity: 0.3;
-      }
-      25% {
-        transform: translateY(-100px) translateX(50px) rotate(90deg);
-        opacity: 0.5;
-      }
-      50% {
-        transform: translateY(-200px) translateX(-30px) rotate(180deg);
-        opacity: 0.2;
-      }
-      75% {
-        transform: translateY(-150px) translateX(80px) rotate(270deg);
-        opacity: 0.4;
-      }
+    .toc {
+      background: var(--bg-card-2);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 12px var(--shadow);
     }
 
+    .toc h2 {
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      font-size: 1.4em;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 8px;
+    }
+
+    .toc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .toc-item {
+      background: var(--bg-card-3);
+      border: 1px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 8px 12px;
+      transition: all 0.3s ease;
+    }
+
+    .toc-item:hover {
+      background: var(--bg-card-1);
+      transform: translateX(3px);
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+
+    .toc-item.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .toc-item.active a {
+      color: var(--bg-main);
+    }
+
+    .toc-item a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      display: block;
+      transition: color 0.3s ease;
+      font-size: 0.9em;
+    }
+
+    .toc-item a:hover {
+      color: var(--primary-dark);
+    }
+
+    .toc-item.active a:hover {
+      color: var(--bg-main);
+    }
+
+    /* 右侧内容区域 */
+    .content-area {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* 容器 - 保持向后兼容 */
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px 15px;
-      position: relative;
-      z-index: 1;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      padding: 40px 15px;
-      position: relative;
-    }
-
-    .header::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(170, 30, 35, 0.1) 0%, transparent 70%);
-      border-radius: 50%;
-      animation: pulse 3s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.5;
-      }
-      50% {
-        transform: translate(-50%, -50%) scale(1.2);
-        opacity: 0.3;
-      }
-    }
-
-    .header h1 {
-      font-size: 36px;
-      font-weight: 700;
-      color: var(--primary-dark);
-      margin-bottom: 10px;
-      position: relative;
-      z-index: 1;
-      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .header p {
-      font-size: 16px;
-      color: var(--text-secondary);
-      position: relative;
-      z-index: 1;
-      font-weight: 500;
-    }
-
-    .category {
-      margin-bottom: 40px;
-    }
-
-    .category-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--primary-dark);
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 3px solid var(--primary);
-      position: relative;
-    }
-
-    .category-title::after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 60px;
-      height: 3px;
-      background: var(--primary-light);
-      animation: expand 2s ease-in-out infinite;
-    }
-
-    @keyframes expand {
-      0%, 100% {
-        width: 60px;
-      }
-      50% {
-        width: 120px;
-      }
-    }
-
-    .page-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .page-card {
+    /* 章节卡片 */
+    .section {
       background: var(--bg-card-2);
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 4px 16px rgba(170, 30, 35, 0.1);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(170, 30, 35, 0.15);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--primary-light);
+    }
+
+    .section-number {
+      background: var(--primary);
+      color: var(--bg-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .section-title-wrapper {
+      flex: 1;
+    }
+
+    .section-title {
+      color: var(--primary-dark);
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .section-description {
+      color: var(--text-secondary);
+      font-size: 0.9em;
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    /* 功能列表 */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .feature-item {
+      background: var(--bg-card-3);
+      border: 1px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
       transition: all 0.3s ease;
-      border: 2px solid transparent;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
+    }
+
+    .feature-item:hover {
+      background: var(--bg-card-1);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      font-size: 1.5em;
+      margin-bottom: 4px;
+    }
+
+    /* 流程图表 */
+    .flow-diagram {
+      background: var(--bg-card-3);
+      border: 1px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+      font-size: 0.85em;
+    }
+
+    .flow-step {
+      background: var(--bg-main);
+      border-left: 3px solid var(--primary);
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+
+    .flow-step:hover {
+      background: var(--bg-card-1);
+      border-left-color: var(--primary-dark);
+      transform: translateX(3px);
+    }
+
+    .flow-arrow {
+      text-align: center;
+      color: var(--primary);
+      font-size: 1.2em;
+      margin: 4px 0;
+      font-weight: bold;
+    }
+
+    /* 文件链接 */
+    .file-link {
+      display: inline-block;
+      background: var(--primary);
+      color: var(--bg-main);
+      padding: 5px 12px;
+      border-radius: 6px;
       text-decoration: none;
-      color: inherit;
-      display: block;
+      font-weight: 600;
+      font-size: 0.85em;
+      margin: 3px;
+      transition: all 0.3s ease;
+      border: 2px solid var(--primary);
     }
 
-    .page-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(170, 30, 35, 0.1), transparent);
-      transition: left 0.5s ease;
+    .file-link:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px var(--shadow);
     }
 
-    .page-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(170, 30, 35, 0.2);
+    .file-list {
+      background: var(--bg-card-3);
+      border: 1px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    .file-list-item {
+      padding: 6px 0;
+      font-size: 0.9em;
+      border-bottom: 1px solid var(--primary-light);
+    }
+
+    .file-list-item:last-child {
+      border-bottom: none;
+    }
+
+    /* 按钮 */
+    .btn {
+      display: inline-block;
+      background: var(--primary);
+      color: var(--bg-main);
+      padding: 12px 24px;
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
       border-color: var(--primary);
     }
 
-    .page-card:hover::before {
-      left: 100%;
+    .btn-secondary:hover {
+      background: var(--primary);
+      color: var(--bg-main);
     }
 
-    .page-card-icon {
-      font-size: 32px;
-      margin-bottom: 12px;
-      display: block;
+    /* 子章节 */
+    .subsection {
+      background: var(--bg-card-3);
+      border: 1px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
     }
 
-    .page-card-title {
-      font-size: 18px;
-      font-weight: 700;
+    .subsection-title {
       color: var(--primary-dark);
+      font-size: 1.1em;
+      font-weight: 600;
       margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--primary-light);
     }
 
-    .page-card-description {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.5;
+    /* 紧凑布局 - 将相关文件放在流程旁边 */
+    .two-column-layout {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 12px;
+      margin: 10px 0;
     }
 
-    .page-card-path {
-      font-size: 12px;
-      color: var(--primary);
-      margin-top: 12px;
-      opacity: 0.7;
-      font-family: 'Courier New', monospace;
+    .two-column-layout .flow-diagram,
+    .two-column-layout .subsection {
+      margin: 0;
+    }
+
+    /* 完整流程图 */
+    .full-flow {
+      background: linear-gradient(135deg, var(--bg-card-1) 0%, var(--bg-card-2) 100%);
+      border: 3px solid var(--primary);
+      border-radius: 16px;
+      padding: 40px;
+      margin: 40px 0;
+      box-shadow: 0 12px 32px var(--shadow);
+    }
+
+    .full-flow-title {
+      text-align: center;
+      color: var(--primary-dark);
+      font-size: 2em;
+      font-weight: 700;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    /* 特性卡片 */
+    .feature-card {
+      background: var(--bg-card-3);
+      border: 2px solid var(--primary-light);
+      border-radius: 12px;
+      padding: 30px;
+      margin: 20px 0;
+    }
+
+    .feature-card-title {
+      color: var(--primary-dark);
+      font-size: 1.3em;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1024px) {
+      .main-wrapper {
+        flex-direction: column;
+      }
+
+      .toc-sidebar {
+        position: relative;
+        top: 0;
+        width: 100%;
+        max-height: none;
+      }
+
+      .two-column-layout {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 768px) {
-      .page-grid {
-        grid-template-columns: 1fr;
+      .header {
+        padding: 20px 15px;
       }
 
       .header h1 {
-        font-size: 28px;
+        font-size: 2em;
       }
 
-      .category-title {
-        font-size: 20px;
+      .section {
+        padding: 15px;
+        margin-bottom: 15px;
       }
+
+      .section-title {
+        font-size: 1.3em;
+      }
+
+      .toc {
+        padding: 12px;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+    }
+
+    /* 滚动动画 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* 代码块样式 */
+    code {
+      background: var(--bg-card-3);
+      border: 1px solid var(--primary-light);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: 'Courier New', monospace;
+      color: var(--primary-dark);
+    }
+
+    /* 列表样式 */
+    ul, ol {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    li {
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+
+    /* 强调文本 */
+    strong {
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+
+    /* 分隔线 */
+    hr {
+      border: none;
+      border-top: 2px solid var(--primary-light);
+      margin: 30px 0;
+    }
+
+    /* 标签 */
+    .badge {
+      display: inline-block;
+      background: var(--primary);
+      color: var(--bg-main);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin: 0 5px;
     }
   </style>
 </head>
 <body>
-  <!-- Background Particles -->
-  <div class="particles" id="particles"></div>
+  <div class="header">
+    <h1>🚀 SuperOS for Students</h1>
+    <p>用户使用旅程流程图</p>
+  </div>
 
-  <div class="container">
-    <div class="header">
-      <h1>📚 SuperOS Page Directory</h1>
-      <p>Navigate to all available pages for demonstration</p>
-    </div>
-
-    <!-- Main Application -->
-    <div class="category">
-      <h2 class="category-title">Main Application</h2>
-      <div class="page-grid">
-        <a href="login.html" class="page-card">
-          <span class="page-card-icon">🚀</span>
-          <div class="page-card-title">Main Application</div>
-          <div class="page-card-description">Full SuperOS application with login, onboarding, and all features</div>
-          <div class="page-card-path">login.html</div>
-        </a>
+  <div class="main-wrapper">
+    <!-- 左侧目录导航 -->
+    <aside class="toc-sidebar">
+      <div class="toc">
+        <h2>📋 目录</h2>
+        <ul class="toc-list">
+          <li class="toc-item"><a href="#section1">1. 登录与注册</a></li>
+          <li class="toc-item"><a href="#section2">2. Onboarding流程</a></li>
+          <li class="toc-item"><a href="#section3">3. Persona展示</a></li>
+          <li class="toc-item"><a href="#section4">4. Profile页面</a></li>
+          <li class="toc-item"><a href="#section5">5. Roadmap解锁</a></li>
+          <li class="toc-item"><a href="#section6">6. Mission解锁</a></li>
+          <li class="toc-item"><a href="#section7">7. 支线任务</a></li>
+          <li class="toc-item"><a href="#section8">8. Router日常交互</a></li>
+        </ul>
       </div>
-    </div>
+    </aside>
 
-    <!-- Roadmap Pages -->
-    <div class="category">
-      <h2 class="category-title">Roadmap Pages</h2>
-      <div class="page-grid">
-        <a href="roadmap/roadmap.html" class="page-card">
-          <span class="page-card-icon">🗺️</span>
-          <div class="page-card-title">Main Roadmap</div>
-          <div class="page-card-description">Complete high school to college roadmap overview</div>
-          <div class="page-card-path">roadmap/roadmap.html</div>
-        </a>
+    <!-- 右侧内容区域 -->
+    <main class="content-area">
 
-        <a href="roadmap/roadmap_pre_high_school.html" class="page-card">
-          <span class="page-card-icon">🎓</span>
-          <div class="page-card-title">Pre-High School</div>
-          <div class="page-card-description">Preparation roadmap before entering high school</div>
-          <div class="page-card-path">roadmap/roadmap_pre_high_school.html</div>
-        </a>
-
-        <a href="roadmap/roadmap_building_candidacy.html" class="page-card">
-          <span class="page-card-icon">🏗️</span>
-          <div class="page-card-title">Building Candidacy</div>
-          <div class="page-card-description">Roadmap for building application competitiveness</div>
-          <div class="page-card-path">roadmap/roadmap_building_candidacy.html</div>
-        </a>
-
-        <a href="roadmap/roadmap_application.html" class="page-card">
-          <span class="page-card-icon">📝</span>
-          <div class="page-card-title">Application Stage</div>
-          <div class="page-card-description">College application process roadmap</div>
-          <div class="page-card-path">roadmap/roadmap_application.html</div>
-        </a>
-
-        <a href="roadmap/roadmap_post_application.html" class="page-card">
-          <span class="page-card-icon">✅</span>
-          <div class="page-card-title">Post-Application</div>
-          <div class="page-card-description">Post-submission steps and follow-up</div>
-          <div class="page-card-path">roadmap/roadmap_post_application.html</div>
-        </a>
+    <!-- 章节1: 登录与注册 -->
+    <section id="section1" class="section">
+      <div class="section-header">
+        <div class="section-number">1</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">登录与注册</h2>
+          <p class="section-description">用户首次访问系统时的入口，支持多种登录方式，确保账号安全便捷。登录成功后自动进入Onboarding流程，引导新用户完成初始设置。</p>
+        </div>
       </div>
-    </div>
-
-    <!-- Router Pages -->
-    <div class="category">
-      <h2 class="category-title">Router Pages</h2>
-      <div class="page-grid">
-        <a href="router/router.html" class="page-card">
-          <span class="page-card-icon">🧭</span>
-          <div class="page-card-title">Main Router</div>
-          <div class="page-card-description">Intelligent routing navigation homepage</div>
-          <div class="page-card-path">router/router.html</div>
-        </a>
-
-        <a href="router/router_pre_high_school.html" class="page-card">
-          <span class="page-card-icon">🎯</span>
-          <div class="page-card-title">Pre-High School Router</div>
-          <div class="page-card-description">Pre-high school stage routing navigation</div>
-          <div class="page-card-path">router/router_pre_high_school.html</div>
-        </a>
-
-        <a href="router/router_building_candidacy.html" class="page-card">
-          <span class="page-card-icon">🔀</span>
-          <div class="page-card-title">Building Candidacy Router</div>
-          <div class="page-card-description">Building application profile stage routing</div>
-          <div class="page-card-path">router/router_building_candidacy.html</div>
-        </a>
-
-        <a href="router/router_application.html" class="page-card">
-          <span class="page-card-icon">📋</span>
-          <div class="page-card-title">Application Router</div>
-          <div class="page-card-description">Application stage routing navigation</div>
-          <div class="page-card-path">router/router_application.html</div>
-        </a>
-
-        <a href="router/router_post_application.html" class="page-card">
-          <span class="page-card-icon">📊</span>
-          <div class="page-card-title">Post-Application Router</div>
-          <div class="page-card-description">Post-application stage routing navigation</div>
-          <div class="page-card-path">router/router_post_application.html</div>
-        </a>
-
-        <a href="router/router_status_dashboard.html" class="page-card">
-          <span class="page-card-icon">📈</span>
-          <div class="page-card-title">Status Dashboard</div>
-          <div class="page-card-description">Application status overview dashboard</div>
-          <div class="page-card-path">router/router_status_dashboard.html</div>
-        </a>
-
-        <a href="router/router_review.html" class="page-card">
-          <span class="page-card-icon">🔍</span>
-          <div class="page-card-title">Review Router</div>
-          <div class="page-card-description">Application review and evaluation routing</div>
-          <div class="page-card-path">router/router_review.html</div>
-        </a>
-
-        <a href="router/router2.html" class="page-card">
-          <span class="page-card-icon">🧭</span>
-          <div class="page-card-title">Router 2</div>
-          <div class="page-card-description">Alternative router page</div>
-          <div class="page-card-path">router/router2.html</div>
-        </a>
-
-        <a href="router/router3.html" class="page-card">
-          <span class="page-card-icon">🧭</span>
-          <div class="page-card-title">Router 3</div>
-          <div class="page-card-description">Alternative router page</div>
-          <div class="page-card-path">router/router3.html</div>
-        </a>
+      
+      <div class="subsection">
+        <h3 class="subsection-title">📄 入口文件</h3>
+        <a href="login.html" class="file-link">login.html</a>
       </div>
-    </div>
 
-    <!-- Major Advisor Pages -->
-    <div class="category">
-      <h2 class="category-title">Major Advisor</h2>
-      <div class="page-grid">
-        <a href="major_advisor/view-advisor.html" class="page-card">
-          <span class="page-card-icon">👨‍🏫</span>
-          <div class="page-card-title">View Advisor</div>
-          <div class="page-card-description">Major advisor main page</div>
-          <div class="page-card-path">major_advisor/view-advisor.html</div>
-        </a>
-
-        <a href="major_advisor/check_profile.html" class="page-card">
-          <span class="page-card-icon">📋</span>
-          <div class="page-card-title">Check Profile</div>
-          <div class="page-card-description">Review personal application profile</div>
-          <div class="page-card-path">major_advisor/check_profile.html</div>
-        </a>
-
-        <a href="major_advisor/refine_majors.html" class="page-card">
-          <span class="page-card-icon">🎯</span>
-          <div class="page-card-title">Refine Majors</div>
-          <div class="page-card-description">Optimize and refine target majors</div>
-          <div class="page-card-path">major_advisor/refine_majors.html</div>
-        </a>
-
-        <a href="major_advisor/recommend_categories.html" class="page-card">
-          <span class="page-card-icon">💡</span>
-          <div class="page-card-title">Recommend Categories</div>
-          <div class="page-card-description">Major category recommendations</div>
-          <div class="page-card-path">major_advisor/recommend_categories.html</div>
-        </a>
-
-        <a href="major_advisor/create_tasklist.html" class="page-card">
-          <span class="page-card-icon">📝</span>
-          <div class="page-card-title">Create Task List</div>
-          <div class="page-card-description">Create application task checklist</div>
-          <div class="page-card-path">major_advisor/create_tasklist.html</div>
-        </a>
-
-        <a href="major_advisor/execute_tasks.html" class="page-card">
-          <span class="page-card-icon">⚙️</span>
-          <div class="page-card-title">Execute Tasks</div>
-          <div class="page-card-description">Execute and manage application tasks</div>
-          <div class="page-card-path">major_advisor/execute_tasks.html</div>
-        </a>
-
-        <a href="major_advisor/analyze_target_major.html" class="page-card">
-          <span class="page-card-icon">🔬</span>
-          <div class="page-card-title">Analyze Target Major</div>
-          <div class="page-card-description">Target major analysis tool</div>
-          <div class="page-card-path">major_advisor/analyze_target_major.html</div>
-        </a>
+      <div class="subsection">
+        <h3 class="subsection-title">✨ 功能</h3>
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">📧</div>
+            <div>邮箱注册登录</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔐</div>
+            <div>Google账号同步</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔗</div>
+            <div>Capp账号同步</div>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- Academic Pages -->
-    <div class="category">
-      <h2 class="category-title">Academic Management</h2>
-      <div class="page-grid">
-        <a href="academic/check_academic_profile.html" class="page-card">
-          <span class="page-card-icon">📊</span>
-          <div class="page-card-title">Check Academic Profile</div>
-          <div class="page-card-description">View academic performance and profile</div>
-          <div class="page-card-path">academic/check_academic_profile.html</div>
-        </a>
-
-        <a href="academic/manage_gpa.html" class="page-card">
-          <span class="page-card-icon">📈</span>
-          <div class="page-card-title">Manage GPA</div>
-          <div class="page-card-description">GPA management and planning</div>
-          <div class="page-card-path">academic/manage_gpa.html</div>
-        </a>
-
-        <a href="academic/recommend_courses.html" class="page-card">
-          <span class="page-card-icon">📚</span>
-          <div class="page-card-title">Recommend Courses</div>
-          <div class="page-card-description">Personalized course recommendations</div>
-          <div class="page-card-path">academic/recommend_courses.html</div>
-        </a>
-
-        <a href="academic/achieve_goal.html" class="page-card">
-          <span class="page-card-icon">🎯</span>
-          <div class="page-card-title">Achieve Goals</div>
-          <div class="page-card-description">Academic goal setting and tracking</div>
-          <div class="page-card-path">academic/achieve_goal.html</div>
-        </a>
+      <div class="subsection">
+        <h3 class="subsection-title">🔄 流程</h3>
+        <div class="flow-diagram">
+          <div class="flow-step">[未登录用户]</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[登录页面 login.html]</div>
+          <div class="flow-step" style="margin-left: 20px;">├─→ 邮箱注册/登录</div>
+          <div class="flow-step" style="margin-left: 20px;">├─→ Google OAuth登录</div>
+          <div class="flow-step" style="margin-left: 20px;">└─→ Capp账号同步登录</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[认证成功]</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[进入Onboarding流程]</div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Sections Pages -->
-    <div class="category">
-      <h2 class="category-title">View Sections</h2>
-      <div class="page-grid">
-        <a href="sections/view-profile.html" class="page-card">
-          <span class="page-card-icon">👤</span>
-          <div class="page-card-title">Profile View</div>
-          <div class="page-card-description">View and manage personal profile</div>
-          <div class="page-card-path">sections/view-profile.html</div>
-        </a>
-
-        <a href="sections/view-persona.html" class="page-card">
-          <span class="page-card-icon">🎭</span>
-          <div class="page-card-title">Persona View</div>
-          <div class="page-card-description">Personal branding and positioning</div>
-          <div class="page-card-path">sections/view-persona.html</div>
-        </a>
-
-        <a href="sections/view-gap.html" class="page-card">
-          <span class="page-card-icon">📏</span>
-          <div class="page-card-title">Gap Analysis View</div>
-          <div class="page-card-description">Target gap analysis</div>
-          <div class="page-card-path">sections/view-gap.html</div>
-        </a>
-
-        <a href="sections/view-roadmap.html" class="page-card">
-          <span class="page-card-icon">🗺️</span>
-          <div class="page-card-title">Roadmap View</div>
-          <div class="page-card-description">Roadmap viewing interface</div>
-          <div class="page-card-path">sections/view-roadmap.html</div>
-        </a>
-
-        <a href="sections/view-auth.html" class="page-card">
-          <span class="page-card-icon">🔐</span>
-          <div class="page-card-title">Auth View</div>
-          <div class="page-card-description">Login and authentication page</div>
-          <div class="page-card-path">sections/view-auth.html</div>
-        </a>
+    <!-- 章节2: Onboarding流程 -->
+    <section id="section2" class="section">
+      <div class="section-header">
+        <div class="section-number">2</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">Onboarding流程</h2>
+          <p class="section-description">通过语音交互和表单配合的方式，收集学生的基本信息、学术背景、兴趣爱好等，为后续的Persona生成和个性化推荐奠定基础。AI Tutor全程引导，让信息收集过程更加自然流畅。</p>
+        </div>
       </div>
-    </div>
 
-    <!-- Capstone Pages -->
-    <div class="category">
-      <h2 class="category-title">Capstone Project</h2>
-      <div class="page-grid">
-        <a href="capstone/capstone.html" class="page-card">
-          <span class="page-card-icon">🎓</span>
-          <div class="page-card-title">Capstone Project</div>
-          <div class="page-card-description">Capstone project main page</div>
-          <div class="page-card-path">capstone/capstone.html</div>
-        </a>
-
-        <a href="capstone/component.html" class="page-card">
-          <span class="page-card-icon">🧩</span>
-          <div class="page-card-title">Component Page</div>
-          <div class="page-card-description">Capstone project components</div>
-          <div class="page-card-path">capstone/component.html</div>
-        </a>
-
-        <a href="capstone/conversation_component.html" class="page-card">
-          <span class="page-card-icon">💬</span>
-          <div class="page-card-title">Conversation Component</div>
-          <div class="page-card-description">Conversation interaction component</div>
-          <div class="page-card-path">capstone/conversation_component.html</div>
-        </a>
-
-        <a href="capstone/taskslist.html" class="page-card">
-          <span class="page-card-icon">✅</span>
-          <div class="page-card-title">Task List</div>
-          <div class="page-card-description">Capstone project task list</div>
-          <div class="page-card-path">capstone/taskslist.html</div>
-        </a>
+      <div class="subsection">
+        <h3 class="subsection-title">📄 入口文件</h3>
+        <a href="login.html" class="file-link">login.html</a>
+        <p style="margin-top: 10px; color: var(--text-secondary);">(包含在登录页面中)</p>
       </div>
-    </div>
 
-    <!-- Grade Missions Pages -->
-    <div class="category">
-      <h2 class="category-title">Grade Missions</h2>
-      <div class="page-grid">
-        <!-- Grade 7 -->
-        <a href="grade_7/grade_7.html" class="page-card">
-          <span class="page-card-icon">📚</span>
-          <div class="page-card-title">Grade 7 Mission</div>
-          <div class="page-card-description">Age ~12–13 | Building Strong Foundations</div>
-          <div class="page-card-path">grade_7/grade_7.html</div>
-        </a>
-
-        <a href="grade_7/check_profile.html" class="page-card">
-          <span class="page-card-icon">📋</span>
-          <div class="page-card-title">Grade 7 - Check Profile</div>
-          <div class="page-card-description">Verify Grade 7 mission profile information</div>
-          <div class="page-card-path">grade_7/check_profile.html</div>
-        </a>
-
-        <a href="grade_7/recommendation.html" class="page-card">
-          <span class="page-card-icon">💡</span>
-          <div class="page-card-title">Grade 7 - Recommendations</div>
-          <div class="page-card-description">Personalized recommendations for Grade 7</div>
-          <div class="page-card-path">grade_7/recommendation.html</div>
-        </a>
-
-        <a href="grade_7/taskslist.html" class="page-card">
-          <span class="page-card-icon">📝</span>
-          <div class="page-card-title">Grade 7 - Task List</div>
-          <div class="page-card-description">Create task list for Grade 7 mission</div>
-          <div class="page-card-path">grade_7/taskslist.html</div>
-        </a>
-
-        <a href="grade_7/execution.html" class="page-card">
-          <span class="page-card-icon">⚙️</span>
-          <div class="page-card-title">Grade 7 - Execute Tasks</div>
-          <div class="page-card-description">Execute and track Grade 7 mission tasks</div>
-          <div class="page-card-path">grade_7/execution.html</div>
-        </a>
-
-        <!-- Grade 8 -->
-        <a href="grade_8/grade_8.html" class="page-card">
-          <span class="page-card-icon">📚</span>
-          <div class="page-card-title">Grade 8 Mission</div>
-          <div class="page-card-description">Age ~13–14 | Planning Your High School Path</div>
-          <div class="page-card-path">grade_8/grade_8.html</div>
-        </a>
-
-        <!-- Grade 9 -->
-        <a href="grade_9/grade_9.html" class="page-card">
-          <span class="page-card-icon">📚</span>
-          <div class="page-card-title">Grade 9 Mission</div>
-          <div class="page-card-description">Freshman | Age ~14–15 | Starting High School Strong</div>
-          <div class="page-card-path">grade_9/grade_9.html</div>
-        </a>
-
-        <!-- Grade 10 -->
-        <a href="grade_10/grade_10.html" class="page-card">
-          <span class="page-card-icon">📚</span>
-          <div class="page-card-title">Grade 10 Mission</div>
-          <div class="page-card-description">Sophomore | Age ~15–16 | Building Your Profile</div>
-          <div class="page-card-path">grade_10/grade_10.html</div>
-        </a>
-
-        <!-- Grade 11 -->
-        <a href="grade_11/grade_11.html" class="page-card">
-          <span class="page-card-icon">📚</span>
-          <div class="page-card-title">Grade 11 Mission</div>
-          <div class="page-card-description">Junior | Age ~16–17 | Application Preparation</div>
-          <div class="page-card-path">grade_11/grade_11.html</div>
-        </a>
-
-        <!-- Grade 12 -->
-        <a href="grade_12/grade_12.html" class="page-card">
-          <span class="page-card-icon">📚</span>
-          <div class="page-card-title">Grade 12 Mission</div>
-          <div class="page-card-description">Senior | Age ~17–18 | Final Steps to College</div>
-          <div class="page-card-path">grade_12/grade_12.html</div>
-        </a>
+      <div class="subsection">
+        <h3 class="subsection-title">✨ 功能</h3>
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">🎤</div>
+            <div>语音交互输入</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📝</div>
+            <div>表单填写配合</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div>进度跟踪</div>
+          </div>
+        </div>
       </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">📋 收集信息</h3>
+        <div class="file-list">
+          <div class="file-list-item"><strong>基本信息</strong>
+            <ul>
+              <li>姓名 (Name)</li>
+              <li>学术背景 (Academic Background)</li>
+              <li>兴趣爱好 (Interests)</li>
+              <li>目标专业 (Target Majors)</li>
+              <li>目标大学 (Target Universities) - 可选</li>
+              <li>学习风格 (Learning Style)</li>
+            </ul>
+          </div>
+          <div class="file-list-item"><strong>交互方式</strong>
+            <ul>
+              <li>文字输入</li>
+              <li>语音输入 (🎤 按钮)</li>
+              <li>AI Tutor引导</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="subsection">
+          <h3 class="subsection-title">🔄 流程</h3>
+          <div class="flow-diagram">
+            <div class="flow-step">[Onboarding开始]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[步骤1: 基本信息收集]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[步骤2: 学术背景]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[步骤3: 兴趣爱好]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[步骤4: 目标专业]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[步骤5: 学习风格]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[Onboarding完成]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[生成初始Persona]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[进入Profile页面]</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3 class="subsection-title">📎 相关文件</h3>
+          <a href="login.html" class="file-link">login.html</a>
+          <a href="sections/view-auth.html" class="file-link">sections/view-auth.html</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 章节3: Persona展示 -->
+    <section id="section3" class="section">
+      <div class="section-header">
+        <div class="section-number">3</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">Persona展示</h2>
+          <p class="section-description">基于Onboarding收集的信息，AI生成学生的初步Persona画像。展示核心叙事、亮点、锚点和发展规划，帮助学生更好地了解自己的特质和潜力，为后续的个性化建议提供依据。</p>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">📄 入口文件</h3>
+        <a href="sections/view-persona.html" class="file-link">sections/view-persona.html</a>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">✨ 功能</h3>
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">🎭</div>
+            <div>展示初步Persona</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📖</div>
+            <div>Core Narrative</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">⭐</div>
+            <div>Highlights</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div>Anchor Points</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📈</div>
+            <div>Development Plan</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="subsection">
+          <h3 class="subsection-title">🔄 流程</h3>
+          <div class="flow-diagram">
+            <div class="flow-step">[Onboarding完成]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[AI生成初始Persona]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[展示Persona页面]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ Persona 1: [标题]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ Persona 2: [标题]</div>
+            <div class="flow-step" style="margin-left: 20px;">└─→ Persona 3: [标题]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[学生了解自己的Persona]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[进入Profile页面完善信息]</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3 class="subsection-title">📎 相关文件</h3>
+          <a href="sections/view-persona.html" class="file-link">sections/view-persona.html</a>
+          <a href="js/persona.js" class="file-link">js/persona.js</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 章节4: Profile页面 -->
+    <section id="section4" class="section">
+      <div class="section-header">
+        <div class="section-number">4</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">Profile页面</h2>
+          <p class="section-description">学生可以持续补充和完善自己的Context信息，包括Common App的各个字段。支持语音输入和实时编辑，AI Tutor会提供智能建议，帮助提升Profile完整度，解锁更多功能。</p>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">📄 入口文件</h3>
+        <a href="sections/view-profile.html" class="file-link">sections/view-profile.html</a>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">✨ 功能</h3>
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">📝</div>
+            <div>持续补充Context</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📋</div>
+            <div>Common App字段指南</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎤</div>
+            <div>语音输入支持</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✏️</div>
+            <div>实时编辑</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">📋 Profile Sections</h3>
+        <div class="file-list">
+          <div class="file-list-item"><span class="badge">1</span> <strong>Identity & Contact</strong> - 身份和联系方式</div>
+          <div class="file-list-item"><span class="badge">2</span> <strong>School & CEEB</strong> - 学校和CEEB代码</div>
+          <div class="file-list-item"><span class="badge">3</span> <strong>Transcript / GPA</strong> - 成绩单和GPA</div>
+          <div class="file-list-item"><span class="badge">4</span> <strong>Activities</strong> - 活动经历</div>
+          <div class="file-list-item"><span class="badge">5</span> <strong>Testing</strong> - 标准化考试</div>
+          <div class="file-list-item"><span class="badge">6</span> <strong>Recommenders</strong> - 推荐人</div>
+          <div class="file-list-item"><span class="badge">7</span> <strong>Essays</strong> - 文书</div>
+          <div class="file-list-item"><span class="badge">8</span> <strong>Permissions / FERPA</strong> - 权限和FERPA</div>
+        </div>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="subsection">
+          <h3 class="subsection-title">🔄 流程</h3>
+          <div class="flow-diagram">
+            <div class="flow-step">[进入Profile页面]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[查看各Section状态]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ empty (未填写)</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ pending (待处理)</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ updated (已更新)</div>
+            <div class="flow-step" style="margin-left: 20px;">└─→ risk (风险)</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[点击Section展开编辑]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[填写/编辑信息]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 文字输入</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 语音输入 (🎤)</div>
+            <div class="flow-step" style="margin-left: 20px;">└─→ AI Tutor辅助</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[保存更新] → [Profile完整度提升] → [解锁更多功能]</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3 class="subsection-title">📎 相关文件</h3>
+          <a href="sections/view-profile.html" class="file-link">sections/view-profile.html</a>
+          <a href="js/profile.js" class="file-link">js/profile.js</a>
+          <a href="js/editor.js" class="file-link">js/editor.js</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 章节5: Roadmap解锁 -->
+    <section id="section5" class="section">
+      <div class="section-header">
+        <div class="section-number">5</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">Roadmap解锁</h2>
+          <p class="section-description">根据学生当前所处的阶段（Pre-High School、Building Candidacy、Application、Post-Application），系统会解锁相应状态的Roadmap。Roadmap提供阶段性的任务指引，帮助学生有序推进申请准备。</p>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">📄 入口文件</h3>
+        <a href="sections/view-roadmap.html" class="file-link">sections/view-roadmap.html</a>
+        <a href="roadmap/roadmap.html" class="file-link">roadmap/roadmap.html</a>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">✨ 功能</h3>
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">🗺️</div>
+            <div>根据阶段解锁Roadmap</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div>阶段可视化</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✅</div>
+            <div>任务跟踪</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">🗺️ Roadmap阶段</h3>
+        <div class="file-list">
+          <div class="file-list-item">
+            <strong>1. Pre-High School (高中前)</strong>
+            <br><a href="roadmap/roadmap_pre_high_school.html" class="file-link">roadmap_pre_high_school.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>2. Building Candidacy (建立候选资格)</strong>
+            <br><a href="roadmap/roadmap_building_candidacy.html" class="file-link">roadmap_building_candidacy.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>3. Application (申请阶段)</strong>
+            <br><a href="roadmap/roadmap_application.html" class="file-link">roadmap_application.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>4. Post-Application (申请后)</strong>
+            <br><a href="roadmap/roadmap_post_application.html" class="file-link">roadmap_post_application.html</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="subsection">
+          <h3 class="subsection-title">🔄 流程</h3>
+          <div class="flow-diagram">
+            <div class="flow-step">[Profile完成度达到阈值]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[根据学生阶段判断]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ Pre-High School</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ Building Candidacy</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ Application</div>
+            <div class="flow-step" style="margin-left: 20px;">└─→ Post-Application</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[解锁对应Roadmap]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[展示阶段Roadmap]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[查看可解锁的Missions]</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3 class="subsection-title">📎 相关文件</h3>
+          <a href="sections/view-roadmap.html" class="file-link">sections/view-roadmap.html</a>
+          <a href="roadmap/roadmap.html" class="file-link">roadmap/roadmap.html</a>
+          <a href="js/roadmap.js" class="file-link">js/roadmap.js</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 章节6: Mission解锁 -->
+    <section id="section6" class="section">
+      <div class="section-header">
+        <div class="section-number">6</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">Mission解锁</h2>
+          <p class="section-description">从Roadmap中可以解锁不同的Missions，每个Mission包含具体的任务列表、完成标准和进度跟踪。完成Missions可以开启相应的支线任务模块，如Capstone、Major Advisor、Academic等。</p>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">✨ 功能</h3>
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div>从Roadmap解锁Missions</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📋</div>
+            <div>Mission任务列表</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✅</div>
+            <div>进度跟踪</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">🔄 流程</h3>
+        <div class="flow-diagram">
+          <div class="flow-step">[查看Roadmap]</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[点击Mission卡片]</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[解锁Mission]</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[查看Mission详情]</div>
+          <div class="flow-step" style="margin-left: 20px;">├─→ 任务列表</div>
+          <div class="flow-step" style="margin-left: 20px;">├─→ 完成标准</div>
+          <div class="flow-step" style="margin-left: 20px;">└─→ 进度跟踪</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[开始执行Mission]</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">[开启相关支线任务]</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 章节7: 支线任务 -->
+    <section id="section7" class="section">
+      <div class="section-header">
+        <div class="section-number">7</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">支线任务</h2>
+          <p class="section-description">从Roadmap解锁的Missions可以开启不同的支线任务模块，包括Capstone（顶点项目）、Major Advisor（专业顾问）和Academic（学术管理）。每个模块提供专业化的功能支持，帮助学生深度推进相关领域的准备。</p>
+        </div>
+      </div>
+
+      <!-- 7.1 Capstone -->
+      <div class="subsection">
+        <h3 class="subsection-title">7.1 Capstone (顶点项目)</h3>
+        <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">帮助学生创建和管理Capstone项目，提供对话组件和任务列表管理功能。</p>
+        <div style="margin-top: 10px;">
+          <strong>📄 入口文件:</strong> <a href="capstone/capstone.html" class="file-link">capstone/capstone.html</a>
+        </div>
+        <div class="features" style="margin-top: 10px;">
+          <div class="feature-item">
+            <div class="feature-icon">📝</div>
+            <div>项目创建和管理</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">💬</div>
+            <div>对话组件</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✅</div>
+            <div>任务列表管理</div>
+          </div>
+        </div>
+        <div class="file-list" style="margin-top: 10px;">
+          <div class="file-list-item"><a href="capstone/capstone.html" class="file-link">capstone.html</a></div>
+          <div class="file-list-item"><a href="capstone/component.html" class="file-link">component.html</a></div>
+          <div class="file-list-item"><a href="capstone/conversation_component.html" class="file-link">conversation_component.html</a></div>
+          <div class="file-list-item"><a href="capstone/taskslist.html" class="file-link">taskslist.html</a></div>
+        </div>
+      </div>
+
+      <!-- 7.2 Major Advisor -->
+      <div class="subsection">
+        <h3 class="subsection-title">7.2 Major Advisor (专业顾问)</h3>
+        <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">提供目标专业分析、Profile检查、任务列表创建和执行等功能，帮助学生更好地规划和准备专业相关的申请材料。</p>
+        <div style="margin-top: 10px;">
+          <strong>📄 入口文件:</strong> <a href="major_advisor/view-advisor.html" class="file-link">major_advisor/view-advisor.html</a>
+        </div>
+        <div class="features" style="margin-top: 10px;">
+          <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div>目标专业分析</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div>Profile检查</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📋</div>
+            <div>任务列表创建</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✅</div>
+            <div>任务执行</div>
+          </div>
+        </div>
+        <div class="file-list" style="margin-top: 10px;">
+          <div class="file-list-item"><a href="major_advisor/view-advisor.html" class="file-link">view-advisor.html</a></div>
+          <div class="file-list-item"><a href="major_advisor/analyze_target_major.html" class="file-link">analyze_target_major.html</a></div>
+          <div class="file-list-item"><a href="major_advisor/check_profile.html" class="file-link">check_profile.html</a></div>
+          <div class="file-list-item"><a href="major_advisor/create_tasklist.html" class="file-link">create_tasklist.html</a></div>
+          <div class="file-list-item"><a href="major_advisor/execute_tasks.html" class="file-link">execute_tasks.html</a></div>
+          <div class="file-list-item"><a href="major_advisor/recommend_categories.html" class="file-link">recommend_categories.html</a></div>
+          <div class="file-list-item"><a href="major_advisor/refine_majors.html" class="file-link">refine_majors.html</a></div>
+          <div class="file-list-item"><a href="js/advisor.js" class="file-link">js/advisor.js</a></div>
+        </div>
+      </div>
+
+      <!-- 7.3 Academic -->
+      <div class="subsection">
+        <h3 class="subsection-title">7.3 Academic (学术)</h3>
+        <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理学术Profile、目标达成、GPA跟踪和课程推荐，帮助学生保持良好的学术表现。</p>
+        <div class="features" style="margin-top: 10px;">
+          <div class="feature-item">
+            <div class="feature-icon">📚</div>
+            <div>学术Profile检查</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div>目标达成</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div>GPA管理</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📖</div>
+            <div>课程推荐</div>
+          </div>
+        </div>
+        <div class="file-list" style="margin-top: 10px;">
+          <div class="file-list-item"><a href="academic/check_academic_profile.html" class="file-link">check_academic_profile.html</a></div>
+          <div class="file-list-item"><a href="academic/achieve_goal.html" class="file-link">achieve_goal.html</a></div>
+          <div class="file-list-item"><a href="academic/manage_gpa.html" class="file-link">manage_gpa.html</a></div>
+          <div class="file-list-item"><a href="academic/recommend_courses.html" class="file-link">recommend_courses.html</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 章节8: Router日常交互 -->
+    <section id="section8" class="section">
+      <div class="section-header">
+        <div class="section-number">8</div>
+        <div class="section-title-wrapper">
+          <h2 class="section-title">Router日常交互</h2>
+          <p class="section-description">学生每天通过Router进入系统时，AI Tutor会首先进行暖场交互，然后根据Router规则智能分析学生的状态，引导他们完成不同任务或进行更多交互。Router会根据学生所处的阶段显示不同的页面，提供个性化的日常指导。</p>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">📄 入口文件</h3>
+        <a href="router/router.html" class="file-link">router/router.html</a>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">✨ 功能</h3>
+        <div class="features">
+          <div class="feature-item">
+            <div class="feature-icon">🌅</div>
+            <div>每日暖场交互</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🧭</div>
+            <div>智能路由引导</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">📊</div>
+            <div>状态仪表板</div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🔍</div>
+            <div>审查功能</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3 class="subsection-title">🗺️ Router页面 (根据学生阶段)</h3>
+        <div class="file-list">
+          <div class="file-list-item">
+            <strong>1. Pre-High School Router</strong>
+            <br><a href="router/router_pre_high_school.html" class="file-link">router_pre_high_school.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>2. Building Candidacy Router</strong>
+            <br><a href="router/router_building_candidacy.html" class="file-link">router_building_candidacy.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>3. Application Router</strong>
+            <br><a href="router/router_application.html" class="file-link">router_application.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>4. Post-Application Router</strong>
+            <br><a href="router/router_post_application.html" class="file-link">router_post_application.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>5. Review Router</strong>
+            <br><a href="router/router_review.html" class="file-link">router_review.html</a>
+          </div>
+          <div class="file-list-item">
+            <strong>6. Status Dashboard</strong>
+            <br><a href="router/router_status_dashboard.html" class="file-link">router_status_dashboard.html</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-column-layout">
+        <div class="subsection">
+          <h3 class="subsection-title">🔄 流程</h3>
+          <div class="flow-diagram">
+            <div class="flow-step">[用户每日登录]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[进入Router页面]</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[AI Tutor暖场交互]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 问候</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 检查上次进度</div>
+            <div class="flow-step" style="margin-left: 20px;">└─→ 提供建议</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[Router智能分析]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 检查Profile完整度</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 检查任务进度</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 检查截止日期</div>
+            <div class="flow-step" style="margin-left: 20px;">└─→ 生成建议</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[引导用户]</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 完善Profile</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 查看Roadmap</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 执行Mission任务</div>
+            <div class="flow-step" style="margin-left: 20px;">├─→ 查看Persona</div>
+            <div class="flow-step" style="margin-left: 20px;">└─→ 更多交互行为</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-step">[根据Router规则导航]</div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3 class="subsection-title">📎 相关文件</h3>
+          <a href="router/router.html" class="file-link">router/router.html</a>
+          <a href="js/router.js" class="file-link">js/router.js</a>
+          <a href="js/router-agent.js" class="file-link">js/router-agent.js</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 完整用户旅程流程图 -->
+    <section class="full-flow">
+      <h2 class="full-flow-title">🔄 完整用户旅程流程图</h2>
+      <div class="flow-diagram" style="background: var(--bg-main);">
+        <div class="flow-step" style="text-align: center; font-weight: bold; background: var(--primary); color: var(--bg-main);">
+          SuperOS用户旅程
+        </div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>1. [登录/注册]</strong> → login.html</div>
+        <div class="flow-step" style="margin-left: 20px;">├─→ 邮箱注册/登录</div>
+        <div class="flow-step" style="margin-left: 20px;">├─→ Google OAuth</div>
+        <div class="flow-step" style="margin-left: 20px;">└─→ Capp账号同步</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>2. [Onboarding]</strong> → login.html (Onboarding流程)</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>3. [Persona展示]</strong> → sections/view-persona.html</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>4. [Profile页面]</strong> → sections/view-profile.html</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>5. [Roadmap解锁]</strong> → sections/view-roadmap.html</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>6. [Mission解锁]</strong> → 从Roadmap解锁不同Missions</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>7. [支线任务]</strong></div>
+        <div class="flow-step" style="margin-left: 20px;">├─→ Capstone → capstone/capstone.html</div>
+        <div class="flow-step" style="margin-left: 20px;">├─→ Major Advisor → major_advisor/view-advisor.html</div>
+        <div class="flow-step" style="margin-left: 20px;">└─→ Academic → academic/*.html</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step"><strong>8. [Router日常交互]</strong> → router/router.html</div>
+        <div class="flow-step" style="margin-left: 20px;">├─→ 暖场交互</div>
+        <div class="flow-step" style="margin-left: 20px;">├─→ 智能路由引导</div>
+        <div class="flow-step" style="margin-left: 20px;">└─→ 根据阶段显示不同Router页面</div>
+      </div>
+    </section>
+
+    <!-- 核心功能模块 -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-number">📱</div>
+        <h2 class="section-title">核心功能模块</h2>
+      </div>
+
+      <div class="features">
+        <div class="feature-card">
+          <h3 class="feature-card-title">🧭 导航与路由</h3>
+          <a href="index.html" class="file-link">index.html</a>
+          <a href="js/router.js" class="file-link">js/router.js</a>
+          <a href="js/sections.js" class="file-link">js/sections.js</a>
+        </div>
+
+        <div class="feature-card">
+          <h3 class="feature-card-title">🔐 认证与状态</h3>
+          <a href="js/auth.js" class="file-link">js/auth.js</a>
+          <a href="js/state.js" class="file-link">js/state.js</a>
+        </div>
+
+        <div class="feature-card">
+          <h3 class="feature-card-title">🤖 AI交互</h3>
+          <a href="js/tutor.js" class="file-link">js/tutor.js</a>
+          <a href="js/voice.js" class="file-link">js/voice.js</a>
+          <a href="js/subtitle.js" class="file-link">js/subtitle.js</a>
+        </div>
+
+        <div class="feature-card">
+          <h3 class="feature-card-title">🛠️ 工具函数</h3>
+          <a href="js/utils.js" class="file-link">js/utils.js</a>
+          <a href="js/gap.js" class="file-link">js/gap.js</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关键特性 -->
+    <section class="section">
+      <div class="section-header">
+        <div class="section-number">🎯</div>
+        <h2 class="section-title">关键特性</h2>
+      </div>
+
+      <div class="features">
+        <div class="feature-card">
+          <h3 class="feature-card-title">🎤 多模态交互</h3>
+          <ul>
+            <li>语音输入</li>
+            <li>文字输入</li>
+            <li>AI对话</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <h3 class="feature-card-title">🧭 个性化引导</h3>
+          <ul>
+            <li>智能Router</li>
+            <li>阶段感知</li>
+            <li>任务推荐</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <h3 class="feature-card-title">📈 持续完善</h3>
+          <ul>
+            <li>Profile动态更新</li>
+            <li>Persona迭代</li>
+            <li>进度跟踪</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <h3 class="feature-card-title">🔌 模块化设计</h3>
+          <ul>
+            <li>可扩展的模块</li>
+            <li>组件复用</li>
+            <li>清晰的文件结构</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <div style="text-align: center; padding: 20px 15px; color: var(--text-secondary);">
+      <p style="font-size: 0.9em;"><strong>最后更新:</strong> 2024 | <strong>版本:</strong> V1.0</p>
+      <p style="margin-top: 8px; font-size: 0.85em;">SuperOS for Students - 用户使用旅程流程图</p>
     </div>
+    </main>
   </div>
 
   <script>
-    // Create background particles
-    function createParticles() {
-      const particlesContainer = document.getElementById('particles');
-      const particleCount = 30;
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+          // 更新目录高亮
+          updateActiveTocItem(this.getAttribute('href'));
+        }
+      });
+    });
 
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 15 + 's';
-        particle.style.animationDuration = (10 + Math.random() * 10) + 's';
-        particlesContainer.appendChild(particle);
-      }
+    // 更新目录中当前章节的高亮
+    function updateActiveTocItem(href) {
+      document.querySelectorAll('.toc-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.querySelector('a').getAttribute('href') === href) {
+          item.classList.add('active');
+        }
+      });
     }
 
-    // Initialize particles on load
-    createParticles();
+    // 监听滚动，自动高亮当前章节
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          if (id) {
+            updateActiveTocItem('#' + id);
+          }
+        }
+      });
+    }, {
+      threshold: 0.3,
+      rootMargin: '-100px 0px -50% 0px'
+    });
+
+    document.querySelectorAll('.section[id]').forEach(section => {
+      sectionObserver.observe(section);
+    });
+
+    // 初始化：高亮第一个section
+    if (document.querySelector('.section[id]')) {
+      updateActiveTocItem('#' + document.querySelector('.section[id]').getAttribute('id'));
+    }
+
+    // 添加滚动动画
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.section').forEach(section => {
+      section.style.opacity = '0';
+      section.style.transform = 'translateY(30px)';
+      section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(section);
+    });
   </script>
 </body>
 </html>
