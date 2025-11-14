@@ -1,0 +1,3133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Interview Task - Stanford</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #8C1515;
+      --primary-glow: rgba(140, 21, 21, 0.4);
+      --primary-light: #B1040E;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --border: rgba(140, 21, 21, 0.2);
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --purple: #8b5cf6;
+      --beige: #D4A574;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* Header */
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-hover);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.1);
+    }
+    .header-title {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    /* Task Card Container */
+    .task-container {
+      padding: 24px 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      min-height: calc(100vh - 200px);
+    }
+    .task-bubble {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      position: relative;
+      animation: slideIn 0.4s ease;
+    }
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .task-number {
+      position: absolute;
+      top: -12px;
+      left: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    .task-bubble.completed .task-number {
+      background: linear-gradient(135deg, var(--purple), #7c3aed);
+    }
+    .task-bubble.ongoing .task-number {
+      background: linear-gradient(135deg, var(--beige), #c4955a);
+      animation: pulse-number 2s ease-in-out infinite;
+    }
+    @keyframes pulse-number {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .task-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+      margin-top: 8px;
+    }
+    .task-description {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .task-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .task-status.pending {
+      background: var(--bg-hover);
+      color: var(--text-muted);
+    }
+    .task-status.ongoing {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
+    .task-status.completed {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+    .task-bubble.ongoing {
+      animation: breathing 3s ease-in-out infinite;
+      border: 2px solid var(--beige);
+    }
+    .task-complete-btn {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, var(--success), #16a34a);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    }
+    .task-complete-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+    }
+    .task-complete-btn:active {
+      transform: translateY(0);
+    }
+    .task-complete-btn.completed {
+      background: linear-gradient(135deg, var(--purple), #7c3aed);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      cursor: default;
+    }
+    .task-complete-btn.completed:hover {
+      transform: none;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+    @keyframes breathing {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      }
+      50% {
+        transform: scale(1.01);
+        box-shadow: 0 6px 20px rgba(212, 165, 116, 0.3);
+      }
+    }
+    
+    /* Interview Mode Selector (Bottom) */
+    .interview-mode-selector {
+      position: fixed;
+      bottom: 100px;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.95));
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      z-index: 199;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      animation: slideUpMagic 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow: hidden;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+    .interview-mode-selector.collapsed {
+      padding: 8px 16px;
+      max-height: 50px;
+      bottom: 100px;
+    }
+    .interview-mode-selector.collapsed .mode-selector-title,
+    .interview-mode-selector.collapsed .mode-selector-buttons {
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+    .interview-mode-selector.collapsed .mode-selector-minimized {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .mode-selector-minimized {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      transition: all 0.3s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+    }
+    .mode-selector-minimized-icon {
+      font-size: 20px;
+      animation: iconPulse 2s ease-in-out infinite;
+    }
+    @keyframes iconPulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+    .mode-selector-minimized-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .mode-selector-minimized-mode {
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+      padding: 2px 8px;
+      background: rgba(140, 21, 21, 0.1);
+      border-radius: 8px;
+    }
+    @keyframes slideUpMagic {
+      0% {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    .mode-selector-title {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      animation: fadeInDown 0.6s ease 0.2s both;
+    }
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .mode-selector-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .mode-selector-btn {
+      flex: 1;
+      min-width: 100px;
+      max-width: 160px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+      animation: buttonPopIn 0.5s ease both;
+    }
+    .mode-selector-btn:nth-child(1) {
+      animation-delay: 0.1s;
+    }
+    .mode-selector-btn:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .mode-selector-btn:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+    @keyframes buttonPopIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+      }
+      60% {
+        transform: scale(1.05) translateY(-2px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .mode-selector-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(140, 21, 21, 0.2), transparent);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+    .mode-selector-btn:hover::before {
+      width: 200px;
+      height: 200px;
+    }
+    .mode-selector-btn:hover {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--bg-hover), var(--bg-card));
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(140, 21, 21, 0.2);
+    }
+    .mode-selector-btn.active {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      box-shadow: 0 4px 20px var(--primary-glow), 0 0 30px rgba(140, 21, 21, 0.3);
+      transform: translateY(-2px) scale(1.05);
+      animation: activePulse 2s ease-in-out infinite;
+    }
+    @keyframes activePulse {
+      0%, 100% {
+        box-shadow: 0 4px 20px var(--primary-glow), 0 0 30px rgba(140, 21, 21, 0.3);
+      }
+      50% {
+        box-shadow: 0 6px 30px var(--primary-glow), 0 0 40px rgba(140, 21, 21, 0.5);
+      }
+    }
+    .mode-selector-btn.active::after {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 12px;
+      background: linear-gradient(45deg, var(--primary), var(--primary-light), var(--primary));
+      background-size: 200% 200%;
+      z-index: -1;
+      animation: borderGlow 3s ease infinite;
+      opacity: 0.6;
+    }
+    @keyframes borderGlow {
+      0%, 100% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+    .mode-selector-btn .mode-icon {
+      font-size: 24px;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      z-index: 1;
+    }
+    .mode-selector-btn:hover .mode-icon {
+      transform: scale(1.2) rotate(5deg);
+    }
+    .mode-selector-btn.active .mode-icon {
+      animation: iconBounce 1s ease infinite;
+      transform: scale(1.15);
+    }
+    @keyframes iconBounce {
+      0%, 100% {
+        transform: scale(1.15) translateY(0);
+      }
+      50% {
+        transform: scale(1.2) translateY(-3px);
+      }
+    }
+    .mode-selector-btn .mode-label {
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .mode-selector-btn:hover .mode-label {
+      transform: translateY(-1px);
+    }
+    .mode-selector-btn.active .mode-label {
+      text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
+      animation: labelShine 2s ease-in-out infinite;
+    }
+    @keyframes labelShine {
+      0%, 100% {
+        text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
+      }
+      50% {
+        text-shadow: 0 2px 12px rgba(255, 255, 255, 0.8);
+      }
+    }
+    .mode-selector-btn .mode-desc {
+      font-size: 10px;
+      opacity: 0.8;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .mode-selector-btn:hover .mode-desc {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+    .mode-selector-btn.active .mode-desc {
+      opacity: 1;
+      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Voice Interaction Bar */
+    .voice-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      z-index: 200;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    }
+    .voice-prompt {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .voice-prompt-icon {
+      width: 20px;
+      height: 20px;
+      background: var(--beige);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    .voice-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+    }
+    .voice-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: none;
+      background: var(--bg-hover);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .voice-btn:hover {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.1);
+    }
+    .voice-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+    }
+    .voice-btn.mic {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .voice-btn.mic.recording {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      animation: pulse-mic 1.5s infinite;
+    }
+    @keyframes pulse-mic {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .voice-btn.end-call {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: white;
+      font-size: 20px;
+    }
+    
+    /* Sidebar Buttons - Direct positioning */
+    .sidebar {
+      position: fixed;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    #dynamicSidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    /* Interview mode sidebar - positioned to not block content */
+    .sidebar.interview-mode {
+      left: 12px;
+      top: 20%;
+      transform: none;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    .sidebar-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: none;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .sidebar-btn:hover {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .sidebar-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    /* Interview Mode Selection */
+    .sidebar-btn.mode-btn {
+      width: 100%;
+      min-width: 140px;
+      max-width: 160px;
+      height: auto;
+      padding: 12px 16px;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 14px;
+      text-align: center;
+      white-space: normal;
+    }
+    /* Ensure interview interface has proper spacing */
+    .interview-interface.active {
+      padding-bottom: 160px; /* Space for mode selector and voice bar */
+      transition: padding-bottom 0.3s ease;
+    }
+    @media (max-width: 768px) {
+      .mode-selector-buttons {
+        flex-direction: column;
+        gap: 6px;
+      }
+      .mode-selector-btn {
+        max-width: 100%;
+        min-width: auto;
+      }
+      .interview-mode-selector {
+        bottom: 90px;
+        padding: 10px 12px;
+      }
+      .interview-interface.active {
+        padding-bottom: 200px;
+      }
+    }
+    .sidebar-btn.mode-btn .mode-icon {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .sidebar-btn.mode-btn .mode-label {
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .sidebar-btn.mode-btn .mode-desc {
+      font-size: 10px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+    
+    /* Main content - no offset needed */
+    .task-container {
+      margin-left: 0;
+    }
+    
+    /* Interview Interface */
+    .interview-interface {
+      display: none;
+      flex-direction: column;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 24px 20px;
+      min-height: calc(100vh - 200px);
+    }
+    .interview-interface.active {
+      display: flex;
+    }
+    .interview-question-card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: slideIn 0.4s ease;
+      width: 100%;
+      max-width: 800px;
+      min-height: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .interview-question-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .interview-question-text {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .interview-question-number {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--bg-hover);
+      border-radius: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 16px;
+    }
+    .reaction-area {
+      margin-top: 20px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .reaction-emoji {
+      font-size: 48px;
+      animation: emojiPop 0.5s ease;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+      transition: transform 0.3s ease;
+    }
+    .reaction-emoji:hover {
+      transform: scale(1.2);
+    }
+    @keyframes emojiPop {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .reaction-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-style: italic;
+    }
+    .interview-complete-card {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: slideIn 0.4s ease;
+    }
+    .interview-complete-card h2 {
+      font-size: 24px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .interview-complete-card p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .restart-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0 8px;
+    }
+    .restart-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .interview-input-area {
+      background: transparent;
+      padding: 16px 0;
+      margin-bottom: 24px;
+    }
+    .interview-textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 16px;
+      border: none;
+      border-bottom: 2px solid var(--border);
+      border-radius: 0;
+      font-family: inherit;
+      font-size: 16px;
+      resize: vertical;
+      background: transparent;
+      color: var(--text);
+      margin-bottom: 16px;
+      transition: border-color 0.3s ease;
+    }
+    .interview-textarea:focus {
+      outline: none;
+      border-bottom-color: var(--primary);
+      border-bottom-width: 3px;
+    }
+    .interview-feedback {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+      display: none;
+      animation: slideIn 0.4s ease;
+    }
+    .interview-feedback.show {
+      display: block;
+    }
+    .feedback-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .feedback-content {
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+    .feedback-item {
+      padding: 12px;
+      background: var(--bg-main);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .feedback-item:last-child {
+      margin-bottom: 0;
+    }
+    .feedback-item.positive {
+      border-left: 4px solid var(--success);
+    }
+    .feedback-item.suggestion {
+      border-left: 4px solid var(--warning);
+    }
+    .feedback-item.area {
+      border-left: 4px solid var(--info);
+    }
+    
+    /* Pop-up Modal with blur effect */
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    .popup-overlay.show {
+      display: flex;
+    }
+    .popup-overlay.show ~ * {
+      filter: blur(4px);
+      pointer-events: none;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Blur effect for background when popup is open */
+    body.popup-open {
+      overflow: hidden;
+    }
+    body.popup-open .header,
+    body.popup-open .task-container,
+    body.popup-open .voice-bar {
+      filter: blur(4px);
+      pointer-events: none;
+    }
+    .popup-content {
+      background: white;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+      position: relative;
+    }
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .popup-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: white;
+      border-radius: 20px 20px 0 0;
+      z-index: 10;
+    }
+    .popup-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .popup-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-hover);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s ease;
+    }
+    .popup-close:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .popup-body {
+      padding: 20px;
+    }
+    
+    /* Content Styles for Pop-up */
+    .content-section {
+      margin-bottom: 20px;
+    }
+    .content-section:last-child {
+      margin-bottom: 0;
+    }
+    .content-section h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+    .content-section p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .content-list {
+      list-style: none;
+      padding: 0;
+    }
+    .content-list li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .content-list li::before {
+      content: '•';
+      position: absolute;
+      left: 8px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    .resource-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 13px;
+      margin-top: 8px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .resource-link:hover {
+      background: var(--bg-hover);
+    }
+    
+    /* Flashcard in Pop-up */
+    .flashcard-popup {
+      background: var(--bg-main);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .flashcard-popup:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .flashcard-header {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .flashcard-content {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    
+    /* Agent Message */
+    .agent-message {
+      position: fixed;
+      bottom: 120px;
+      left: 80px;
+      right: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 150;
+      display: none;
+      animation: slideUpMessage 0.3s ease;
+    }
+    @media (min-width: 601px) {
+      .agent-message {
+        left: 80px;
+      }
+    }
+    .agent-message.show {
+      display: block;
+    }
+    @keyframes slideUpMessage {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Chatbox for Transcript */
+    .chatbox {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      background: white;
+      z-index: 900;
+      display: none;
+      flex-direction: column;
+      animation: slideUpChat 0.3s ease;
+    }
+    .chatbox.show {
+      display: flex;
+    }
+    @keyframes slideUpChat {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+    .chatbox-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+    }
+    .chatbox-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .chatbox-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-hover);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.2s ease;
+    }
+    .chatbox-close:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .chatbox-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .chat-message {
+      display: flex;
+      gap: 12px;
+      animation: messageSlideIn 0.3s ease;
+    }
+    @keyframes messageSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .chat-message.user {
+      flex-direction: row-reverse;
+    }
+    .chat-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .chat-message.user .chat-avatar {
+      background: linear-gradient(135deg, var(--primary-light), #4A0509);
+    }
+    .chat-bubble {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    .chat-message.user .chat-bubble {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+    }
+    .chat-time {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-align: right;
+    }
+    .chat-message.user .chat-time {
+      text-align: left;
+    }
+    
+    /* Text Input Modal */
+    .text-input-modal {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-top: 1px solid var(--border);
+      z-index: 900;
+      display: none;
+      flex-direction: column;
+      animation: slideUpInput 0.3s ease;
+      max-height: 80vh;
+    }
+    .text-input-modal.show {
+      display: flex;
+    }
+    @keyframes slideUpInput {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+    .text-input-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+    }
+    .text-input-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .text-input-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--bg-hover);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.2s ease;
+    }
+    .text-input-close:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .text-input-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .text-input-area {
+      width: 100%;
+      min-height: 200px;
+      padding: 16px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      resize: none;
+      background: var(--bg-main);
+      color: var(--text);
+      flex: 1;
+    }
+    .text-input-area:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(140, 21, 21, 0.1);
+    }
+    .text-input-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .btn-save {
+      flex: 1;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+    .agent-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .agent-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 600px) {
+      .sidebar {
+        left: 8px;
+      }
+      .sidebar-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+      }
+      .task-container {
+        padding: 16px;
+      }
+      .agent-message {
+        left: 20px;
+        right: 20px;
+      }
+      .voice-controls {
+        gap: 8px;
+      }
+      .voice-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+      }
+      .voice-btn.mic {
+        width: 56px;
+        height: 56px;
+      }
+      .popup-content {
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+        max-height: 90vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <button class="back-btn" onclick="goBack()">←</button>
+    <div class="header-title" id="taskTitle">Loading Task...</div>
+  </div>
+    
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <!-- Dynamic sidebar buttons will be generated here -->
+    <div id="dynamicSidebar">
+      <!-- Buttons will be dynamically generated based on task content -->
+    </div>
+    </div>
+    
+  <!-- Task Container -->
+  <div class="task-container" id="taskContainer">
+    <div class="task-bubble ongoing" id="taskBubble">
+      <div class="task-number" id="taskNumber">1</div>
+      <div class="task-title" id="taskTitleContent">Task Title</div>
+      <div class="task-description" id="taskDescription">Task description will appear here...</div>
+      <div class="task-status ongoing" id="taskStatus">In Progress</div>
+      <button class="task-complete-btn" id="taskCompleteBtn" onclick="completeTask()">
+        <span>✓</span>
+        <span>Mark as Complete</span>
+      </button>
+        </div>
+      </div>
+      
+  <!-- Interview Interface -->
+  <div class="interview-interface" id="interviewInterface">
+    <div class="interview-question-card" id="questionCard">
+      <div class="interview-question-label">Question</div>
+      <div class="interview-question-text" id="questionText">Select an interview mode to begin...</div>
+      <div class="interview-question-number" id="questionNumber" style="display: none;">
+        <span>Question</span>
+        <span id="currentQuestionNum">1</span>
+        <span>of</span>
+        <span id="totalQuestions">3</span>
+          </div>
+      <div class="reaction-area" id="reactionArea">
+        <!-- Reactions will be dynamically displayed here -->
+        </div>
+      </div>
+      
+    <!-- Interview Complete Card -->
+    <div class="interview-complete-card" id="completeCard" style="display: none;">
+      <h2>🎉 Interview Complete!</h2>
+      <p>You've finished the mock interview. Great job! Would you like to try another mode?</p>
+      <div>
+        <button class="restart-btn" onclick="resetInterviewMode()">Choose Different Mode</button>
+        <button class="restart-btn" onclick="restartSameMode()" style="background: var(--bg-hover); color: var(--text);">Try Again</button>
+        </div>
+      </div>
+      
+    <div class="interview-input-area" id="interviewInputArea">
+      <div class="voice-status" id="voiceStatus">
+        <span id="voiceStatusText">Click the microphone button below to start speaking</span>
+        </div>
+      <div class="voice-transcript empty" id="voiceTranscript">
+        Your spoken answer will appear here...
+      </div>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button class="btn-save" onclick="handleSkipOrEnd()" id="skipOrEndBtn" style="flex: 1; max-width: 200px; padding: 12px 20px;">Skip</button>
+      </div>
+    </div>
+    
+    <div class="interview-feedback" id="interviewFeedback">
+      <div class="feedback-header">
+        <span>💡</span>
+        <span>Feedback</span>
+          </div>
+      <div class="feedback-content" id="feedbackContent">
+        <!-- Feedback will be dynamically generated -->
+      </div>
+          </div>
+        </div>
+        
+        
+  <!-- Chatbox for Transcript -->
+  <div class="chatbox" id="chatbox">
+    <div class="chatbox-header">
+      <div class="chatbox-title">Conversation Transcript</div>
+      <button class="chatbox-close" onclick="closeChatbox()">×</button>
+            </div>
+    <div class="chatbox-messages" id="chatboxMessages">
+      <!-- Messages will be dynamically added here -->
+          </div>
+        </div>
+        
+  <!-- Text Input Modal -->
+  <div class="text-input-modal" id="textInputModal">
+    <div class="text-input-header">
+      <div class="text-input-title" id="textInputTitle">Edit Your Content</div>
+      <button class="text-input-close" onclick="closeTextInput()">×</button>
+    </div>
+    <div class="text-input-body">
+      <textarea class="text-input-area" id="textInputArea" placeholder="Type your content here..."></textarea>
+      <div class="text-input-actions">
+        <button class="btn-save" onclick="saveTextInput()">Save</button>
+        </div>
+      </div>
+    </div>
+    
+  <!-- Interview Mode Selection (Bottom) -->
+  <div class="interview-mode-selector" id="interviewModeSelector" style="display: none;">
+    <div class="mode-selector-title">Select Interview Mode</div>
+    <div class="mode-selector-buttons">
+      <button class="mode-selector-btn" onclick="selectInterviewMode('quick')" id="modeQuick">
+        <div class="mode-icon">⚡</div>
+        <div class="mode-label">Quick Warm-up</div>
+        <div class="mode-desc">3 questions</div>
+            </button>
+      <button class="mode-selector-btn" onclick="selectInterviewMode('full')" id="modeFull">
+        <div class="mode-icon">🎯</div>
+        <div class="mode-label">Full Simulation</div>
+        <div class="mode-desc">15-20 min</div>
+            </button>
+      <button class="mode-selector-btn" onclick="selectInterviewMode('targeted')" id="modeTargeted">
+        <div class="mode-icon">🎪</div>
+        <div class="mode-label">Targeted Drill</div>
+        <div class="mode-desc">Focus area</div>
+            </button>
+          </div>
+    <div class="mode-selector-minimized" id="modeSelectorMinimized">
+      <div class="mode-selector-minimized-icon">⚙️</div>
+      <div class="mode-selector-minimized-text">Current Mode:</div>
+      <div class="mode-selector-minimized-mode" id="currentModeDisplay">-</div>
+        </div>
+        </div>
+        
+  <!-- Voice Interaction Bar -->
+  <div class="voice-bar">
+    <div class="voice-prompt">
+      <div class="voice-prompt-icon">🎤</div>
+      <span id="voicePromptText">Speak or click to interrupt...</span>
+            </div>
+    <div class="voice-controls">
+      <button class="voice-btn" onclick="showTextInput()" title="Edit">✏️</button>
+      <button class="voice-btn" onclick="showChatbox()" title="Transcript">📄</button>
+      <button class="voice-btn mic" id="micBtn" onclick="toggleMicrophone()" title="Microphone">🎙️</button>
+      <button class="voice-btn end-call" onclick="endSession()" title="End">📞</button>
+          </div>
+        </div>
+        
+  <!-- Pop-up Modal -->
+  <div class="popup-overlay" id="popupOverlay" onclick="closePopup(event)">
+    <div class="popup-content" onclick="event.stopPropagation()">
+      <div class="popup-header">
+        <div class="popup-title" id="popupTitle">Content</div>
+        <button class="popup-close" onclick="closePopup()">×</button>
+        </div>
+      <div class="popup-body" id="popupBody">
+        <!-- Content will be dynamically loaded here -->
+        </div>
+      </div>
+    </div>
+    
+  <script>
+    // Task data
+    const taskData = {
+      '1.1': {
+        title: 'Interview Prep Planning',
+        description: 'Understand the complete Stanford interview process from preparation to post-interview follow-up.',
+        number: '1.1',
+        content: {
+          edit: {
+            title: 'Edit Your Plan',
+            body: `
+              <div class="content-section">
+                <h3>Interview Preparation Checklist</h3>
+                <ul class="content-list">
+                  <li>Research Stanford interview policies</li>
+                  <li>Learn interview techniques (STAR method)</li>
+                  <li>Prepare answers for common questions</li>
+                  <li>Practice with mock interviews</li>
+                  <li>Confirm interview details</li>
+                </ul>
+          </div>
+            `
+          },
+          resources: {
+            title: 'Resources & Links',
+            body: `
+              <div class="content-section">
+                <h3>Official Stanford Resources</h3>
+                <p>Learn about Stanford's interview process from official sources.</p>
+                <a href="https://admission.stanford.edu/apply/first-year/interviews.html" class="resource-link" target="_blank">🌐 Stanford Interview Page →</a>
+          </div>
+              <div class="content-section">
+                <h3>Student Experiences</h3>
+                <p>Read about past applicants' interview experiences.</p>
+                <a href="https://www.reddit.com/r/ApplyingToCollege/search/?q=stanford%20interview" class="resource-link" target="_blank">💬 Reddit Discussions →</a>
+        </div>
+            `
+          }
+        }
+      },
+      '1.2': {
+        title: 'Research Stanford Interview Policies',
+        description: 'Learn about Stanford\'s alumni interview process. Stanford interviews are optional but recommended, conducted by alumni volunteers, typically 30-45 minutes.',
+        number: '1.2',
+        content: {
+          edit: {
+            title: 'Stanford Interview Information',
+            body: `
+              <div class="content-section">
+                <h3>Interview Format</h3>
+                <p><strong>Type:</strong> Alumni Interview (Optional but Recommended)</p>
+                <p><strong>Duration:</strong> 30-45 minutes</p>
+                <p><strong>Format:</strong> In-person or Virtual (Zoom/Phone)</p>
+                <p><strong>Conducted by:</strong> Stanford alumni volunteers</p>
+                <p><strong>Style:</strong> Conversational, evaluative</p>
+      </div>
+              <div class="content-section">
+                <h3>What Stanford Looks For</h3>
+                <ul class="content-list">
+                  <li>Intellectual vitality and curiosity</li>
+                  <li>Personal qualities and character</li>
+                  <li>Fit with Stanford's community</li>
+                  <li>Communication skills</li>
+                </ul>
+        </div>
+            `
+          },
+          resources: {
+            title: 'Stanford Interview Resources',
+            body: `
+              <div class="content-section">
+                <h3>Official Information</h3>
+                <a href="https://admission.stanford.edu/apply/first-year/interviews.html" class="resource-link" target="_blank">🌐 Stanford Official Page →</a>
+      </div>
+              <div class="content-section">
+                <h3>Common Questions</h3>
+                <ul class="content-list">
+                  <li>"Tell me about yourself."</li>
+                  <li>"Why Stanford?"</li>
+                  <li>"What are you passionate about?"</li>
+                  <li>"How do you see yourself contributing to Stanford?"</li>
+                  <li>"What questions do you have about Stanford?"</li>
+                </ul>
+    </div>
+            `
+          }
+        }
+      },
+      '1.3': {
+        title: 'Interview Skills Flashcards',
+        description: 'Learn essential interview techniques: STAR method, body language, "Why Stanford?" strategy, and common pitfalls to avoid.',
+        number: '1.3',
+        content: {
+          edit: {
+            title: 'Interview Skills',
+            body: `
+              <div class="flashcard-popup">
+                <div class="flashcard-header">⭐ STAR Method</div>
+                <div class="flashcard-content">
+                  <strong>Situation:</strong> Describe the context<br>
+                  <strong>Task:</strong> Explain your responsibility<br>
+                  <strong>Action:</strong> Detail what you did<br>
+                  <strong>Result:</strong> Share the outcome
+  </div>
+          </div>
+              <div class="flashcard-popup">
+                <div class="flashcard-header">💬 Body Language</div>
+                <div class="flashcard-content">
+                  Maintain eye contact, sit up straight, and smile naturally. Even in video interviews, these matter!
+        </div>
+        </div>
+              <div class="flashcard-popup">
+                <div class="flashcard-header">❤️ "Why Stanford?" Strategy</div>
+                <div class="flashcard-content">
+                  Show genuine interest and deep research about Stanford. Connect your goals with their programs.
+      </div>
+    </div>
+              <div class="flashcard-popup">
+                <div class="flashcard-header">⚠️ Common Pitfalls</div>
+                <div class="flashcard-content">
+                  Avoid: Memorizing answers, complaining, saying "I don't know" without context, being too negative.
+          </div>
+          </div>
+            `
+          },
+          resources: {
+            title: 'Skills Resources',
+            body: `
+              <div class="content-section">
+                <h3>STAR Method Examples</h3>
+                <p>Learn how to structure your answers effectively using the STAR method.</p>
+        </div>
+              <div class="content-section">
+                <h3>Video Interview Tips</h3>
+                <p>Best practices for virtual interviews, including lighting, camera positioning, and technical setup.</p>
+      </div>
+            `
+          }
+        }
+      },
+      '1.4': {
+        title: 'Prepare Interview Questions',
+        description: 'Prepare answers for common Stanford interview questions such as self-introduction, why you chose Stanford, and your strengths.',
+        number: '1.4',
+        content: {
+          edit: {
+            title: 'Prepare Your Answers',
+            body: `
+              <div class="content-section">
+                <h3>Common Stanford Interview Questions</h3>
+                <ul class="content-list">
+                  <li>Tell me about yourself.</li>
+                  <li>Why Stanford? What draws you to our university?</li>
+                  <li>What are you passionate about? (Stanford values intellectual vitality)</li>
+                  <li>Why do you want to study your chosen major at Stanford?</li>
+                  <li>How do you see yourself contributing to Stanford's community?</li>
+                  <li>Describe a challenging situation you've faced and how you handled it.</li>
+                  <li>What questions do you have about Stanford?</li>
+                </ul>
+        </div>
+              <div class="content-section">
+                <h3>Tips for Answering</h3>
+                <p>Use the STAR method for behavioral questions. Be specific about Stanford's programs, faculty, or opportunities. Show genuine enthusiasm and intellectual curiosity.</p>
+      </div>
+            `
+          },
+          resources: {
+            title: 'Answer Examples',
+            body: `
+              <div class="content-section">
+                <h3>Sample Answers</h3>
+                <p>Review example answers to common interview questions. Remember to personalize these to your own experiences.</p>
+    </div>
+            `
+          }
+        }
+      },
+      '1.5': {
+        title: 'Preparatory Mock Interview',
+        description: 'Practice with some simple questions and receive targeted feedback and guidance before the real interview.',
+        number: '1.5',
+        content: {
+          edit: {
+            title: 'Practice Session',
+            body: `
+              <div class="content-section">
+                <h3>Practice Questions</h3>
+                <p>Click the microphone button to start practicing. I'll ask you questions and provide feedback on your answers.</p>
+  </div>
+            `
+          },
+          resources: {
+            title: 'Practice Resources',
+            body: `
+              <div class="content-section">
+                <h3>Mock Interview Tips</h3>
+                <p>Practice speaking clearly and confidently. Use the STAR method to structure your answers.</p>
+              </div>
+            `
+          }
+        }
+      },
+      '1.6': {
+        title: 'Confirm Interview Details',
+        description: 'Confirm interview time, location, format (online/offline), and interviewer information. Make schedule arrangements.',
+        number: '1.6',
+        content: {
+          edit: {
+            title: 'Interview Details',
+            body: `
+              <div class="content-section">
+                <h3>Confirm Your Interview</h3>
+                <p>Make sure you have all the details:</p>
+                <ul class="content-list">
+                  <li>Date and time</li>
+                  <li>Location or meeting link</li>
+                  <li>Interviewer name (if known)</li>
+                  <li>Format (in-person or virtual)</li>
+                </ul>
+              </div>
+            `
+          },
+          resources: {
+            title: 'Interview Preparation',
+            body: `
+              <div class="content-section">
+                <h3>Pre-Interview Checklist</h3>
+                <ul class="content-list">
+                  <li>Test your technology (if virtual)</li>
+                  <li>Prepare your environment</li>
+                  <li>Review your application materials</li>
+                  <li>Prepare questions to ask</li>
+                </ul>
+              </div>
+            `
+          }
+        }
+      },
+      '2.1': {
+        title: 'Mock Interview Setup',
+        description: 'Choose your mock interview mode: Quick Warm-up, Full Simulation, or Targeted Drill.',
+        number: '2.1',
+        content: {
+          edit: {
+            title: 'Interview Mode Selection',
+            body: `
+              <div class="content-section">
+                <h3>Choose Your Mode</h3>
+                <ul class="content-list">
+                  <li><strong>Quick Warm-up:</strong> 3 classic questions</li>
+                  <li><strong>Full Simulation:</strong> 15-20 minutes with behavioral and school-specific questions</li>
+                  <li><strong>Targeted Drill:</strong> Focus on specific questions you struggle with</li>
+                </ul>
+              </div>
+            `
+          },
+          resources: {
+            title: 'Interview Modes',
+            body: `
+              <div class="content-section">
+                <h3>Which Mode Should You Choose?</h3>
+                <p>Quick Warm-up is great for a quick practice session. Full Simulation gives you the most realistic experience. Targeted Drill helps you improve specific areas.</p>
+              </div>
+            `
+          }
+        }
+      },
+      '2.2': {
+        title: 'Interview in Progress',
+        description: 'Conduct mock interview with AI agent. Practice answering Stanford-specific questions.',
+        number: '2.2',
+        content: {
+          edit: {
+            title: 'Interview Session',
+            body: `
+              <div class="content-section">
+                <h3>Mock Interview</h3>
+                <p>I'll act as a Stanford admissions officer and ask you questions. Answer naturally, and I'll provide feedback after each response.</p>
+              </div>
+            `
+          },
+          resources: {
+            title: 'Interview Tips',
+            body: `
+              <div class="content-section">
+                <h3>During the Interview</h3>
+                <ul class="content-list">
+                  <li>Speak clearly and at a comfortable pace</li>
+                  <li>Use specific examples</li>
+                  <li>Show enthusiasm for Stanford</li>
+                  <li>Ask thoughtful questions at the end</li>
+                </ul>
+              </div>
+            `
+          }
+        }
+      }
+    };
+    
+    // Global state
+    let currentTaskId = null;
+    let isMicrophoneOn = false;
+    let voiceRecognition = null;
+    let agentSpeaking = false;
+    let transcript = [];
+    let interviewMode = null;
+    let currentQuestionIndex = 0;
+    let interviewQuestions = [];
+    let currentAnswer = '';
+    
+    // Interview questions by mode
+    const interviewQuestionsByMode = {
+      quick: [
+        "Tell me about yourself.",
+        "Why Stanford?",
+        "What are you passionate about?"
+      ],
+      full: [
+        "Thanks for your time today. Let's start with: tell me a little bit about yourself.",
+        "What draws you to Stanford specifically?",
+        "What are you passionate about? Stanford really values intellectual vitality.",
+        "Why do you want to study your chosen major at Stanford?",
+        "Describe a challenging situation you've faced and how you handled it.",
+        "How do you see yourself contributing to Stanford's community?",
+        "What questions do you have about Stanford?"
+      ],
+      targeted: [
+        "Why Stanford?",
+        "Why do you want to study your chosen major at Stanford?",
+        "How do you see yourself contributing to Stanford's community?"
+      ]
+    };
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Get task ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      currentTaskId = urlParams.get('task') || '1.1';
+      
+      // Load saved transcript
+      const savedTranscript = localStorage.getItem(`transcript_${currentTaskId}`);
+      if (savedTranscript) {
+        transcript = JSON.parse(savedTranscript);
+      }
+      
+      loadTask(currentTaskId);
+      
+      // Generate sidebar buttons based on task content
+      if (currentTaskId && !(currentTaskId.startsWith('2.1') || currentTaskId.startsWith('2.2'))) {
+        generateSidebarButtons(currentTaskId);
+      }
+      
+      // Check if this is a milestone2 task
+      if (currentTaskId === '2.2') {
+        // Task 2.2: Direct immersive interview - start immediately
+        hideInterviewModeSidebar();
+        setTimeout(() => {
+          startImmersiveInterview();
+        }, 100);
+      } else if (currentTaskId && currentTaskId.startsWith('2.1')) {
+        // Task 2.1: Show mode selection sidebar
+        showInterviewModeSidebar();
+      }
+      
+    });
+    
+    function showInterviewModeSidebar() {
+      // Hide dynamic sidebar buttons
+      document.getElementById('dynamicSidebar').style.display = 'none';
+      // Show bottom mode selector
+      const selector = document.getElementById('interviewModeSelector');
+      selector.style.display = 'block';
+      selector.classList.remove('collapsed');
+      setupSelectorExpandHandler(selector);
+    }
+    
+    function hideInterviewModeSidebar() {
+      // Show dynamic sidebar buttons
+      document.getElementById('dynamicSidebar').style.display = 'flex';
+      // Hide bottom mode selector
+      document.getElementById('interviewModeSelector').style.display = 'none';
+    }
+    
+    function generateSidebarButtons(taskId) {
+      const task = taskData[taskId];
+      if (!task || !task.content) return;
+      
+      const sidebar = document.getElementById('dynamicSidebar');
+      sidebar.innerHTML = '';
+      sidebar.style.display = 'flex';
+      sidebar.style.flexDirection = 'column';
+      sidebar.style.gap = '12px';
+      
+      // Button configuration based on available content
+      const buttonConfig = [
+        { key: 'resources', icon: '📄', label: 'Resources', title: 'Resources' },
+        { key: 'content', icon: '📚', label: 'Content', title: 'Content' },
+        { key: 'edit', icon: '✏️', label: 'Edit', title: 'Edit' },
+        { key: 'tips', icon: '💡', label: 'Tips', title: 'Tips' },
+        { key: 'examples', icon: '⭐', label: 'Examples', title: 'Examples' }
+      ];
+      
+      // Generate buttons only for available content
+      buttonConfig.forEach(config => {
+        if (task.content[config.key]) {
+          const btn = document.createElement('button');
+          btn.className = 'sidebar-btn';
+          btn.innerHTML = config.icon;
+          btn.title = config.title;
+          btn.onclick = () => showSidebarContent(config.key);
+          sidebar.appendChild(btn);
+        }
+      });
+      
+      // If no buttons were generated, hide sidebar
+      if (sidebar.children.length === 0) {
+        sidebar.style.display = 'none';
+      }
+    }
+    
+    let selectorTouchStartY = 0;
+    let selectorTouchEndY = 0;
+    
+    function setupSelectorExpandHandler(selector) {
+      // Remove existing click handler if any
+      selector.onclick = null;
+      
+      // Click handler to expand when collapsed
+      selector.addEventListener('click', function expandHandler(e) {
+        // Don't expand if clicking on a button (let button handle it)
+        if (e.target.closest('.mode-selector-btn')) {
+          return;
+        }
+        
+        if (selector.classList.contains('collapsed')) {
+          selector.classList.remove('collapsed');
+        }
+      });
+      
+      // Touch handlers for swipe
+      selector.addEventListener('touchstart', function touchStartHandler(e) {
+        if (selector.classList.contains('collapsed')) {
+          selectorTouchStartY = e.changedTouches[0].screenY;
+        }
+      }, { passive: true });
+      
+      selector.addEventListener('touchend', function touchEndHandler(e) {
+        if (selector.classList.contains('collapsed')) {
+          selectorTouchEndY = e.changedTouches[0].screenY;
+          const swipeDistance = selectorTouchStartY - selectorTouchEndY;
+          // Swipe up (more than 30px) to expand
+          if (swipeDistance > 30) {
+            selector.classList.remove('collapsed');
+          }
+        }
+      }, { passive: true });
+    }
+    
+    function startImmersiveInterview() {
+      // Task 2.2: Start immersive interview directly with full mode
+      interviewMode = 'full';
+      interviewQuestions = interviewQuestionsByMode['full'] || [];
+      currentQuestionIndex = 0;
+      
+      // Hide task container, show interview interface
+      document.getElementById('taskContainer').style.display = 'none';
+      document.getElementById('interviewInterface').classList.add('active');
+      
+      // Reset complete card
+      document.getElementById('completeCard').style.display = 'none';
+      
+      // Show feedback area from the start
+      const feedbackEl = document.getElementById('interviewFeedback');
+      if (feedbackEl) {
+        feedbackEl.style.display = 'block';
+        // Show initial feedback state
+        const feedbackContent = document.getElementById('feedbackContent');
+        if (feedbackContent) {
+          feedbackContent.innerHTML = `
+            <div class="feedback-item info" style="text-align: center; padding: 20px;">
+              <div style="font-size: 24px; margin-bottom: 8px;">🎤</div>
+              <div>Ready to begin. Click the microphone to start speaking your answer.</div>
+            </div>
+          `;
+          feedbackEl.classList.add('show');
+        }
+      }
+      
+      // Show first question
+      setTimeout(() => {
+        showQuestion(0);
+        updateSkipOrEndButton();
+      }, 200);
+    }
+    
+    function selectInterviewMode(mode) {
+      interviewMode = mode;
+      interviewQuestions = interviewQuestionsByMode[mode] || [];
+      currentQuestionIndex = 0;
+      
+      // Update mode selector button states with animation
+      document.querySelectorAll('.mode-selector-btn').forEach((btn, index) => {
+        btn.classList.remove('active');
+        if (btn.id === `mode${mode.charAt(0).toUpperCase() + mode.slice(1)}`) {
+          // Add active class with delay for smooth transition
+          setTimeout(() => {
+            btn.classList.add('active');
+            // Add click ripple effect
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+              position: absolute;
+              border-radius: 50%;
+              background: rgba(255, 255, 255, 0.6);
+              transform: scale(0);
+              animation: ripple 0.6s ease-out;
+              width: 100px;
+              height: 100px;
+              top: 50%;
+              left: 50%;
+              margin-top: -50px;
+              margin-left: -50px;
+              pointer-events: none;
+            `;
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+          }, 50);
+        }
+      });
+      
+      // Add CSS for ripple animation if not exists
+      if (!document.getElementById('rippleAnimation')) {
+        const style = document.createElement('style');
+        style.id = 'rippleAnimation';
+        style.textContent = `
+          @keyframes ripple {
+            to {
+              transform: scale(2);
+              opacity: 0;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      // Collapse mode selector instead of hiding
+      const selector = document.getElementById('interviewModeSelector');
+      const currentModeDisplay = document.getElementById('currentModeDisplay');
+      
+      // Update current mode display
+      const modeNames = {
+        'quick': 'Quick Warm-up',
+        'full': 'Full Simulation',
+        'targeted': 'Targeted Drill'
+      };
+      if (currentModeDisplay) {
+        currentModeDisplay.textContent = modeNames[mode] || mode;
+      }
+      
+      // Collapse selector after a short delay
+      setTimeout(() => {
+        selector.classList.add('collapsed');
+      }, 500);
+      
+      // Setup click handler to expand (only when collapsed)
+      setupSelectorExpandHandler(selector);
+      
+      // Hide task container, show interview interface
+      document.getElementById('taskContainer').style.display = 'none';
+      document.getElementById('interviewInterface').classList.add('active');
+      
+      // Reset complete card
+      document.getElementById('completeCard').style.display = 'none';
+      
+      // Show first question
+      setTimeout(() => {
+        showQuestion(0);
+        updateSkipOrEndButton();
+      }, 200);
+      
+      showAgentMessage(`Interview mode selected: ${mode === 'quick' ? 'Quick Warm-up' : mode === 'full' ? 'Full Simulation' : 'Targeted Drill'}. Let's begin!`);
+    }
+    
+    function resetInterviewMode() {
+      // Reset interview state
+      interviewMode = null;
+      currentQuestionIndex = 0;
+      interviewQuestions = [];
+      currentAnswer = '';
+      
+      // Hide interview interface, show task container
+      document.getElementById('interviewInterface').classList.remove('active');
+      document.getElementById('taskContainer').style.display = 'block';
+      
+      // Reset mode selector button states
+      document.querySelectorAll('.mode-selector-btn').forEach(btn => btn.classList.remove('active'));
+      
+      // Show and expand mode selector again
+      const selector = document.getElementById('interviewModeSelector');
+      selector.style.display = 'block';
+      selector.classList.remove('collapsed');
+      
+      // Clear inputs
+      const transcriptEl = document.getElementById('voiceTranscript');
+      if (transcriptEl) {
+        transcriptEl.textContent = 'Your spoken answer will appear here...';
+        transcriptEl.classList.add('empty');
+      }
+      const feedback = document.getElementById('interviewFeedback');
+      if (feedback) feedback.classList.remove('show');
+      const reactionArea = document.getElementById('reactionArea');
+      if (reactionArea) reactionArea.innerHTML = '';
+      
+      // Reset question card
+      const questionCard = document.getElementById('questionCard');
+      if (questionCard) {
+        questionCard.style.display = 'block';
+        const questionText = document.getElementById('questionText');
+        if (questionText) questionText.textContent = 'Select an interview mode to begin...';
+        const questionNumber = document.getElementById('questionNumber');
+        if (questionNumber) questionNumber.style.display = 'none';
+      }
+      const completeCard = document.getElementById('completeCard');
+      if (completeCard) completeCard.style.display = 'none';
+      
+      showAgentMessage('You can now select a different interview mode from the bottom.');
+    }
+    
+    function restartSameMode() {
+      if (!interviewMode) return;
+      
+      // Reset to first question
+      currentQuestionIndex = 0;
+      currentAnswer = '';
+      
+      // Clear inputs
+      const transcriptEl = document.getElementById('voiceTranscript');
+      if (transcriptEl) {
+        transcriptEl.textContent = 'Your spoken answer will appear here...';
+        transcriptEl.classList.add('empty');
+      }
+      document.getElementById('interviewFeedback').classList.remove('show');
+      document.getElementById('reactionArea').innerHTML = '';
+      
+      // Show first question
+      showQuestion(0);
+      
+      showAgentMessage('Starting the interview again. Good luck!');
+    }
+    
+    function showQuestion(index) {
+      if (index >= interviewQuestions.length) {
+        // Interview complete
+        document.getElementById('questionCard').style.display = 'none';
+        document.getElementById('interviewInputArea').style.display = 'none';
+        document.getElementById('interviewFeedback').style.display = 'none';
+        document.getElementById('completeCard').style.display = 'block';
+        return;
+      }
+      
+      currentQuestionIndex = index;
+      document.getElementById('questionText').textContent = interviewQuestions[index];
+      document.getElementById('currentQuestionNum').textContent = index + 1;
+      document.getElementById('totalQuestions').textContent = interviewQuestions.length;
+      document.getElementById('questionNumber').style.display = 'inline-flex';
+      
+      // Clear answer - use voiceTranscript instead of interviewAnswer
+      const transcriptEl = document.getElementById('voiceTranscript');
+      if (transcriptEl) {
+        transcriptEl.textContent = 'Your spoken answer will appear here...';
+        transcriptEl.classList.add('empty');
+      }
+      
+      // For task 2.2, keep feedback visible and show initial state
+      const feedbackEl = document.getElementById('interviewFeedback');
+      if (currentTaskId === '2.2') {
+        // Keep feedback visible with initial state
+        feedbackEl.style.display = 'block';
+        const feedbackContent = document.getElementById('feedbackContent');
+        if (feedbackContent && !currentAnswer) {
+          feedbackContent.innerHTML = `
+            <div class="feedback-item info" style="text-align: center; padding: 20px;">
+              <div style="font-size: 24px; margin-bottom: 8px;">🎤</div>
+              <div>Ready to answer. Click the microphone to start speaking.</div>
+            </div>
+          `;
+        }
+        feedbackEl.classList.add('show');
+        } else {
+        // For other tasks, hide feedback initially
+        feedbackEl.classList.remove('show');
+      }
+      
+      document.getElementById('reactionArea').innerHTML = '';
+      currentAnswer = '';
+      
+      // Show question card and input area
+      document.getElementById('questionCard').style.display = 'block';
+      document.getElementById('interviewInputArea').style.display = 'block';
+      document.getElementById('interviewFeedback').style.display = 'block';
+      document.getElementById('completeCard').style.display = 'none';
+      
+      // Update skip/end button based on question index
+      updateSkipOrEndButton();
+    }
+    
+    function updateSkipOrEndButton() {
+      const btn = document.getElementById('skipOrEndBtn');
+      if (!btn) return;
+      
+      const isLastQuestion = currentQuestionIndex === interviewQuestions.length - 1;
+      if (isLastQuestion) {
+        btn.textContent = 'End';
+        btn.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-light))';
+        btn.style.color = 'white';
+        btn.onclick = handleSkipOrEnd;
+      } else {
+        btn.textContent = 'Skip';
+        btn.style.background = 'var(--bg-hover)';
+        btn.style.color = 'var(--text)';
+        btn.onclick = handleSkipOrEnd;
+      }
+    }
+    
+    function handleSkipOrEnd() {
+      const isLastQuestion = currentQuestionIndex === interviewQuestions.length - 1;
+      if (isLastQuestion) {
+        showInterviewSummaryPopup();
+      } else {
+        skipQuestion();
+      }
+    }
+    
+    function showInterviewSummaryPopup() {
+      // Generate final interview summary first
+      generateInterviewSummary();
+      
+      // Collect interview data for summary
+      const interviewDataStr = localStorage.getItem(`interviewData_${currentTaskId}`);
+      const interviewData = interviewDataStr ? JSON.parse(interviewDataStr) : null;
+      
+      // Get transcript data
+      const transcriptStr = localStorage.getItem(`transcript_${currentTaskId}`);
+      const transcriptData = transcriptStr ? JSON.parse(transcriptStr) : [];
+      
+      // Count answered questions from transcript
+      let answeredCount = 0;
+      if (transcriptData && transcriptData.length > 0) {
+        transcriptData.forEach(msg => {
+          if (msg.role === 'user' && msg.text.includes('Q:') && msg.text.includes('A:')) {
+            answeredCount++;
+          }
+        });
+      }
+      
+      // Build summary content
+      let summaryHTML = '<div class="content-section">';
+      summaryHTML += '<h3 style="color: var(--primary); margin-bottom: 16px;">📊 Interview Summary</h3>';
+      
+      // Overall performance
+      summaryHTML += '<div style="margin-bottom: 20px;">';
+      summaryHTML += '<h4 style="color: var(--text); margin-bottom: 8px;">Overall Performance</h4>';
+      summaryHTML += '<p style="line-height: 1.6; color: var(--text-muted);">';
+      
+      const totalQuestions = interviewQuestions.length;
+      if (answeredCount > 0) {
+        summaryHTML += `You completed ${answeredCount} out of ${totalQuestions} questions. `;
+        
+        if (answeredCount === totalQuestions) {
+          summaryHTML += 'Great job completing all questions! ';
+        } else if (answeredCount >= totalQuestions * 0.7) {
+          summaryHTML += 'You answered most of the questions. ';
+        } else {
+          summaryHTML += 'Consider practicing more to answer all questions. ';
+        }
+      } else {
+        summaryHTML += 'You\'ve started the interview process. Keep practicing to improve your interview skills! ';
+      }
+      
+      summaryHTML += '</p></div>';
+      
+      // Key Strengths
+      summaryHTML += '<div style="margin-bottom: 20px;">';
+      summaryHTML += '<h4 style="color: var(--success); margin-bottom: 8px;">✅ Key Strengths</h4>';
+      summaryHTML += '<ul style="line-height: 1.8; color: var(--text-muted); padding-left: 20px;">';
+      summaryHTML += '<li>Good engagement with the interview process</li>';
+      summaryHTML += '<li>Willingness to practice and improve</li>';
+      summaryHTML += '<li>Active participation in the mock interview</li>';
+      if (answeredCount > 0) {
+        summaryHTML += '<li>Completed multiple questions successfully</li>';
+      }
+      summaryHTML += '</ul></div>';
+      
+      // Areas for Improvement
+      summaryHTML += '<div style="margin-bottom: 20px;">';
+      summaryHTML += '<h4 style="color: var(--warning); margin-bottom: 8px;">💡 Areas for Improvement</h4>';
+      summaryHTML += '<ul style="line-height: 1.8; color: var(--text-muted); padding-left: 20px;">';
+      summaryHTML += '<li>Practice speaking more clearly and confidently</li>';
+      summaryHTML += '<li>Add more specific examples to your answers</li>';
+      summaryHTML += '<li>Use the STAR method for behavioral questions</li>';
+      summaryHTML += '<li>Show more enthusiasm and specific interest in Stanford</li>';
+      if (answeredCount < totalQuestions) {
+        summaryHTML += '<li>Try to complete all questions in future practice sessions</li>';
+      }
+      summaryHTML += '</ul></div>';
+      
+      // Recommendations
+      summaryHTML += '<div style="margin-bottom: 20px;">';
+      summaryHTML += '<h4 style="color: var(--primary); margin-bottom: 8px;">🎯 Recommendations</h4>';
+      summaryHTML += '<ul style="line-height: 1.8; color: var(--text-muted); padding-left: 20px;">';
+      summaryHTML += '<li>Continue practicing with mock interviews</li>';
+      summaryHTML += '<li>Review your answers and identify areas to strengthen</li>';
+      summaryHTML += '<li>Prepare specific examples for common questions</li>';
+      summaryHTML += '<li>Practice speaking at a comfortable pace</li>';
+      summaryHTML += '<li>Focus on being concise while including key details</li>';
+      summaryHTML += '</ul></div>';
+      
+      summaryHTML += '</div>';
+      
+      // Show popup
+      const popupTitle = document.getElementById('popupTitle');
+      const popupBody = document.getElementById('popupBody');
+      const popupOverlay = document.getElementById('popupOverlay');
+      
+      if (popupTitle && popupBody && popupOverlay) {
+        popupTitle.textContent = 'Interview Summary & Recommendations';
+        popupBody.innerHTML = summaryHTML;
+        popupOverlay.classList.add('show');
+        document.body.classList.add('popup-open');
+        
+        console.log('Interview summary popup displayed');
+      } else {
+        console.error('Popup elements not found:', { popupTitle, popupBody, popupOverlay });
+        // Fallback: show alert if popup elements not found
+        alert('Interview Summary:\n\n' + summaryHTML.replace(/<[^>]*>/g, ''));
+      }
+      
+      // Don't automatically end interview - let user close popup first
+      // The interview will end when popup is closed or user navigates away
+    }
+    
+    function endInterviewAndShowReflection() {
+      // Generate final interview summary
+      generateInterviewSummary();
+      
+      // Hide interview interface
+      document.getElementById('interviewInterface').classList.remove('active');
+      document.getElementById('questionCard').style.display = 'none';
+      document.getElementById('interviewInputArea').style.display = 'none';
+      document.getElementById('interviewFeedback').style.display = 'none';
+      
+      // Show completion card
+      document.getElementById('completeCard').style.display = 'block';
+    }
+    
+    function handleAnswerInput(value) {
+      currentAnswer = value;
+      
+      // Update transcript display
+      const transcriptEl = document.getElementById('voiceTranscript');
+      if (value.trim()) {
+        transcriptEl.textContent = value;
+        transcriptEl.classList.remove('empty');
+        } else {
+        transcriptEl.textContent = 'Your spoken answer will appear here...';
+        transcriptEl.classList.add('empty');
+      }
+      
+      // Real-time emoji reactions based on input
+      updateReactions(value);
+      
+      // Real-time feedback as user types
+      if (value.length > 50) {
+        generateRealTimeFeedback(value);
+      }
+    }
+    
+    function updateReactions(answer) {
+      const reactionArea = document.getElementById('reactionArea');
+      const reactions = [];
+      
+      if (answer.length === 0) {
+        reactionArea.innerHTML = '';
+        return;
+      }
+      
+      // Analyze answer and determine reactions
+      const lowerAnswer = answer.toLowerCase();
+      const answerLength = answer.length;
+      
+      // Length-based reactions
+      if (answerLength < 30) {
+        reactions.push({ emoji: '🤔', text: 'Thinking...' });
+      } else if (answerLength < 100) {
+        reactions.push({ emoji: '👂', text: 'Listening...' });
+      } else if (answerLength < 200) {
+        reactions.push({ emoji: '👍', text: 'Good start!' });
+      } else if (answerLength < 400) {
+        reactions.push({ emoji: '😊', text: 'Nice detail!' });
+        } else {
+        reactions.push({ emoji: '✨', text: 'Comprehensive!' });
+      }
+      
+      // Content-based reactions
+      if (lowerAnswer.includes('stanford')) {
+        reactions.push({ emoji: '❤️', text: 'Great specificity!' });
+      }
+      
+      if (lowerAnswer.includes('because') || lowerAnswer.includes('reason') || lowerAnswer.includes('why')) {
+        reactions.push({ emoji: '💭', text: 'Good reasoning!' });
+      }
+      
+      if (lowerAnswer.includes('example') || lowerAnswer.includes('instance') || lowerAnswer.includes('experience')) {
+        reactions.push({ emoji: '⭐', text: 'Examples help!' });
+      }
+      
+      // STAR method indicators
+      const starKeywords = ['situation', 'task', 'action', 'result', 'challenge', 'problem', 'solution', 'outcome'];
+      const hasStarElements = starKeywords.some(keyword => lowerAnswer.includes(keyword));
+      if (hasStarElements) {
+        reactions.push({ emoji: '🎯', text: 'Well structured!' });
+      }
+      
+      // Show reactions (limit to 3 most relevant)
+      const displayReactions = reactions.slice(0, 3);
+      reactionArea.innerHTML = displayReactions.map(r => `
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <div class="reaction-emoji">${r.emoji}</div>
+          <div class="reaction-text">${r.text}</div>
+        </div>
+      `).join('');
+    }
+    
+    function generateRealTimeFeedback(answer) {
+      const feedbackContent = document.getElementById('feedbackContent');
+      const feedback = [];
+      
+      // Analyze answer length
+      if (answer.length < 100) {
+        feedback.push({
+          type: 'suggestion',
+          text: '💡 Your answer is quite brief. Consider adding more details or examples to make it more compelling.'
+        });
+      } else if (answer.length > 500) {
+        feedback.push({
+          type: 'suggestion',
+          text: '💡 Your answer is quite long. Consider being more concise while keeping the key points.'
+        });
+        } else {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Good length! Your answer has a nice balance of detail.'
+        });
+      }
+      
+      // Check for STAR method indicators
+      const starKeywords = ['situation', 'task', 'action', 'result', 'challenge', 'problem', 'solution', 'outcome'];
+      const hasStarElements = starKeywords.some(keyword => answer.toLowerCase().includes(keyword));
+      if (hasStarElements) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Great! You\'re using structured thinking in your answer.'
+        });
+      }
+      
+      // Check for Stanford-specific mentions
+      if (answer.toLowerCase().includes('stanford')) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Good! You\'re showing specific interest in Stanford.'
+        });
+      } else if (currentQuestionIndex === 1 || currentQuestionIndex === 3) {
+        feedback.push({
+          type: 'area',
+          text: '💡 Consider mentioning specific Stanford programs, faculty, or opportunities.'
+        });
+      }
+      
+      // Render feedback
+      feedbackContent.innerHTML = feedback.map(f => `
+        <div class="feedback-item ${f.type}">${f.text}</div>
+      `).join('');
+      
+      document.getElementById('interviewFeedback').classList.add('show');
+    }
+    
+    function submitAnswer() {
+      const transcriptEl = document.getElementById('voiceTranscript');
+      const answer = currentAnswer.trim() || transcriptEl.textContent.trim();
+      
+      if (!answer || answer === 'Your spoken answer will appear here...') {
+        showAgentMessage('Please provide an answer before submitting.');
+        return;
+      }
+      
+      // Generate comprehensive feedback
+      generateComprehensiveFeedback(answer);
+      
+      // Add to transcript
+      addTranscriptMessage('user', `Q: ${interviewQuestions[currentQuestionIndex]}\nA: ${answer}`);
+      
+      // Move to next question after a delay
+      setTimeout(() => {
+        if (currentQuestionIndex < interviewQuestions.length - 1) {
+          showQuestion(currentQuestionIndex + 1);
+        } else {
+          // Interview complete
+          showQuestion(interviewQuestions.length);
+          showAgentMessage('Congratulations! You\'ve completed the interview. Great work!');
+          
+          // Generate final interview summary
+          generateInterviewSummary();
+        }
+      }, 3000);
+    }
+    
+    function generateInterviewSummary() {
+      // This will be called after interview completion
+      // Store interview performance data for reflection
+      const interviewData = {
+        mode: interviewMode,
+        questions: interviewQuestions,
+        answers: [],
+        feedback: [],
+        completedAt: new Date().toISOString()
+      };
+      
+      // Collect all Q&A pairs from transcript
+      transcript.forEach(msg => {
+        if (msg.role === 'user' && msg.text.includes('Q:') && msg.text.includes('A:')) {
+          const parts = msg.text.split('\n');
+          if (parts.length >= 2) {
+            const question = parts[0].replace('Q: ', '');
+            const answer = parts[1].replace('A: ', '');
+            interviewData.answers.push({ question, answer });
+          }
+        }
+      });
+      
+      localStorage.setItem(`interviewData_${currentTaskId}`, JSON.stringify(interviewData));
+    }
+    
+    function generateComprehensiveFeedback(answer) {
+      const feedbackContent = document.getElementById('feedbackContent');
+      const feedback = [];
+      const lowerAnswer = answer.toLowerCase();
+      
+      // Harvard Interview Evaluation Dimensions
+      
+      // 1. Academic Ability & Intellectual Vitality
+      const academicKeywords = ['research', 'study', 'learn', 'academic', 'course', 'class', 'project'];
+      const hasAcademicContent = academicKeywords.some(kw => lowerAnswer.includes(kw));
+      if (hasAcademicContent) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Academic Focus: You demonstrate intellectual curiosity and engagement with academic topics.'
+        });
+      } else {
+        feedback.push({
+          type: 'area',
+          text: '💡 Academic Focus: Consider highlighting your academic interests, research experiences, or intellectual pursuits.'
+        });
+      }
+      
+      // 2. Personal Qualities & Character
+      const characterKeywords = ['challenge', 'difficult', 'overcome', 'persevere', 'growth', 'learned', 'improve'];
+      const hasCharacterContent = characterKeywords.some(kw => lowerAnswer.includes(kw));
+      if (hasCharacterContent) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Personal Qualities: You show resilience, growth mindset, and self-awareness.'
+        });
+      } else {
+        feedback.push({
+          type: 'suggestion',
+          text: '💡 Personal Qualities: Consider sharing how you\'ve grown from challenges or what you\'ve learned about yourself.'
+        });
+      }
+      
+      // 3. Communication Skills
+      const answerLength = answer.length;
+      const wordCount = answer.split(/\s+/).length;
+      if (wordCount >= 50 && wordCount <= 200) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Communication: Your answer length is appropriate and well-structured.'
+        });
+      } else if (wordCount < 50) {
+        feedback.push({
+          type: 'suggestion',
+          text: '💡 Communication: Your answer is quite brief. Expand with specific examples and details.'
+        });
+      } else {
+        feedback.push({
+          type: 'suggestion',
+          text: '💡 Communication: Your answer is quite long. Practice being more concise while keeping key points.'
+        });
+      }
+      
+      // 4. Interest in School & Fit
+      if (lowerAnswer.includes('stanford') || lowerAnswer.includes('university') || lowerAnswer.includes('program')) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ School Interest: You demonstrate specific interest and knowledge about Stanford.'
+        });
+      } else if (currentQuestionIndex === 1 || currentQuestionIndex === 3) {
+        feedback.push({
+          type: 'area',
+          text: '💡 School Interest: For "Why Stanford?" questions, mention specific programs, faculty, research opportunities, or campus culture.'
+        });
+      }
+      
+      // 5. Examples & Specificity
+      if (lowerAnswer.includes('example') || lowerAnswer.includes('instance') || lowerAnswer.includes('experience') || lowerAnswer.includes('when')) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Specificity: You use concrete examples, which makes your answer more compelling and memorable.'
+        });
+      } else {
+        feedback.push({
+          type: 'suggestion',
+          text: '💡 Specificity: Add specific examples or experiences to illustrate your points. Use the STAR method: Situation, Task, Action, Result.'
+        });
+      }
+      
+      // 6. Overall Structure
+      const starKeywords = ['situation', 'task', 'action', 'result', 'challenge', 'problem', 'solution', 'outcome'];
+      const hasStarStructure = starKeywords.some(kw => lowerAnswer.includes(kw));
+      if (hasStarStructure) {
+        feedback.push({
+          type: 'positive',
+          text: '✅ Structure: Your answer follows a clear, logical structure that is easy to follow.'
+        });
+      } else {
+        feedback.push({
+          type: 'suggestion',
+          text: '💡 Structure: Organize your answer with a clear beginning, middle, and end. Consider using the STAR method for behavioral questions.'
+        });
+      }
+      
+      // Overall Assessment
+      const positiveCount = feedback.filter(f => f.type === 'positive').length;
+      if (positiveCount >= 3) {
+        feedback.unshift({
+          type: 'positive',
+          text: '🌟 Overall: Strong answer! You demonstrate good communication skills and thoughtful responses.'
+        });
+      } else {
+        feedback.unshift({
+          type: 'suggestion',
+          text: '💡 Overall: Good foundation! Consider adding more specific examples and details to strengthen your answer.'
+        });
+      }
+      
+      // Render feedback
+      feedbackContent.innerHTML = feedback.map(f => `
+        <div class="feedback-item ${f.type}">${f.text}</div>
+      `).join('');
+      
+      document.getElementById('interviewFeedback').classList.add('show');
+    }
+    
+    function skipQuestion() {
+      if (currentQuestionIndex < interviewQuestions.length - 1) {
+        showQuestion(currentQuestionIndex + 1);
+        showAgentMessage('Question skipped. Moving to the next one.');
+      }
+    }
+    
+    function loadTask(taskId) {
+      const task = taskData[taskId];
+      if (!task) {
+        console.error('Task not found:', taskId);
+        return;
+      }
+      
+      currentTaskId = taskId;
+      
+      document.getElementById('taskTitle').textContent = `Task ${task.number}: ${task.title}`;
+      document.getElementById('taskTitleContent').textContent = task.title;
+      document.getElementById('taskDescription').textContent = task.description;
+      document.getElementById('taskNumber').textContent = task.number;
+      
+      // Show/hide sidebar based on task type
+      if (taskId === '2.2') {
+        // Task 2.2: Direct immersive interview - start immediately with full mode
+        hideInterviewModeSidebar();
+        startImmersiveInterview();
+      } else if (taskId.startsWith('2.1')) {
+        // Task 2.1: Show mode selection sidebar
+        showInterviewModeSidebar();
+      } else {
+        // Other tasks - generate dynamic sidebar buttons based on task content
+        generateSidebarButtons(taskId);
+      }
+      
+      // Show sidebar and voice-bar
+      document.getElementById('sidebar').style.display = 'flex';
+      document.getElementById('voice-bar').style.display = 'block';
+      
+      // Update task status
+      const completed = JSON.parse(localStorage.getItem('completedInterviewTasks') || '[]');
+      const taskBubble = document.getElementById('taskBubble');
+      const taskStatus = document.getElementById('taskStatus');
+      const completeBtn = document.getElementById('taskCompleteBtn');
+      
+      if (completed.includes(taskId)) {
+        taskBubble.classList.remove('ongoing');
+        taskBubble.classList.add('completed');
+        taskStatus.textContent = 'Completed';
+        taskStatus.className = 'task-status completed';
+        
+        // Update complete button
+        completeBtn.classList.add('completed');
+        completeBtn.innerHTML = '<span>✓</span><span>Completed</span>';
+        completeBtn.onclick = null;
+        completeBtn.style.cursor = 'default';
+      } else {
+        taskBubble.classList.remove('completed');
+        taskBubble.classList.add('ongoing');
+        taskStatus.textContent = 'In Progress';
+        taskStatus.className = 'task-status ongoing';
+        
+        // Reset complete button
+        completeBtn.classList.remove('completed');
+        completeBtn.innerHTML = '<span>✓</span><span>Mark as Complete</span>';
+        completeBtn.onclick = completeTask;
+        completeBtn.style.cursor = 'pointer';
+      }
+    }
+    
+    function showChatbox() {
+      document.getElementById('chatbox').classList.add('show');
+      renderTranscript();
+    }
+    
+    function closeChatbox() {
+      document.getElementById('chatbox').classList.remove('show');
+    }
+    
+    function renderTranscript() {
+      const messagesContainer = document.getElementById('chatboxMessages');
+      messagesContainer.innerHTML = '';
+      
+      if (transcript.length === 0) {
+        messagesContainer.innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: 40px 20px;">
+            <p>No conversation yet. Start speaking to see the transcript here.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      transcript.forEach(msg => {
+      const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${msg.role}`;
+      
+        const avatar = msg.role === 'user' ? '👤' : '🤖';
+        const time = new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      
+      messageDiv.innerHTML = `
+          <div class="chat-avatar">${avatar}</div>
+          <div>
+            <div class="chat-bubble">${msg.text}</div>
+            <div class="chat-time">${time}</div>
+        </div>
+      `;
+      
+        messagesContainer.appendChild(messageDiv);
+      });
+      
+      // Scroll to bottom
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    function showTextInput() {
+      const task = taskData[currentTaskId];
+      const title = task ? `Edit: ${task.title}` : 'Edit Your Content';
+      document.getElementById('textInputTitle').textContent = title;
+      
+      // Load saved content if exists
+      const savedContent = localStorage.getItem(`taskContent_${currentTaskId}`);
+      if (savedContent) {
+        document.getElementById('textInputArea').value = savedContent;
+      }
+      
+      document.getElementById('textInputModal').classList.add('show');
+      document.body.classList.add('popup-open');
+      
+      // Focus on textarea to trigger soft keyboard
+        setTimeout(() => {
+        document.getElementById('textInputArea').focus();
+      }, 300);
+    }
+    
+    function closeTextInput() {
+      document.getElementById('textInputModal').classList.remove('show');
+      document.body.classList.remove('popup-open');
+    }
+    
+    function saveTextInput() {
+      const content = document.getElementById('textInputArea').value;
+      localStorage.setItem(`taskContent_${currentTaskId}`, content);
+      addTranscriptMessage('user', `Updated content: ${content.substring(0, 50)}...`);
+      showAgentMessage('Content saved successfully!');
+      closeTextInput();
+    }
+    
+    function showSidebarContent(type) {
+      const task = taskData[currentTaskId];
+      if (!task || !task.content) {
+        showAgentMessage('Task information not available. Please refresh the page.');
+        return;
+      }
+      
+      let content = null;
+      let title = '';
+      
+      // Only show content that actually exists in the task
+      switch(type) {
+        case 'resources':
+          if (task.content.resources) {
+            content = task.content.resources;
+            title = content.title || 'Resources';
+          }
+          break;
+        case 'content':
+          if (task.content.edit) {
+            content = task.content.edit;
+            title = content.title || 'Content';
+          }
+          break;
+        case 'edit':
+          if (task.content.edit) {
+            content = task.content.edit;
+            title = content.title || 'Edit';
+          }
+          break;
+        case 'tips':
+          if (task.content.tips) {
+            content = task.content.tips;
+            title = content.title || 'Tips';
+          }
+          break;
+        case 'examples':
+          if (task.content.examples) {
+            content = task.content.examples;
+            title = content.title || 'Examples';
+          }
+          break;
+      }
+      
+      if (content) {
+        document.getElementById('popupTitle').textContent = title;
+        document.getElementById('popupBody').innerHTML = content.body;
+        document.getElementById('popupOverlay').classList.add('show');
+        document.body.classList.add('popup-open');
+      } else {
+        showAgentMessage('Content not available for this task.');
+      }
+    }
+    
+    function closePopup(event) {
+      if (event && event.target !== event.currentTarget && !event.target.closest('.popup-close')) {
+        if (event.target.closest('.popup-content')) {
+          return; // Don't close if clicking inside popup content
+        }
+      }
+      
+      const popupOverlay = document.getElementById('popupOverlay');
+      const popupTitle = document.getElementById('popupTitle');
+      
+      if (popupOverlay) {
+        popupOverlay.classList.remove('show');
+        document.body.classList.remove('popup-open');
+        
+        // If this was the interview summary popup, end the interview after closing
+        if (popupTitle && popupTitle.textContent === 'Interview Summary & Recommendations') {
+          setTimeout(() => {
+            endInterviewAndShowReflection();
+          }, 300);
+        }
+      }
+    }
+    
+    function addTranscriptMessage(role, text) {
+      transcript.push({
+        role: role,
+        text: text,
+        timestamp: new Date()
+      });
+      
+      // Save to localStorage
+      localStorage.setItem(`transcript_${currentTaskId}`, JSON.stringify(transcript));
+      
+      // Update chatbox if open
+      if (document.getElementById('chatbox').classList.contains('show')) {
+        renderTranscript();
+      }
+    }
+    
+    function toggleMicrophone() {
+      // If in interview mode, handle interview-specific voice input
+      if (interviewMode && document.getElementById('interviewInterface').classList.contains('active')) {
+        toggleInterviewMicrophone();
+        return;
+      }
+      
+      // Default behavior for other tasks
+      isMicrophoneOn = !isMicrophoneOn;
+      const micBtn = document.getElementById('micBtn');
+      const promptText = document.getElementById('voicePromptText');
+      
+      if (isMicrophoneOn) {
+        micBtn.classList.add('recording');
+        promptText.textContent = 'Listening... Speak now';
+        startVoiceRecognition();
+        showAgentMessage("I'm listening! Go ahead and speak.");
+      } else {
+        micBtn.classList.remove('recording');
+        promptText.textContent = 'Speak or click to interrupt...';
+        stopVoiceRecognition();
+        showAgentMessage("Microphone turned off. Click again to start speaking.");
+      }
+    }
+    
+    function toggleInterviewMicrophone() {
+      isMicrophoneOn = !isMicrophoneOn;
+      const micBtn = document.getElementById('micBtn');
+      const voiceStatus = document.getElementById('voiceStatus');
+      const voiceStatusText = document.getElementById('voiceStatusText');
+      const transcriptEl = document.getElementById('voiceTranscript');
+      
+      if (isMicrophoneOn) {
+        micBtn.classList.add('recording');
+        voiceStatus.classList.add('recording');
+        voiceStatusText.innerHTML = '<span class="recording-dot"></span> Recording... Speak your answer';
+        transcriptEl.classList.add('recording');
+        startInterviewVoiceRecognition();
+        showAgentMessage("I'm listening! Please speak your answer to the question.");
+      } else {
+        micBtn.classList.remove('recording');
+        voiceStatus.classList.remove('recording');
+        voiceStatusText.textContent = 'Click the microphone button to continue speaking';
+        transcriptEl.classList.remove('recording');
+        stopVoiceRecognition();
+        showAgentMessage("Recording stopped. You can click the microphone again to add more to your answer.");
+      }
+    }
+    
+    function startVoiceRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        
+        recognition.onresult = (event) => {
+          const transcript = event.results[event.results.length - 1][0].transcript;
+          if (transcript.trim()) {
+            // If in interview mode, update transcript display and trigger feedback
+            if (interviewMode && document.getElementById('interviewInterface').classList.contains('active')) {
+              const transcriptEl = document.getElementById('voiceTranscript');
+              const currentText = transcriptEl.textContent;
+              
+              // Append to existing transcript or replace if empty
+              if (currentText === 'Your spoken answer will appear here...' || currentText.trim() === '') {
+                transcriptEl.textContent = transcript;
+              } else {
+                transcriptEl.textContent = currentText + ' ' + transcript;
+              }
+              
+              transcriptEl.classList.remove('empty');
+              // Update current answer and trigger feedback
+              currentAnswer = transcriptEl.textContent;
+              handleAnswerInput(currentAnswer);
+            } else {
+              handleUserSpeech(transcript);
+            }
+          }
+        };
+        
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          if (event.error === 'no-speech') {
+            showAgentMessage("I didn't catch that. Please try speaking again.");
+          }
+        };
+        
+        recognition.start();
+        voiceRecognition = recognition;
+      } else {
+        showAgentMessage("Voice recognition is not supported in your browser. Please use text input instead.");
+      }
+    }
+    
+    function stopVoiceRecognition() {
+        if (voiceRecognition) {
+          try {
+            voiceRecognition.stop();
+          } catch (e) {}
+          voiceRecognition = null;
+      }
+    }
+    
+    function handleUserSpeech(text) {
+      // Add user message to transcript
+      addTranscriptMessage('user', text);
+      
+      showAgentMessage(`I heard: "${text}". Let me help you with that...`);
+      
+      // Simulate agent response based on user input
+      setTimeout(() => {
+        const lowerText = text.toLowerCase();
+        let agentResponse = '';
+        
+        if (lowerText.includes('help') || lowerText.includes('what') || lowerText.includes('how')) {
+          agentResponse = "I can help you with this task! Use the sidebar buttons to access resources, content, tips, and examples. Or click the edit button to input text.";
+          showAgentMessage(agentResponse);
+        } else if (lowerText.includes('complete') || lowerText.includes('done') || lowerText.includes('finish')) {
+          agentResponse = "Great! Let me mark this task as complete for you.";
+          showAgentMessage(agentResponse);
+          addTranscriptMessage('agent', agentResponse);
+          completeTask();
+        } else if (lowerText.includes('resources') || lowerText.includes('links') || lowerText.includes('information')) {
+          agentResponse = "I'll show you the resources. Check the sidebar or pop-up.";
+          showAgentMessage(agentResponse);
+          showSidebarContent('resources');
+        } else if (lowerText.includes('edit') || lowerText.includes('change') || lowerText.includes('update') || lowerText.includes('write')) {
+          agentResponse = "I'll open the text editor for you. You can type your content there.";
+          showAgentMessage(agentResponse);
+          showTextInput();
+        } else if (lowerText.includes('transcript') || lowerText.includes('conversation') || lowerText.includes('history')) {
+          agentResponse = "I'll show you the conversation transcript.";
+          showAgentMessage(agentResponse);
+          showChatbox();
+        } else {
+          agentResponse = "I understand. How can I help you with this task? You can ask for resources, edit content, or view tips.";
+          showAgentMessage(agentResponse);
+        }
+        
+        if (agentResponse) {
+          addTranscriptMessage('agent', agentResponse);
+        }
+      }, 1000);
+    }
+    
+    function showAgentMessage(text) {
+      const messageEl = document.getElementById('agentMessage');
+      const textEl = document.getElementById('agentText');
+      textEl.textContent = text;
+      messageEl.classList.add('show');
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        messageEl.classList.remove('show');
+      }, 5000);
+    }
+    
+    
+    function completeTask() {
+      const completed = JSON.parse(localStorage.getItem('completedInterviewTasks') || '[]');
+      if (!completed.includes(currentTaskId)) {
+        completed.push(currentTaskId);
+        localStorage.setItem('completedInterviewTasks', JSON.stringify(completed));
+      }
+      
+      const taskBubble = document.getElementById('taskBubble');
+      const taskStatus = document.getElementById('taskStatus');
+      const completeBtn = document.getElementById('taskCompleteBtn');
+      
+      if (taskBubble) {
+        taskBubble.classList.remove('ongoing');
+        taskBubble.classList.add('completed');
+      }
+      if (taskStatus) {
+        taskStatus.textContent = 'Completed';
+        taskStatus.className = 'task-status completed';
+      }
+      
+      // Update complete button
+      completeBtn.classList.add('completed');
+      completeBtn.innerHTML = '<span>✓</span><span>Completed</span>';
+      completeBtn.onclick = null;
+      completeBtn.style.cursor = 'default';
+      
+      showAgentMessage("Great job! Task marked as complete. You can continue to the next task.");
+      addTranscriptMessage('agent', "Task marked as complete! Great work!");
+      
+      // Update task progress in tasklist
+      const progress = JSON.parse(localStorage.getItem('taskProgress') || '{}');
+      if (!progress[currentTaskId]) {
+        progress[currentTaskId] = {};
+      }
+      progress[currentTaskId].status = 'completed';
+      progress[currentTaskId].progress = 100;
+      localStorage.setItem('taskProgress', JSON.stringify(progress));
+    }
+    
+    function endSession() {
+      if (confirm('Are you sure you want to end this session?')) {
+        stopVoiceRecognition();
+        window.location.href = 'tasklist.html';
+      }
+    }
+    
+    function goBack() {
+      window.location.href = 'tasklist.html';
+    }
+  </script>
+</body>
+</html>

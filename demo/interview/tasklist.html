@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Interview Task List - Stanford Interview</title>
+  <style>
+    :root {
+      --bg-main: #FAF9F6;
+      --bg-card: #FDF1EB;
+      --bg-hover: #FAE2D8;
+      --primary: #8C1515;
+      --primary-glow: rgba(140, 21, 21, 0.4);
+      --primary-light: #B1040E;
+      --text: #4A0509;
+      --text-muted: #74070E;
+      --border: rgba(140, 21, 21, 0.2);
+      --milestone-1: #3b82f6;
+      --milestone-2: #f59e0b;
+      --milestone-3: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { 
+      background: linear-gradient(135deg, #FAF9F6 0%, #FDF1EB 100%);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+    .milestone-header {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .milestone-header-item {
+      min-width: 200px;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+    .milestone-header-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .milestone-header-item.milestone-1 {
+      border-color: var(--milestone-1);
+    }
+    .milestone-header-item.milestone-2 {
+      border-color: var(--milestone-2);
+    }
+    .milestone-header-item.milestone-3 {
+      border-color: var(--milestone-3);
+    }
+    .milestone-header-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+      border-width: 3px;
+    }
+    .milestone-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .milestone-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    .milestone-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .milestone-status.pending {
+      background: var(--bg-hover);
+      color: var(--text-muted);
+    }
+    .milestone-status.in-progress {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
+    .milestone-status.completed {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+    .milestone-progress {
+      margin-top: 12px;
+      height: 6px;
+      background: var(--bg-hover);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .milestone-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    .milestone-content {
+      margin-bottom: 40px;
+    }
+    .milestone-content h2 {
+      font-size: 24px;
+      margin-bottom: 24px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .tasks-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+    .task-bubble {
+      position: relative;
+      background: var(--bg-card);
+      border: 3px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      min-width: 280px;
+      max-width: 320px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .task-bubble:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .task-bubble.completed {
+      border-color: var(--milestone-3);
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      opacity: 0.8;
+    }
+    .task-bubble.ongoing {
+      border-color: var(--milestone-2);
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      animation: breathing 3s ease-in-out infinite;
+      box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+    @keyframes breathing {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+      }
+      50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 0 8px rgba(245, 158, 11, 0);
+      }
+    }
+    .task-bubble.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      position: relative;
+    }
+    .task-bubble.locked::before {
+      content: '🔒';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 20px;
+    }
+    .task-number {
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    .task-bubble.completed .task-number {
+      background: linear-gradient(135deg, var(--milestone-3), #16a34a);
+    }
+    .task-bubble.ongoing .task-number {
+      background: linear-gradient(135deg, var(--milestone-2), #d97706);
+      animation: pulse-number 2s ease-in-out infinite;
+    }
+    @keyframes pulse-number {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .task-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--text);
+      margin-top: 8px;
+    }
+    .task-description {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+    .task-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .task-progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-hover);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .task-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+    .task-progress-text {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-width: 40px;
+      text-align: right;
+    }
+    .task-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .task-status.pending {
+      background: var(--bg-hover);
+      color: var(--text-muted);
+    }
+    .task-status.in-progress {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
+    .task-status.completed {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+    .action-button {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      z-index: 100;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--primary-glow);
+    }
+    .back-button {
+      position: fixed;
+      bottom: 30px;
+      left: 30px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+    @media (max-width: 768px) {
+      .tasks-container {
+        justify-content: center;
+      }
+      .task-bubble {
+        min-width: 100%;
+        max-width: 100%;
+      }
+      .milestone-header {
+        gap: 12px;
+      }
+      .milestone-header-item {
+        min-width: 160px;
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎯 Stanford Interview Preparation</h1>
+    <p style="color: var(--text-muted); margin-top: 8px;">Your personalized interview preparation roadmap</p>
+  </div>
+  <div class="container">
+    <div class="milestone-header">
+      <div class="milestone-header-item milestone-1 active" onclick="scrollToMilestone(1)">
+        <div class="milestone-icon">📝</div>
+        <div class="milestone-title">Milestone 1: Strategy Prep</div>
+        <div class="milestone-status in-progress" id="ms1Status">In Progress</div>
+        <div class="milestone-progress">
+          <div class="milestone-progress-bar" id="ms1Progress" style="width: 33%"></div>
+        </div>
+      </div>
+      <div class="milestone-header-item milestone-2" onclick="scrollToMilestone(2)">
+        <div class="milestone-icon">🎤</div>
+        <div class="milestone-title">Milestone 2: Mock Interview</div>
+        <div class="milestone-status pending" id="ms2Status">Pending</div>
+        <div class="milestone-progress">
+          <div class="milestone-progress-bar" id="ms2Progress" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="milestone-header-item milestone-3" onclick="scrollToMilestone(3)">
+        <div class="milestone-icon">✨</div>
+        <div class="milestone-title">Milestone 3: Post-Interview</div>
+        <div class="milestone-status pending" id="ms3Status">Pending</div>
+        <div class="milestone-progress">
+          <div class="milestone-progress-bar" id="ms3Progress" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Milestone 1: Strategy Prep -->
+    <div class="milestone-content" id="milestone1">
+      <h2>📝 Milestone 1: Strategy Preparation</h2>
+      <div class="tasks-container" id="milestone1Tasks">
+        <!-- Tasks will be dynamically generated -->
+      </div>
+    </div>
+    
+    <!-- Milestone 2: Mock Interview -->
+    <div class="milestone-content" id="milestone2">
+      <h2>🎤 Milestone 2: Mock Interview</h2>
+      <div class="tasks-container" id="milestone2Tasks">
+        <!-- Tasks will be dynamically generated -->
+      </div>
+    </div>
+    
+    <!-- Milestone 3: Post-Interview -->
+    <div class="milestone-content" id="milestone3">
+      <h2>✨ Milestone 3: Post-Interview</h2>
+      <div class="tasks-container" id="milestone3Tasks">
+        <!-- Tasks will be dynamically generated -->
+      </div>
+    </div>
+  </div>
+  
+  <button class="action-button" onclick="startExecution()">
+    <span>🚀</span>
+    <span>Start Execution</span>
+  </button>
+  <button class="back-button" onclick="window.location.href='milestone0.html'">←</button>
+  
+  <script>
+    // Stanford Interview Tasks
+    const tasks = {
+      milestone1: [
+        {
+          id: '1.1',
+          title: 'Interview Prep Planning',
+          description: 'Understand the complete Stanford interview process from preparation to follow-up.',
+          progress: 0,
+          status: 'ongoing',
+          locked: false
+        },
+        {
+          id: '1.2',
+          title: 'Research Stanford Interview Policies',
+          description: 'Learn about Stanford\'s alumni interview format, evaluation criteria, and what to expect.',
+          progress: 0,
+          status: 'pending',
+          locked: false
+        },
+        {
+          id: '1.3',
+          title: 'Interview Skills Flashcards',
+          description: 'Master essential interview techniques: STAR method, body language, "Why Stanford?" strategy.',
+          progress: 0,
+          status: 'pending',
+          locked: false
+        },
+        {
+          id: '1.4',
+          title: 'Prepare Interview Questions',
+          description: 'Prepare answers for common Stanford interview questions with specific examples.',
+          progress: 0,
+          status: 'pending',
+          locked: false
+        },
+        {
+          id: '1.5',
+          title: 'Preparatory Mock Interview',
+          description: 'Practice with sample questions and receive targeted feedback before the real interview.',
+          progress: 0,
+          status: 'pending',
+          locked: false
+        },
+        {
+          id: '1.6',
+          title: 'Confirm Interview Details',
+          description: 'Confirm interview time, location, format, and interviewer information. Align calendar.',
+          progress: 0,
+          status: 'pending',
+          locked: false
+        }
+      ],
+      milestone2: [
+        {
+          id: '2.1',
+          title: 'Mock Interview Setup',
+          description: 'Choose your mock interview mode: Quick Warm-up, Full Simulation, or Targeted Drill.',
+          progress: 0,
+          status: 'pending',
+          locked: true
+        },
+        {
+          id: '2.2',
+          title: 'Interview in Progress',
+          description: 'Conduct mock interview with AI agent. Practice answering Stanford-specific questions.',
+          progress: 0,
+          status: 'pending',
+          locked: true
+        }
+      ],
+      milestone3: [
+        {
+          id: '3.1',
+          title: 'Post-Interview Reflection',
+          description: 'Share your interview experience and receive encouragement and support.',
+          progress: 0,
+          status: 'pending',
+          locked: true
+        }
+      ]
+    };
+    
+    function renderTasks() {
+      // Render Milestone 1 tasks
+      const ms1Container = document.getElementById('milestone1Tasks');
+      ms1Container.innerHTML = tasks.milestone1.map(task => createTaskBubble(task)).join('');
+      
+      // Render Milestone 2 tasks
+      const ms2Container = document.getElementById('milestone2Tasks');
+      ms2Container.innerHTML = tasks.milestone2.map(task => createTaskBubble(task)).join('');
+      
+      // Render Milestone 3 tasks
+      const ms3Container = document.getElementById('milestone3Tasks');
+      ms3Container.innerHTML = tasks.milestone3.map(task => createTaskBubble(task)).join('');
+      
+      // Attach click handlers
+      attachTaskHandlers();
+      
+      // Update milestone progress
+      updateMilestoneProgress();
+    }
+    
+    function createTaskBubble(task) {
+      const statusClass = task.status === 'completed' ? 'completed' : 
+                          task.status === 'ongoing' ? 'ongoing' : 'pending';
+      const lockedClass = task.locked ? 'locked' : '';
+      const statusText = task.status === 'completed' ? 'Completed' :
+                        task.status === 'ongoing' ? 'In Progress' : 'Pending';
+      const statusBg = task.status === 'completed' ? 'completed' :
+                       task.status === 'ongoing' ? 'in-progress' : 'pending';
+      
+      return `
+        <div class="task-bubble ${statusClass} ${lockedClass}" data-task-id="${task.id}">
+          <div class="task-number">${task.id}</div>
+          <div class="task-title">${task.title}</div>
+          <div class="task-description">${task.description}</div>
+          <div class="task-status ${statusBg}">${statusText}</div>
+          <div class="task-progress">
+            <div class="task-progress-bar">
+              <div class="task-progress-fill" style="width: ${task.progress}%"></div>
+            </div>
+            <div class="task-progress-text">${task.progress}%</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function attachTaskHandlers() {
+      document.querySelectorAll('.task-bubble').forEach(bubble => {
+        bubble.addEventListener('click', function() {
+          const taskId = this.dataset.taskId;
+          const task = findTask(taskId);
+          
+          if (task && !task.locked) {
+            // Navigate to execution page with task focus
+            localStorage.setItem('currentTask', taskId);
+            window.location.href = `execution.html?task=${taskId}`;
+          } else if (task && task.locked) {
+            alert('This task is locked. Complete previous tasks to unlock it.');
+          }
+        });
+      });
+    }
+    
+    function findTask(taskId) {
+      for (const milestone in tasks) {
+        const task = tasks[milestone].find(t => t.id === taskId);
+        if (task) return task;
+      }
+      return null;
+    }
+    
+    function updateMilestoneProgress() {
+      // Calculate Milestone 1 progress
+      const ms1Tasks = tasks.milestone1;
+      const ms1Completed = ms1Tasks.filter(t => t.status === 'completed').length;
+      const ms1Progress = (ms1Completed / ms1Tasks.length) * 100;
+      document.getElementById('ms1Progress').style.width = ms1Progress + '%';
+      
+      // Update Milestone 1 status
+      if (ms1Progress === 100) {
+        document.getElementById('ms1Status').textContent = 'Completed';
+        document.getElementById('ms1Status').className = 'milestone-status completed';
+        // Unlock Milestone 2
+        tasks.milestone2.forEach(t => t.locked = false);
+      } else if (ms1Progress > 0) {
+        document.getElementById('ms1Status').textContent = 'In Progress';
+        document.getElementById('ms1Status').className = 'milestone-status in-progress';
+      }
+      
+      // Calculate Milestone 2 progress
+      const ms2Tasks = tasks.milestone2;
+      const ms2Completed = ms2Tasks.filter(t => t.status === 'completed').length;
+      const ms2Progress = (ms2Completed / ms2Tasks.length) * 100;
+      document.getElementById('ms2Progress').style.width = ms2Progress + '%';
+      
+      // Update Milestone 2 status
+      if (ms2Progress === 100) {
+        document.getElementById('ms2Status').textContent = 'Completed';
+        document.getElementById('ms2Status').className = 'milestone-status completed';
+        // Unlock Milestone 3
+        tasks.milestone3.forEach(t => t.locked = false);
+      } else if (ms2Progress > 0 && !tasks.milestone2[0].locked) {
+        document.getElementById('ms2Status').textContent = 'In Progress';
+        document.getElementById('ms2Status').className = 'milestone-status in-progress';
+      }
+      
+      // Calculate Milestone 3 progress
+      const ms3Tasks = tasks.milestone3;
+      const ms3Completed = ms3Tasks.filter(t => t.status === 'completed').length;
+      const ms3Progress = (ms3Completed / ms3Tasks.length) * 100;
+      document.getElementById('ms3Progress').style.width = ms3Progress + '%';
+      
+      // Update Milestone 3 status
+      if (ms3Progress === 100) {
+        document.getElementById('ms3Status').textContent = 'Completed';
+        document.getElementById('ms3Status').className = 'milestone-status completed';
+      } else if (ms3Progress > 0 && !tasks.milestone3[0].locked) {
+        document.getElementById('ms3Status').textContent = 'In Progress';
+        document.getElementById('ms3Status').className = 'milestone-status in-progress';
+      }
+      
+      // Update locked status in DOM without re-rendering
+      updateLockedStatus();
+    }
+    
+    function updateLockedStatus() {
+      // Update Milestone 2 tasks locked status
+      tasks.milestone2.forEach(task => {
+        const bubble = document.querySelector(`[data-task-id="${task.id}"]`);
+        if (bubble) {
+          if (task.locked) {
+            bubble.classList.add('locked');
+          } else {
+            bubble.classList.remove('locked');
+          }
+        }
+      });
+      
+      // Update Milestone 3 tasks locked status
+      tasks.milestone3.forEach(task => {
+        const bubble = document.querySelector(`[data-task-id="${task.id}"]`);
+        if (bubble) {
+          if (task.locked) {
+            bubble.classList.add('locked');
+          } else {
+            bubble.classList.remove('locked');
+          }
+        }
+      });
+    }
+    
+    function scrollToMilestone(milestoneNum) {
+      document.getElementById(`milestone${milestoneNum}`).scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+      
+      // Update active header
+      document.querySelectorAll('.milestone-header-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.querySelectorAll('.milestone-header-item')[milestoneNum - 1].classList.add('active');
+    }
+    
+    function startExecution() {
+      // Find first ongoing or pending task
+      let targetTask = null;
+      for (const milestone in tasks) {
+        const ongoing = tasks[milestone].find(t => t.status === 'ongoing' && !t.locked);
+        if (ongoing) {
+          targetTask = ongoing;
+          break;
+        }
+        const pending = tasks[milestone].find(t => t.status === 'pending' && !t.locked);
+        if (pending) {
+          targetTask = pending;
+          break;
+        }
+      }
+      
+      if (targetTask) {
+        localStorage.setItem('currentTask', targetTask.id);
+        window.location.href = `execution.html?task=${targetTask.id}`;
+      } else {
+        window.location.href = 'execution.html';
+      }
+    }
+    
+    // Load task progress from localStorage
+    function loadTaskProgress() {
+      const savedProgress = localStorage.getItem('taskProgress');
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+        for (const milestone in tasks) {
+          tasks[milestone].forEach(task => {
+            if (progress[task.id]) {
+              task.progress = progress[task.id].progress || 0;
+              task.status = progress[task.id].status || task.status;
+            }
+          });
+        }
+      }
+      
+      // Check completed tasks
+      const completed = JSON.parse(localStorage.getItem('completedInterviewTasks') || '[]');
+      completed.forEach(taskId => {
+        const task = findTask(taskId);
+        if (task) {
+          task.status = 'completed';
+          task.progress = 100;
+        }
+      });
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTaskProgress();
+      renderTasks();
+      
+      // Set first task as ongoing if none is set
+      if (!tasks.milestone1.find(t => t.status === 'ongoing')) {
+        tasks.milestone1[0].status = 'ongoing';
+      }
+    });
+    
+    // Save progress periodically
+    setInterval(() => {
+      const progress = {};
+      for (const milestone in tasks) {
+        tasks[milestone].forEach(task => {
+          progress[task.id] = {
+            progress: task.progress,
+            status: task.status
+          };
+        });
+      }
+      localStorage.setItem('taskProgress', JSON.stringify(progress));
+    }, 5000);
+  </script>
+</body>
+</html>
