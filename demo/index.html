@@ -69,10 +69,10 @@
     /* 主容器 - 左右分栏布局 */
     .main-wrapper {
       display: flex;
-      gap: 20px;
-      max-width: 1400px;
+      gap: 16px;
+      max-width: 1600px;
       margin: 0 auto;
-      padding: 20px 15px;
+      padding: 16px 20px;
       align-items: flex-start;
     }
 
@@ -173,13 +173,14 @@
     .content-area {
       flex: 1;
       min-width: 0;
+      max-width: none;
     }
 
     /* 容器 - 保持向后兼容 */
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px 15px;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
     }
 
     /* 章节卡片 */
@@ -187,8 +188,8 @@
       background: var(--bg-card-2);
       border: 2px solid var(--primary);
       border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
       box-shadow: 0 4px 12px var(--shadow);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -202,8 +203,8 @@
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
       border-bottom: 1px solid var(--primary-light);
     }
 
@@ -227,24 +228,25 @@
 
     .section-title {
       color: var(--primary-dark);
-      font-size: 1.5em;
+      font-size: 1.4em;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      line-height: 1.3;
     }
 
     .section-description {
       color: var(--text-secondary);
       font-size: 0.9em;
       line-height: 1.5;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     /* 功能列表 */
     .features {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 8px;
-      margin: 10px 0;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 6px;
+      margin: 8px 0;
     }
 
     .feature-item {
@@ -272,20 +274,23 @@
       background: var(--bg-card-3);
       border: 1px solid var(--primary-light);
       border-radius: 8px;
-      padding: 12px;
-      margin: 10px 0;
+      padding: 10px;
+      margin: 8px 0;
       font-family: 'Courier New', monospace;
       overflow-x: auto;
       font-size: 0.85em;
+      max-height: 500px;
+      overflow-y: auto;
     }
 
     .flow-step {
       background: var(--bg-main);
       border-left: 3px solid var(--primary);
       border-radius: 6px;
-      padding: 6px 10px;
-      margin: 5px 0;
+      padding: 5px 8px;
+      margin: 4px 0;
       transition: all 0.3s ease;
+      line-height: 1.4;
     }
 
     .flow-step:hover {
@@ -328,13 +333,16 @@
       background: var(--bg-card-3);
       border: 1px solid var(--primary-light);
       border-radius: 8px;
-      padding: 10px;
-      margin: 10px 0;
+      padding: 8px;
+      margin: 8px 0;
+      max-height: 500px;
+      overflow-y: auto;
     }
 
     .file-list-item {
-      padding: 6px 0;
+      padding: 5px 0;
       font-size: 0.9em;
+      line-height: 1.4;
       border-bottom: 1px solid var(--primary-light);
     }
 
@@ -379,29 +387,97 @@
       background: var(--bg-card-3);
       border: 1px solid var(--primary-light);
       border-radius: 8px;
-      padding: 12px;
-      margin: 10px 0;
+      padding: 10px;
+      margin: 8px 0;
     }
 
     .subsection-title {
       color: var(--primary-dark);
-      font-size: 1.1em;
+      font-size: 1.05em;
       font-weight: 600;
-      margin-bottom: 8px;
-      padding-bottom: 6px;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
       border-bottom: 1px solid var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .subsection-title-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .subsection-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: rgba(170, 30, 35, 0.1);
+      border: 1px solid rgba(170, 30, 35, 0.3);
+      border-radius: 12px;
+      font-size: 0.75em;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .feature-tag:hover {
+      background: rgba(170, 30, 35, 0.15);
+      border-color: var(--primary);
+    }
+
+    .feature-tag-icon {
+      font-size: 0.9em;
     }
 
     /* 紧凑布局 - 将相关文件放在流程旁边 */
     .two-column-layout {
       display: grid;
       grid-template-columns: 1.5fr 1fr;
-      gap: 12px;
-      margin: 10px 0;
+      gap: 10px;
+      margin: 8px 0;
     }
 
     .two-column-layout .flow-diagram,
     .two-column-layout .subsection {
+      margin: 0;
+    }
+
+    /* 横向布局 - 流程和文件列表并排 */
+    .horizontal-layout {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 10px;
+      margin: 8px 0;
+      align-items: start;
+    }
+
+    .horizontal-layout .flow-diagram,
+    .horizontal-layout .file-list {
+      margin: 0;
+    }
+
+    /* 流程和文件列表直接横向排列 */
+    .flow-with-files {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 10px;
+      margin: 8px 0;
+      align-items: start;
+    }
+
+    .flow-with-files .flow-diagram,
+    .flow-with-files .file-list {
       margin: 0;
     }
 
@@ -410,18 +486,18 @@
       background: linear-gradient(135deg, var(--bg-card-1) 0%, var(--bg-card-2) 100%);
       border: 3px solid var(--primary);
       border-radius: 16px;
-      padding: 40px;
-      margin: 40px 0;
+      padding: 24px;
+      margin: 24px 0;
       box-shadow: 0 12px 32px var(--shadow);
     }
 
     .full-flow-title {
       text-align: center;
       color: var(--primary-dark);
-      font-size: 2em;
+      font-size: 1.8em;
       font-weight: 700;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
       border-bottom: 3px solid var(--primary);
     }
 
@@ -430,21 +506,23 @@
       background: var(--bg-card-3);
       border: 2px solid var(--primary-light);
       border-radius: 12px;
-      padding: 30px;
-      margin: 20px 0;
+      padding: 16px;
+      margin: 12px 0;
     }
 
     .feature-card-title {
       color: var(--primary-dark);
-      font-size: 1.3em;
+      font-size: 1.2em;
       font-weight: 600;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     /* 响应式设计 */
     @media (max-width: 1024px) {
       .main-wrapper {
         flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
       }
 
       .toc-sidebar {
@@ -456,34 +534,60 @@
 
       .two-column-layout {
         grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .flow-with-files {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .section {
+        padding: 14px;
+        margin-bottom: 12px;
+      }
+
+      .subsection-title {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .subsection-tags {
+        margin-top: 6px;
+        width: 100%;
       }
     }
 
     @media (max-width: 768px) {
       .header {
-        padding: 20px 15px;
+        padding: 16px 12px;
       }
 
       .header h1 {
-        font-size: 2em;
+        font-size: 1.8em;
       }
 
       .section {
-        padding: 15px;
-        margin-bottom: 15px;
+        padding: 12px;
+        margin-bottom: 12px;
       }
 
       .section-title {
-        font-size: 1.3em;
+        font-size: 1.2em;
       }
 
       .toc {
-        padding: 12px;
+        padding: 10px;
       }
 
       .features {
         grid-template-columns: 1fr;
         gap: 6px;
+      }
+
+      .subsection {
+        padding: 8px;
+        margin: 6px 0;
       }
     }
 
@@ -684,7 +788,7 @@
         </div>
       </div>
 
-      <div class="two-column-layout">
+      <div class="flow-with-files">
         <div class="subsection">
           <h3 class="subsection-title">🔄 流程</h3>
           <div class="flow-diagram">
@@ -757,7 +861,7 @@
         </div>
       </div>
 
-      <div class="two-column-layout">
+      <div class="flow-with-files">
         <div class="subsection">
           <h3 class="subsection-title">🔄 流程</h3>
           <div class="flow-diagram">
@@ -821,21 +925,7 @@
         </div>
       </div>
 
-      <div class="subsection">
-        <h3 class="subsection-title">📋 Profile Sections</h3>
-        <div class="file-list">
-          <div class="file-list-item"><span class="badge">1</span> <strong>Identity & Contact</strong> - 身份和联系方式</div>
-          <div class="file-list-item"><span class="badge">2</span> <strong>School & CEEB</strong> - 学校和CEEB代码</div>
-          <div class="file-list-item"><span class="badge">3</span> <strong>Transcript / GPA</strong> - 成绩单和GPA</div>
-          <div class="file-list-item"><span class="badge">4</span> <strong>Activities</strong> - 活动经历</div>
-          <div class="file-list-item"><span class="badge">5</span> <strong>Testing</strong> - 标准化考试</div>
-          <div class="file-list-item"><span class="badge">6</span> <strong>Recommenders</strong> - 推荐人</div>
-          <div class="file-list-item"><span class="badge">7</span> <strong>Essays</strong> - 文书</div>
-          <div class="file-list-item"><span class="badge">8</span> <strong>Permissions / FERPA</strong> - 权限和FERPA</div>
-        </div>
-      </div>
-
-      <div class="two-column-layout">
+      <div class="flow-with-files">
         <div class="subsection">
           <h3 class="subsection-title">🔄 流程</h3>
           <div class="flow-diagram">
@@ -903,31 +993,14 @@
 
       <div class="subsection">
         <h3 class="subsection-title">🗺️ Roadmap阶段</h3>
-        <div class="file-list">
-          <div class="file-list-item">
-            <strong>1. Pre-High School (高中前)</strong>
-            <br><a href="roadmap/roadmap_pre_high_school.html" class="file-link">roadmap_pre_high_school.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>2. Building Candidacy (建立候选资格)</strong>
-            <br><a href="roadmap/roadmap_building_candidacy.html" class="file-link">roadmap_building_candidacy.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>3. Application (申请阶段)</strong>
-            <br><a href="roadmap/roadmap_application.html" class="file-link">roadmap_application.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>4. Post-Application (申请后)</strong>
-            <br><a href="roadmap/roadmap_post_application.html" class="file-link">roadmap_post_application.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>5. Main Roadmap</strong>
-            <br><a href="roadmap/roadmap.html" class="file-link">roadmap.html</a>
-          </div>
-        </div>
+        <a href="roadmap/roadmap_pre_high_school.html" class="file-link">roadmap_pre_high_school.html</a>
+        <a href="roadmap/roadmap_building_candidacy.html" class="file-link">roadmap_building_candidacy.html</a>
+        <a href="roadmap/roadmap_application.html" class="file-link">roadmap_application.html</a>
+        <a href="roadmap/roadmap_post_application.html" class="file-link">roadmap_post_application.html</a>
+        <a href="roadmap/roadmap.html" class="file-link">roadmap.html</a>
       </div>
 
-      <div class="two-column-layout">
+      <div class="flow-with-files">
         <div class="subsection">
           <h3 class="subsection-title">🔄 流程</h3>
           <div class="flow-diagram">
@@ -962,7 +1035,7 @@
         <div class="section-number">6</div>
         <div class="section-title-wrapper">
           <h2 class="section-title">Mission解锁</h2>
-          <p class="section-description">从Roadmap中可以解锁不同的Missions，每个Mission包含具体的任务列表、完成标准和进度跟踪。完成Missions可以开启相应的支线任务模块，如Capstone、Major Advisor、Academic等。</p>
+          <p class="section-description">从Roadmap中可以解锁不同的Missions，每个Mission包含具体的任务列表、完成标准和进度跟踪。完成Missions可以开启相应的支线任务模块，如Capstone、Major Advisor、Academic、Interview等。</p>
         </div>
       </div>
 
@@ -1017,298 +1090,245 @@
 
       <!-- 7.1 Capstone -->
       <div class="subsection">
-        <h3 class="subsection-title">7.1 Capstone (顶点项目)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.1 Capstone (顶点项目)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">📝</span> 项目创建和管理</span>
+            <span class="feature-tag"><span class="feature-tag-icon">💬</span> 对话组件</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务列表管理</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">帮助学生创建和管理Capstone项目，提供对话组件和任务列表管理功能。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="capstone/capstone.html" class="file-link">capstone/capstone.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">📝</div>
-            <div>项目创建和管理</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">💬</div>
-            <div>对话组件</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务列表管理</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="capstone/capstone.html" class="file-link">capstone.html</a></div>
-          <div class="file-list-item"><a href="capstone/component.html" class="file-link">component.html</a></div>
-          <div class="file-list-item"><a href="capstone/conversation_component.html" class="file-link">conversation_component.html</a></div>
-          <div class="file-list-item"><a href="capstone/taskslist.html" class="file-link">taskslist.html</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="capstone/capstone.html" class="file-link">capstone.html</a>
+          <a href="capstone/component.html" class="file-link">component.html</a>
+          <a href="capstone/conversation_component.html" class="file-link">conversation_component.html</a>
+          <a href="capstone/taskslist.html" class="file-link">taskslist.html</a>
         </div>
       </div>
 
       <!-- 7.2 Major Advisor -->
       <div class="subsection">
-        <h3 class="subsection-title">7.2 Major Advisor (专业顾问)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.2 Major Advisor (专业顾问)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 目标专业分析</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📊</span> Profile检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 任务列表创建</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务执行</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">提供目标专业分析、Profile检查、任务列表创建和执行等功能，帮助学生更好地规划和准备专业相关的申请材料。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="major_advisor/view-advisor.html" class="file-link">major_advisor/view-advisor.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>目标专业分析</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📊</div>
-            <div>Profile检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📋</div>
-            <div>任务列表创建</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务执行</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="major_advisor/view-advisor.html" class="file-link">view-advisor.html</a></div>
-          <div class="file-list-item"><a href="major_advisor/analyze_target_major.html" class="file-link">analyze_target_major.html</a></div>
-          <div class="file-list-item"><a href="major_advisor/check_profile.html" class="file-link">check_profile.html</a></div>
-          <div class="file-list-item"><a href="major_advisor/create_tasklist.html" class="file-link">create_tasklist.html</a></div>
-          <div class="file-list-item"><a href="major_advisor/execute_tasks.html" class="file-link">execute_tasks.html</a></div>
-          <div class="file-list-item"><a href="major_advisor/recommend_categories.html" class="file-link">recommend_categories.html</a></div>
-          <div class="file-list-item"><a href="major_advisor/refine_majors.html" class="file-link">refine_majors.html</a></div>
-          <div class="file-list-item"><a href="js/advisor.js" class="file-link">js/advisor.js</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="major_advisor/view-advisor.html" class="file-link">view-advisor.html</a>
+          <a href="major_advisor/analyze_target_major.html" class="file-link">analyze_target_major.html</a>
+          <a href="major_advisor/check_profile.html" class="file-link">check_profile.html</a>
+          <a href="major_advisor/create_tasklist.html" class="file-link">create_tasklist.html</a>
+          <a href="major_advisor/execute_tasks.html" class="file-link">execute_tasks.html</a>
+          <a href="major_advisor/recommend_categories.html" class="file-link">recommend_categories.html</a>
+          <a href="major_advisor/refine_majors.html" class="file-link">refine_majors.html</a>
+          <a href="js/advisor.js" class="file-link">js/advisor.js</a>
         </div>
       </div>
 
       <!-- 7.3 Academic -->
       <div class="subsection">
-        <h3 class="subsection-title">7.3 Academic (学术)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.3 Academic (学术)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">📚</span> 学术Profile检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 目标达成</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📊</span> GPA管理</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📖</span> 课程推荐</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理学术Profile、目标达成、GPA跟踪和课程推荐，帮助学生保持良好的学术表现。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="academic/check_academic_profile.html" class="file-link">check_academic_profile.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">📚</div>
-            <div>学术Profile检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>目标达成</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📊</div>
-            <div>GPA管理</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📖</div>
-            <div>课程推荐</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="academic/check_academic_profile.html" class="file-link">check_academic_profile.html</a></div>
-          <div class="file-list-item"><a href="academic/achieve_goal.html" class="file-link">achieve_goal.html</a></div>
-          <div class="file-list-item"><a href="academic/manage_gpa.html" class="file-link">manage_gpa.html</a></div>
-          <div class="file-list-item"><a href="academic/recommend_courses.html" class="file-link">recommend_courses.html</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="academic/check_academic_profile.html" class="file-link">check_academic_profile.html</a>
+          <a href="academic/achieve_goal.html" class="file-link">achieve_goal.html</a>
+          <a href="academic/manage_gpa.html" class="file-link">manage_gpa.html</a>
+          <a href="academic/recommend_courses.html" class="file-link">recommend_courses.html</a>
         </div>
       </div>
 
       <!-- 7.4 Honor (荣誉) -->
       <div class="subsection">
-        <h3 class="subsection-title">7.4 Honor (荣誉)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.4 Honor (荣誉)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">🏆</span> 荣誉档案检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 荣誉推荐</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 任务列表创建</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务执行</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理荣誉和奖项申请，包括学术荣誉、竞赛奖项、领导职位和社区服务，帮助学生获得更多认可。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="honor/check_profile.html" class="file-link">honor/check_profile.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">🏆</div>
-            <div>荣誉档案检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>荣誉推荐</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📋</div>
-            <div>任务列表创建</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务执行</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="honor/check_profile.html" class="file-link">check_profile.html</a></div>
-          <div class="file-list-item"><a href="honor/recommendation.html" class="file-link">recommendation.html</a></div>
-          <div class="file-list-item"><a href="honor/tasklist.html" class="file-link">tasklist.html</a></div>
-          <div class="file-list-item"><a href="honor/execution.html" class="file-link">execution.html</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="honor/check_profile.html" class="file-link">check_profile.html</a>
+          <a href="honor/recommendation.html" class="file-link">recommendation.html</a>
+          <a href="honor/tasklist.html" class="file-link">tasklist.html</a>
+          <a href="honor/execution.html" class="file-link">execution.html</a>
         </div>
       </div>
 
       <!-- 7.5 Competition (竞赛) -->
       <div class="subsection">
-        <h3 class="subsection-title">7.5 Competition (竞赛)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.5 Competition (竞赛)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">🏆</span> 竞赛档案检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 竞赛推荐</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 任务列表创建</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务执行</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理竞赛参与，包括竞赛档案检查、竞赛推荐、准备任务和执行，帮助学生参与各类学术和技能竞赛。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="competition/check_profile.html" class="file-link">competition/check_profile.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">🏆</div>
-            <div>竞赛档案检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>竞赛推荐</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📋</div>
-            <div>任务列表创建</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务执行</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="competition/check_profile.html" class="file-link">check_profile.html</a></div>
-          <div class="file-list-item"><a href="competition/recommendation.html" class="file-link">recommendation.html</a></div>
-          <div class="file-list-item"><a href="competition/tasklist.html" class="file-link">tasklist.html</a></div>
-          <div class="file-list-item"><a href="competition/execution.html" class="file-link">execution.html</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="competition/check_profile.html" class="file-link">check_profile.html</a>
+          <a href="competition/recommendation.html" class="file-link">recommendation.html</a>
+          <a href="competition/tasklist.html" class="file-link">tasklist.html</a>
+          <a href="competition/execution.html" class="file-link">execution.html</a>
         </div>
       </div>
 
       <!-- 7.6 Extracurricular (课外活动) -->
       <div class="subsection">
-        <h3 class="subsection-title">7.6 Extracurricular (课外活动)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.6 Extracurricular (课外活动)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 活动档案检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 活动推荐</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 任务列表创建</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务执行</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理课外活动参与，包括社团、体育、艺术和志愿服务等活动，帮助学生发展兴趣爱好和软技能。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="extracurricular/check_profile.html" class="file-link">extracurricular/check_profile.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>活动档案检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>活动推荐</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📋</div>
-            <div>任务列表创建</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务执行</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="extracurricular/check_profile.html" class="file-link">check_profile.html</a></div>
-          <div class="file-list-item"><a href="extracurricular/recommendation.html" class="file-link">recommendation.html</a></div>
-          <div class="file-list-item"><a href="extracurricular/tasklist.html" class="file-link">tasklist.html</a></div>
-          <div class="file-list-item"><a href="extracurricular/execution.html" class="file-link">execution.html</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="extracurricular/check_profile.html" class="file-link">check_profile.html</a>
+          <a href="extracurricular/recommendation.html" class="file-link">recommendation.html</a>
+          <a href="extracurricular/tasklist.html" class="file-link">tasklist.html</a>
+          <a href="extracurricular/execution.html" class="file-link">execution.html</a>
         </div>
       </div>
 
       <!-- 7.7 Research (研究) -->
       <div class="subsection">
-        <h3 class="subsection-title">7.7 Research (研究)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.7 Research (研究)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">🔬</span> 研究档案检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 研究推荐</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 任务列表创建</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务执行</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理研究项目参与，包括研究经验检查、研究机会推荐、研究任务列表和执行，帮助学生参与学术研究。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="research/check_profile.html" class="file-link">research/check_profile.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">🔬</div>
-            <div>研究档案检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>研究推荐</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📋</div>
-            <div>任务列表创建</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务执行</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="research/check_profile.html" class="file-link">check_profile.html</a></div>
-          <div class="file-list-item"><a href="research/recommendation.html" class="file-link">recommendation.html</a></div>
-          <div class="file-list-item"><a href="research/tasklist.html" class="file-link">tasklist.html</a></div>
-          <div class="file-list-item"><a href="research/execution.html" class="file-link">execution.html</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="research/check_profile.html" class="file-link">check_profile.html</a>
+          <a href="research/recommendation.html" class="file-link">recommendation.html</a>
+          <a href="research/tasklist.html" class="file-link">tasklist.html</a>
+          <a href="research/execution.html" class="file-link">execution.html</a>
         </div>
       </div>
 
       <!-- 7.8 Standardized Test (标准化考试) -->
       <div class="subsection">
-        <h3 class="subsection-title">7.8 Standardized Test (标准化考试)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.8 Standardized Test (标准化考试)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">📝</span> 考试档案检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 考试推荐</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 任务列表创建</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务执行</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理标准化考试准备和参与，包括SAT/ACT、AP/IB、TOEFL/IELTS等考试，帮助学生准备和参加各类标准化考试。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="standardized test/check_profile.html" class="file-link">standardized test/check_profile.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">📝</div>
-            <div>考试档案检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>考试推荐</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📋</div>
-            <div>任务列表创建</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务执行</div>
-          </div>
-        </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="standardized test/check_profile.html" class="file-link">check_profile.html</a></div>
-          <div class="file-list-item"><a href="standardized test/recommendation.html" class="file-link">recommendation.html</a></div>
-          <div class="file-list-item"><a href="standardized test/tasklist.html" class="file-link">tasklist.html</a></div>
-          <div class="file-list-item"><a href="standardized test/execution.html" class="file-link">execution.html</a></div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="standardized test/check_profile.html" class="file-link">check_profile.html</a>
+          <a href="standardized test/recommendation.html" class="file-link">recommendation.html</a>
+          <a href="standardized test/tasklist.html" class="file-link">tasklist.html</a>
+          <a href="standardized test/execution.html" class="file-link">execution.html</a>
         </div>
       </div>
 
       <!-- 7.9 Summer School (夏校) -->
       <div class="subsection">
-        <h3 class="subsection-title">7.9 Summer School (夏校)</h3>
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.9 Summer School (夏校)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">🌞</span> 夏校档案检查</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 夏校推荐</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 任务列表创建</span>
+            <span class="feature-tag"><span class="feature-tag-icon">✅</span> 任务执行</span>
+          </span>
+        </h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">管理夏校申请和参与，包括学术兴趣匹配、夏校推荐、申请任务列表和执行，帮助学生申请和参加优质夏校项目。</p>
         <div style="margin-top: 10px;">
           <strong>📄 入口文件:</strong> <a href="summer school/check_profile.html" class="file-link">summer school/check_profile.html</a>
         </div>
-        <div class="features" style="margin-top: 10px;">
-          <div class="feature-item">
-            <div class="feature-icon">🌞</div>
-            <div>夏校档案检查</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">🎯</div>
-            <div>夏校推荐</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">📋</div>
-            <div>任务列表创建</div>
-          </div>
-          <div class="feature-item">
-            <div class="feature-icon">✅</div>
-            <div>任务执行</div>
-          </div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> <a href="summer school/check_profile.html" class="file-link">check_profile.html</a>
+          <a href="summer school/recommendation.html" class="file-link">recommendation.html</a>
+          <a href="summer school/tasklist.html" class="file-link">tasklist.html</a>
+          <a href="summer school/execution.html" class="file-link">execution.html</a>
         </div>
-        <div class="file-list" style="margin-top: 10px;">
-          <div class="file-list-item"><a href="summer school/check_profile.html" class="file-link">check_profile.html</a></div>
-          <div class="file-list-item"><a href="summer school/recommendation.html" class="file-link">recommendation.html</a></div>
-          <div class="file-list-item"><a href="summer school/tasklist.html" class="file-link">tasklist.html</a></div>
-          <div class="file-list-item"><a href="summer school/execution.html" class="file-link">execution.html</a></div>
+      </div>
+
+      <!-- 7.10 Interview (面试准备) -->
+      <div class="subsection">
+        <h3 class="subsection-title">
+          <span class="subsection-title-text">7.10 Interview (面试准备)</span>
+          <span class="subsection-tags">
+            <span class="feature-tag"><span class="feature-tag-icon">🎤</span> 语音交互</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📋</span> 里程碑任务</span>
+            <span class="feature-tag"><span class="feature-tag-icon">🎯</span> 模拟面试</span>
+            <span class="feature-tag"><span class="feature-tag-icon">💡</span> 实时反馈</span>
+            <span class="feature-tag"><span class="feature-tag-icon">📊</span> 面试总结</span>
+          </span>
+        </h3>
+        <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">完整的面试准备系统，包括信息确认、策略准备、模拟面试和总结反思。支持语音交互、实时反馈、多种面试模式（快速热身、完整模拟、针对性练习），帮助学生全面提升面试技能。</p>
+        <div style="margin-top: 10px;">
+          <strong>📄 入口文件:</strong> <a href="interview/milestone0.html" class="file-link">interview/milestone0.html</a>
+        </div>
+        <div style="margin-top: 10px;">
+          <strong>📄 相关文件:</strong> 
+          <a href="interview/milestone0.html" class="file-link">milestone0.html</a>
+          <a href="interview/tasklist.html" class="file-link">tasklist.html</a>
+          <a href="interview/execution.html" class="file-link">execution.html</a>
+        </div>
+        <div style="margin-top: 10px;">
+          <strong>✨ 主要功能:</strong>
+          <ul style="margin-top: 6px; margin-left: 20px; line-height: 1.6;">
+            <li>Milestone 0: 信息确认 - 通过语音交互确认学生基本信息</li>
+            <li>Milestone 1: 策略准备 - 研究面试政策、学习面试技巧、准备问题</li>
+            <li>Milestone 2: 模拟面试 - 沉浸式面试体验，支持多种模式，实时反馈</li>
+            <li>动态侧边栏 - 根据任务内容生成不同的资源按钮</li>
+            <li>面试总结 - 自动生成总结和建议的弹窗</li>
+          </ul>
         </div>
       </div>
     </section>
@@ -1353,82 +1373,30 @@
 
       <div class="subsection">
         <h3 class="subsection-title">🗺️ Router页面 (根据学生阶段)</h3>
-        <div class="file-list">
-          <div class="file-list-item">
-            <strong>1. Pre-High School Router</strong>
-            <br><a href="router/router_pre_high_school.html" class="file-link">router_pre_high_school.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>2. Building Candidacy Router</strong>
-            <br><a href="router/router_building_candidacy.html" class="file-link">router_building_candidacy.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>3. Application Router</strong>
-            <br><a href="router/router_application.html" class="file-link">router_application.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>4. Post-Application Router</strong>
-            <br><a href="router/router_post_application.html" class="file-link">router_post_application.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>5. Review Router</strong>
-            <br><a href="router/router_review.html" class="file-link">router_review.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>6. Status Dashboard</strong>
-            <br><a href="router/router_status_dashboard.html" class="file-link">router_status_dashboard.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>7. Daily Quest Router</strong>
-            <br><a href="router/router_dailyquest.html" class="file-link">router_dailyquest.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>8. Breathing Exercise</strong>
-            <br><a href="router/router_breathing.html" class="file-link">router_breathing.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>9. High Priority Router</strong>
-            <br><a href="router/router_highpriority.html" class="file-link">router_highpriority.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>10. Opportunity Recommendations</strong>
-            <br><a href="router/router_opportunity.html" class="file-link">router_opportunity.html</a>
-          </div>
-        </div>
+        <a href="router/router_pre_high_school.html" class="file-link">router_pre_high_school.html</a>
+        <a href="router/router_building_candidacy.html" class="file-link">router_building_candidacy.html</a>
+        <a href="router/router_application.html" class="file-link">router_application.html</a>
+        <a href="router/router_post_application.html" class="file-link">router_post_application.html</a>
+        <a href="router/router_review.html" class="file-link">router_review.html</a>
+        <a href="router/router_status_dashboard.html" class="file-link">router_status_dashboard.html</a>
+        <a href="router/router_dailyquest.html" class="file-link">router_dailyquest.html</a>
+        <a href="router/router_breathing.html" class="file-link">router_breathing.html</a>
+        <a href="router/router_highpriority.html" class="file-link">router_highpriority.html</a>
+        <a href="router/router_opportunity.html" class="file-link">router_opportunity.html</a>
       </div>
 
       <div class="subsection">
         <h3 class="subsection-title">🎓 学生类型专用Router页面</h3>
         <p style="margin: 8px 0; font-size: 0.9em; color: var(--text-secondary);">针对不同类型学生的个性化Router页面，提供针对性的指导和资源推荐。</p>
-        <div class="file-list">
-          <div class="file-list-item">
-            <strong>1. Academic Excellence Router</strong> - 学术优秀型学生
-            <br><a href="router/router_academic.html" class="file-link">router_academic.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>2. Creative Arts Router</strong> - 艺术特长型学生
-            <br><a href="router/router_arts.html" class="file-link">router_arts.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>3. STEM Focus Router</strong> - STEM专长型学生
-            <br><a href="router/router_stem.html" class="file-link">router_stem.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>4. Scholarship Finder Router</strong> - 奖学金申请者
-            <br><a href="router/router_scholarship.html" class="file-link">router_scholarship.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>5. First Generation Router</strong> - 第一代大学生
-            <br><a href="router/router_first_gen.html" class="file-link">router_first_gen.html</a>
-          </div>
-          <div class="file-list-item">
-            <strong>6. International Students Router</strong> - 国际学生
-            <br><a href="router/router_international.html" class="file-link">router_international.html</a>
-          </div>
-        </div>
+        <a href="router/router_academic.html" class="file-link">router_academic.html</a>
+        <a href="router/router_arts.html" class="file-link">router_arts.html</a>
+        <a href="router/router_stem.html" class="file-link">router_stem.html</a>
+        <a href="router/router_scholarship.html" class="file-link">router_scholarship.html</a>
+        <a href="router/router_first_gen.html" class="file-link">router_first_gen.html</a>
+        <a href="router/router_international.html" class="file-link">router_international.html</a>
       </div>
 
-      <div class="two-column-layout">
+      <div class="flow-with-files">
         <div class="subsection">
           <h3 class="subsection-title">🔄 流程</h3>
           <div class="flow-diagram">
@@ -1499,7 +1467,8 @@
         <div class="flow-step" style="margin-left: 20px;">├─→ Extracurricular → extracurricular/*.html</div>
         <div class="flow-step" style="margin-left: 20px;">├─→ Research → research/*.html</div>
         <div class="flow-step" style="margin-left: 20px;">├─→ Standardized Test → standardized test/*.html</div>
-        <div class="flow-step" style="margin-left: 20px;">└─→ Summer School → summer school/*.html</div>
+        <div class="flow-step" style="margin-left: 20px;">├─→ Summer School → summer school/*.html</div>
+        <div class="flow-step" style="margin-left: 20px;">└─→ Interview → interview/milestone0.html</div>
         <div class="flow-arrow">↓</div>
         <div class="flow-step"><strong>8. [Router日常交互]</strong> → router/router.html</div>
         <div class="flow-step" style="margin-left: 20px;">├─→ 暖场交互</div>
