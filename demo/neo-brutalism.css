@@ -1,0 +1,409 @@
+/* =========================================================================
+   SuperOS for Students — Neo-Brutalism Design System (applied)
+   后现代野兽派 / Neo-Brutalism
+   - 暖纸底 + 墨黑粗边 + 硬阴影(无模糊) + 品牌红实色块 + 撞色黄/蓝
+   - 禁渐变 / 禁毛玻璃 / 禁柔阴影 / 禁大圆角
+   - 通过重映射既有 CSS 变量 + 显式覆盖，同时作用于 SPA(app) 与流程图文档(doc)
+   ========================================================================= */
+
+@import url('fonts/fonts.css');
+
+/* ---------- 1. Tokens（重映射既有变量，app 与 doc 通用） ---------- */
+:root {
+  /* 野兽派调色板 */
+  --paper:        #F4F1E8;   /* 暖纸底 */
+  --ink:          #141414;   /* 墨黑（线条/文字/边框） */
+  --brand:        #AA1E23;   /* 品牌红（保留原有主色） */
+  --brand-ink:    #7A1216;   /* 深红（浅底上的红字） */
+  --yellow:       #FFD23F;   /* 撞色黄 */
+  --blue:         #2D7DD2;   /* 撞色蓝 */
+  --accent:       #FFD23F;
+
+  /* 重映射 styles.css / doc 既有变量 → 统一为野兽派实色 */
+  --bg-main:        #F4F1E8;
+  --bg:             #F4F1E8;
+  --bg-card-1:      #FFE7A3;
+  --bg-card-2:      #FFD23F;
+  --bg-card-3:      #ECE6D8;
+  --neon:           #AA1E23;
+  --primary:        #AA1E23;
+  --primary-light:  #141414;
+  --primary-dark:   #141414;
+  --text:           #141414;
+  --text-primary:   #141414;
+  --text-secondary: #2A2118;
+  --text-muted:     #AA1E23;
+  --border:         #141414;
+  --border-color:   #141414;
+  --border-light:   rgba(20,20,20,.35);
+  --shadow:         #141414;          /* 仅作颜色，硬阴影由下方显式规则提供 */
+
+  /* 野兽派原语 */
+  --b-border:       3px solid var(--ink);
+  --b-border-bold:  4px solid var(--ink);
+  --b-shadow:       6px 6px 0 var(--ink);
+  --b-shadow-sm:    4px 4px 0 var(--ink);
+  --b-shadow-lg:    9px 9px 0 var(--ink);
+  --b-radius:       0px;
+
+  /* 字体栈 */
+  --font-display: 'Space Grotesk', 'Inter', 'PingFang SC', 'HarmonyOS Sans', sans-serif;
+  --font-body:    'Inter', 'PingFang SC', 'HarmonyOS Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:    'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+}
+
+/* ---------- 2. 基础 / 排版 ---------- */
+* { box-sizing: border-box; }
+
+html, body {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  font-family: var(--font-body) !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .app-header h1, .section-title, .feature-card-title,
+.major-card-title, .dashboard-card-header, .subsection-title-text,
+.full-flow-title, .section-number {
+  font-family: var(--font-display) !important;
+  letter-spacing: -.01em;
+  color: var(--ink) !important;
+}
+
+/* 等宽标签感：进度百分比、badge、chip 文字 */
+.onboarding-progress-percent, .badge-pill, .major-badge, .status-badge,
+.feature-tag, .chip, .status-label, .meta-label, .input-label,
+.onboarding-progress-text, code {
+  font-family: var(--font-mono) !important;
+}
+
+::selection { background: var(--yellow); color: var(--ink); }
+
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+
+/* ---------- 3. 全局几何：去圆角 + 去玻璃 + 去渐变柔光 ---------- */
+.app-header, .sidebar, .sheet, .status-report-modal, .card, .dashboard-card,
+.major-card, .guide-card, .chip, .chip-option, .badge-pill, .major-badge,
+.status-badge, .selected-badge, .action-btn, .btn-onboarding-primary,
+.btn-onboarding-secondary, .btn-onboarding-finish, .dashboard-action-btn,
+.sidebar-action-btn, .btn-edit, .btn-google, .status-option-btn,
+.onboarding-input, .onboarding-textarea, .input-group, .input-group-wrapper,
+.input-with-voice, .onboarding-progress-bar, .toc, .toc-item, .section,
+.subsection, .file-link, .feature-item, .feature-card, .flow-step, .flow-diagram,
+.full-flow, .btn, .info-item, .info-value, .kv, .row, .stack, .divider,
+.meta-item, .review-section, .confirm-review, .param-editor, .carousel,
+.major-carousel, .dashboard-task, .dashboard-list-item, .learning-style-option,
+.status-option-btn, .router-status-report, .status-input-container, .profile-nav,
+.center-row, .sheet-body, .status-report-body, .insp-list, .insp-name,
+.insp-path, .insp-title, .highlight-tag, .empty-state, .guide {
+  border-radius: var(--b-radius) !important;
+}
+
+/* broad catch-all: subpage card/goal/milestone/task classes  */
+[class*="card"], [class*="Card"], [class*="goal"], [class*="milestone"],
+[class*="step"], [class*="Step"], [class*="task"], [class*="Task"],
+[class*="timeline"], [class*="Timeline"], [class*="badge"], [class*="Badge"],
+[class*="pill"], [class*="Pill"], [class*="tag"], [class*="Tag"] {
+  border-radius: var(--b-radius) !important;
+}
+
+/* broad catch-all: card-like containers */
+[class*="card"], [class*="Card"], [class*="goal"], [class*="milestone"],
+[class*="timeline"], [class*="Timeline"], [class*="step"], [class*="Step"],
+[class*="task"], [class*="Task"] {
+  border: var(--b-border) !important;
+  box-shadow: var(--b-shadow) !important;
+  background-color: var(--paper) !important;
+}
+
+/* 玻璃态彻底禁用（全局：野蛮派禁毛玻璃，覆盖 styles.css 中全部 22 处 backdrop-filter） */
+*, *::before, *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.app-header, .sidebar, .sheet, .status-report-modal, .status-report-header,
+.floating-subtitle-container, .profile-nav, .header, .modal, .overlay {
+  background-image: none !important;
+}
+
+/* ---------- 4. 统一“硬边盒”外观（粗黑边 + 硬阴影） ---------- */
+.card, .dashboard-card, .major-card, .guide-card, .sidebar, .sheet,
+.status-report-modal, .chip, .badge-pill, .major-badge, .status-badge,
+.action-btn, .btn-onboarding-primary, .btn-onboarding-secondary,
+.btn-onboarding-finish, .onboarding-input, .input-group, .input-group-wrapper,
+.toc, .section, .subsection, .file-link, .feature-item, .feature-card,
+.flow-step, .btn, .info-item, .meta-item, .dashboard-task, .review-section,
+.param-editor, .onboarding-progress-bar, .full-flow, .learning-style-option,
+.status-option-btn, .guide {
+  border: var(--b-border) !important;
+  box-shadow: var(--b-shadow) !important;
+  background-color: var(--paper) !important;
+}
+
+/* ---------- 5. 头部 ---------- */
+.app-header {
+  background: var(--brand) !important;
+  color: var(--paper) !important;
+  border-bottom: var(--b-border-bold) !important;
+  box-shadow: var(--b-shadow) !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.app-header h1 {
+  color: var(--paper) !important;
+  font-family: var(--font-display) !important;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  font-weight: 700;
+}
+
+/* ---------- 6. 按钮（野兽派签名交互） ---------- */
+.action-btn, .btn-onboarding-primary, .btn-onboarding-finish,
+.dashboard-action-btn, .sidebar-action-btn, .btn-edit, .btn-google,
+.status-option-btn, .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  padding: 12px 20px;
+  border: var(--b-border) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  background: var(--brand) !important;
+  color: var(--paper) !important;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
+}
+.action-btn:hover, .btn-onboarding-primary:hover, .btn-onboarding-finish:hover,
+.dashboard-action-btn:hover, .sidebar-action-btn:hover, .btn-edit:hover,
+.btn-google:hover, .status-option-btn:hover, .btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--b-shadow-lg) !important;
+  background: var(--yellow) !important;
+  color: var(--ink) !important;
+  text-decoration: none;
+}
+.action-btn:active, .btn-onboarding-primary:active, .btn-onboarding-finish:active,
+.dashboard-action-btn:active, .sidebar-action-btn:active, .btn-edit:active,
+.btn-google:active, .status-option-btn:active, .btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 var(--ink) !important;
+}
+
+/* 次要按钮：纸底 + 红字，hover 反色 */
+.btn-onboarding-secondary, .btn-skip {
+  background: var(--paper) !important;
+  color: var(--brand) !important;
+  border: var(--b-border) !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
+}
+.btn-onboarding-secondary:hover, .btn-skip:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--b-shadow-lg) !important;
+  background: var(--ink) !important;
+  color: var(--paper) !important;
+}
+
+/* 通用 .btn-primary / .btn-secondary（如 Verify & Continue / 关闭弹层按钮） */
+.btn-primary, .btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--font-display) !important; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .02em;
+  padding: 12px 20px; border-radius: 0 !important;
+  border: var(--b-border) !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s ease, color .12s ease;
+}
+.btn-primary { background: var(--brand) !important; color: var(--paper) !important; }
+.btn-primary:hover {
+  transform: translate(-2px, -2px); box-shadow: var(--b-shadow-lg) !important;
+  background: var(--yellow) !important; color: var(--ink) !important; text-decoration: none;
+}
+.btn-primary:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink) !important; }
+.btn-secondary { background: var(--paper) !important; color: var(--brand) !important; }
+.btn-secondary:hover {
+  transform: translate(-2px, -2px); box-shadow: var(--b-shadow-lg) !important;
+  background: var(--ink) !important; color: var(--paper) !important; text-decoration: none;
+}
+.btn-secondary:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink) !important; }
+
+/* ---------- 7. 输入 ---------- */
+.onboarding-input, .onboarding-textarea, .input-group input,
+.input-group textarea, .input-with-voice input, .status-input-container input,
+.param-editor input, .param-editor textarea {
+  background: #FFFFFF !important;
+  color: var(--ink) !important;
+  border: var(--b-border) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  font-family: var(--font-body) !important;
+  padding: 12px 14px;
+  transition: box-shadow .12s ease, transform .12s ease;
+}
+.onboarding-input:focus, .onboarding-textarea:focus, .input-group input:focus,
+.input-group textarea:focus, .input-with-voice input:focus {
+  outline: none;
+  box-shadow: var(--b-shadow) !important;
+  transform: translate(-2px, -2px);
+}
+/* 占位符：中性灰，避免继承到品牌红 / 白字看不清 */
+input::placeholder, textarea::placeholder,
+.onboarding-input::placeholder, .onboarding-textarea::placeholder,
+.input-group input::placeholder, .input-group textarea::placeholder,
+.input-with-voice input::placeholder, .param-editor input::placeholder,
+.param-editor textarea::placeholder, .status-input-container input::placeholder,
+.tutor-input::placeholder {
+  color: #8a7f6f !important;
+  font-style: normal !important;
+  opacity: 1 !important;
+}
+.input-label, .input-label .required { color: var(--brand-ink) !important; font-weight: 700; }
+.voice-input-btn {
+  background: var(--yellow) !important;
+  border: var(--b-border) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  color: var(--ink);
+}
+
+/* 全局兜底：所有文本类输入统一为白底 / 方角 / 粗黑边 / 硬阴影（覆盖 styles.css 任意 input 变体） */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="image"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+textarea, select {
+  background: #FFFFFF !important;
+  color: var(--ink) !important;
+  border: var(--b-border) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  font-family: var(--font-body) !important;
+  padding: 12px 14px;
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]):not([type="image"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):focus,
+textarea:focus, select:focus {
+  outline: none;
+  box-shadow: var(--b-shadow) !important;
+}
+
+/* ---------- 8. 进度条 ---------- */
+.onboarding-progress-bar {
+  background: var(--paper) !important;
+  border: var(--b-border) !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  border-radius: 0 !important;
+  height: 18px !important;
+  overflow: hidden;
+}
+.onboarding-progress-fill {
+  background: var(--brand) !important;
+  border-right: var(--b-border-bold) !important;
+  box-shadow: none !important;
+  transition: width .3s ease;
+}
+.onboarding-progress-percent, .onboarding-progress-text {
+  color: var(--brand-ink) !important; font-weight: 700;
+}
+
+/* ---------- 9. 侧栏 / 浮层 / 抽屉 ---------- */
+.sidebar {
+  background: var(--paper) !important;
+  border-right: var(--b-border-bold) !important;
+  box-shadow: var(--b-shadow) !important;
+}
+.sidebar-head { border-bottom: var(--b-border) !important; }
+.sidebar-footer { border-top: var(--b-border) !important; }
+
+.sheet, .status-report-modal {
+  background: var(--paper) !important;
+  border: var(--b-border-bold) !important;
+  box-shadow: var(--b-shadow-lg) !important;
+  border-radius: 0 !important;
+}
+.status-report-header, .sheet-body { border-bottom: var(--b-border) !important; }
+.status-report-close, .sheet .close-sidebar-btn, .close-transcript-btn {
+  background: var(--brand) !important; color: var(--paper) !important;
+  border: var(--b-border) !important; border-radius: 0 !important;
+}
+
+/* ---------- 10. 卡片 / 看板 ---------- */
+.dashboard-card, .major-card, .guide-card, .card {
+  background: var(--paper) !important;
+  border: var(--b-border) !important;
+  box-shadow: var(--b-shadow) !important;
+  border-radius: 0 !important;
+}
+.dashboard-card-header, .major-card-header, .card .row {
+  border-bottom: var(--b-border) !important;
+}
+.dashboard-card-highlight { background: var(--yellow) !important; color: var(--ink) !important; }
+.dashboard-task-urgent { background: var(--brand) !important; color: var(--paper) !important; }
+.dashboard-task-badge, .status-emoji { background: var(--blue) !important; color: var(--paper) !important; border: var(--b-border) !important; }
+
+/* ---------- 11. Chip / Badge / Tag ---------- */
+.chip, .chip-option, .badge-pill, .major-badge, .status-badge, .selected-badge,
+.feature-tag, .badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  border: var(--b-border) !important;
+  box-shadow: var(--b-shadow-sm) !important;
+  border-radius: 0 !important;
+  font-weight: 700;
+  padding: 6px 12px;
+}
+.chip-option.is-selected, .chip.is-selected, .selected-badge,
+.chip[aria-pressed="true"], .learning-style-option.is-selected {
+  background: var(--brand) !important; color: var(--paper) !important;
+}
+.badge-pill, .major-badge, .status-badge, .badge { background: var(--brand) !important; color: var(--paper) !important; }
+.feature-tag { background: var(--yellow) !important; color: var(--ink) !important; }
+.status-badge { background: var(--blue) !important; color: var(--paper) !important; }
+.chip-selector { gap: 8px; }
+
+/* ---------- 12. 流程图文档（index.html）专用 ---------- */
+.header {
+  background: var(--brand) !important;
+  color: var(--paper) !important;
+  border-bottom: var(--b-border-bold) !important;
+  box-shadow: var(--b-shadow) !important;
+  position: sticky; top: 0; z-index: 100;
+}
+.header h1, .header p { color: var(--paper) !important; font-family: var(--font-display) !important; }
+.section-number {
+  background: var(--yellow) !important; color: var(--ink) !important;
+  border: var(--b-border) !important; border-radius: 0 !important;
+  font-family: var(--font-display) !important; font-weight: 700;
+}
+.section-header { border-bottom: var(--b-border) !important; padding-bottom: 8px; }
+.toc { background: var(--bg-card-3) !important; border: var(--b-border) !important; box-shadow: var(--b-shadow) !important; }
+.toc h2 { border-bottom: var(--b-border) !important; color: var(--brand-ink) !important; }
+.toc-item { border: var(--b-border) !important; box-shadow: var(--b-shadow-sm) !important; border-radius: 0 !important; }
+.toc-item.active { background: var(--brand) !important; color: var(--paper) !important; }
+.toc-item.active a { color: var(--paper) !important; }
+.file-link { background: var(--brand) !important; color: var(--paper) !important; border: var(--b-border) !important; box-shadow: var(--b-shadow-sm) !important; border-radius: 0 !important; }
+.file-link:hover { background: var(--yellow) !important; color: var(--ink) !important; transform: translate(-2px,-2px); box-shadow: var(--b-shadow) !important; text-decoration: none; }
+.feature-item, .feature-card { background: var(--paper) !important; border: var(--b-border) !important; box-shadow: var(--b-shadow-sm) !important; border-radius: 0 !important; }
+.feature-card-title { color: var(--brand-ink) !important; border-bottom: var(--b-border) !important; }
+.flow-diagram { background: var(--bg-card-3) !important; border: var(--b-border) !important; box-shadow: var(--b-shadow-sm) !important; border-radius: 0 !important; font-family: var(--font-mono) !important; }
+.flow-step { background: var(--paper) !important; border-left: var(--b-border-bold) !important; border-radius: 0 !important; }
+.flow-step[style*="background: var(--primary)"] { background: var(--brand) !important; color: var(--paper) !important; }
+.full-flow { background: var(--bg-card-2) !important; border: var(--b-border-bold) !important; box-shadow: var(--b-shadow-lg) !important; border-radius: 0 !important; }
+.full-flow-title { color: var(--brand-ink) !important; border-bottom: var(--b-border-bold) !important; }
+.badge { background: var(--brand) !important; color: var(--paper) !important; border: var(--b-border) !important; }
+code { background: var(--bg-card-3) !important; border: var(--b-border) !important; border-radius: 0 !important; font-family: var(--font-mono) !important; color: var(--brand-ink) !important; }
+hr { border-top: var(--b-border) !important; }
+strong { color: var(--brand-ink) !important; }
+
+/* ---------- 13. 减动效偏好 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
